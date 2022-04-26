@@ -4,16 +4,20 @@ cache:
   paths:
     - node_modules/
 
+stages:
+  - build
+  - test
+
 before_script:
-    - npm install -g grunt-cli
-    - npm install
+  - npm install -g grunt-cli
+  - npm install
 
 build:
   stage: build
   script:
-    - grunt build
+    grunt build
 
 test:
   stage: test
   script:
-    - grunt test
+    grunt test
