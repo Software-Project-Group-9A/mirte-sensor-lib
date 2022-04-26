@@ -1,0 +1,11 @@
+image: node:latest
+
+cache:
+  paths:
+    - node_modules/
+
+test_build:
+  script:
+    - npm install -g grunt-cli
+    - npm install
+    - grunt build
