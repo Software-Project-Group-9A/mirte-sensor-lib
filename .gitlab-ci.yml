@@ -20,5 +20,4 @@ build:
 test:
   stage: test
   script:
-    - grunt build
     - grunt test
