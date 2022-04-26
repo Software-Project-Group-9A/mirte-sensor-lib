@@ -15,4 +15,5 @@ test:
   stage: test
   script:
     - npm install -g grunt-cli
+    - npm install
     - grunt test
