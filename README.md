@@ -1,5 +1,9 @@
 # Mirte Sensor Library
 
+## Project 
+
+In this project we will be designing and implementing a way to get the sensor data (IMU, GPS, camera and many others) of a mobile phone into ROS.
+
 ## Setup
 
 *Requires npm to be installed on your device.*
