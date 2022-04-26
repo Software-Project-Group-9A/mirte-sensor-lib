@@ -1,4 +1,4 @@
-const SensorPublisher = require('./sensorPublisher');
+const SensorPublisher = require('./SensorPublisher.js');
 
 class TestSensor extends SensorPublisher {
     constructor(topic, test) {
