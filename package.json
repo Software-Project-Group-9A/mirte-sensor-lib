@@ -1,0 +1,19 @@
+{
+  "name": "mirte_sensor_lib",
+  "scripts": {
+    "test": "mocha test/**/*.js",
+    "coverage": "nyc npm run test"
+  },
+  "devDependencies": {
+    "grunt": "~1.5.2",
+    "grunt-contrib-clean": "~2.0.1",
+    "grunt-contrib-concat": "~2.1.0",
+    "grunt-contrib-jshint": "~3.2.0",
+    "grunt-contrib-uglify": "~5.2.1",
+    "grunt-contrib-watch": "~1.1.0",
+    "grunt-jsdoc": "~2.4.1",
+    "grunt-mocha-test": "~0.13.3",
+    "mocha": "~9.2.2",
+    "nyc": "~15.1.0"
+  }
+}
