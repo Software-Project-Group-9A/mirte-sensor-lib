@@ -10,4 +10,4 @@ var SENSORLIB = this.SENSORLIB || {
 // Add sensors components
 Object.assign(SENSORLIB, require('./sensors'));
 
-module.exports = ROSLIB;
+global.SENSORLIB = SENSORLIB;

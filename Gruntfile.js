@@ -6,9 +6,9 @@ module.exports = function(grunt) {
 
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
-        concat: {
-            build: {
-                src: ['src/*.js', 'src/**/*.js'],
+        browserify: {
+            dist: {
+                src: ['src/RosSensorLib.js'],
                 dest: 'build/' + MIRTE_SENSOR_LIB + '.js'
             }
         },
@@ -90,10 +90,11 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-jsdoc');
     grunt.loadNpmTasks('grunt-mocha-test');
+    grunt.loadNpmTasks('grunt-browserify');
 
     grunt.registerTask('test', ['mochaTest']);
-    grunt.registerTask('dev', ['concat', 'watch']);
-    grunt.registerTask('build', ['concat', 'jshint', 'uglify']);
+    grunt.registerTask('dev', ['browserify', 'watch']);
+    grunt.registerTask('build', ['browserify', 'jshint', 'uglify']);
     grunt.registerTask('build_and_watch', ['watch']);
     grunt.registerTask('doc', ['clean', 'jsdoc']);
 };
