@@ -53,7 +53,7 @@ grunt doc
 
 | Picture | Name | Email |
 |---|---|---|
-| <img src="https://cdn.vox-cdn.com/thumbor/1kKyzwmocR6pu9ijSIl_l1XP0PY=/0x0:1280x720/1200x675/filters:focal(470x259:674x463)/cdn.vox-cdn.com/uploads/chorus_image/image/58089103/r_m_sauce.0.jpg" width="60"/> | Mike Segers | M.Segers-1@student.tudelft.nl |
+| <img src="https://gitlab.ewi.tudelft.nl/uploads/-/system/user/avatar/3539/avatar.png?width=400" width="60"/> | Mike Segers | M.Segers-1@student.tudelft.nl |
 | <img src="https://cdn.discordapp.com/attachments/965893530251845655/968054757249929246/unknown.png" width="60"/> | Tijs Lenssen | T.Lenssen@student.tudelft.nl |
 | <img src="https://gitlab.ewi.tudelft.nl/uploads/-/system/user/avatar/2546/avatar.png?width=400" width="60"/> | Anish Jaggoe | A.S.H.Jaggoe@student.tudelft.nl |
 | <img src="https://gitlab.ewi.tudelft.nl/uploads/-/system/user/avatar/3729/avatar.png?width=400" width="60"/> | Pieter Carton | P.A.Carton@student.tudelft.nl |
