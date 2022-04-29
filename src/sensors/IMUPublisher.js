@@ -1,6 +1,8 @@
 // Dependencies
 var Quaternion = require('quaternion');
 var ROSLIB = require('roslib');
+const SensorPublisher = require('./SensorPublisher.js');
+
 
 // Important documentation
 // http://docs.ros.org/en/lunar/api/sensor_msgs/html/msg/Imu.html
@@ -12,13 +14,14 @@ var ROSLIB = require('roslib');
 /**
  * Template for object that publishes sensor data to the provided ROS topic.
  */
-class IMU {  
+class IMU extends SensorPublisher {  
 
     /**
      * Creates a new sensor publisher that publishes to the provided topic.
      * @param {Topic} topic a Topic from RosLibJS
      */
     constructor(topic) {
+        super(topic);
         var self = this;
         this.topic = topic;
         this.freq = 0.5;
