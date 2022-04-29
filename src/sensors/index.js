@@ -1,3 +1,5 @@
+const MagneticDeclinationSensor = require('./MagneticDeclinationPublisher');
+
 /**
  * This file tells @function require what to import when requiring the entire sensors folder.
  * 
