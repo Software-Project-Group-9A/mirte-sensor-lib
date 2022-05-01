@@ -1,13 +1,24 @@
 const SensorPublisher = require('./SensorPublisher.js');
 
+/**
+ * ButtonPublisher publishes the state of an HTML button element.
+ * 
+ * The data resulting from the button interactions is published as a
+ * ROS std_msgs/Bool message. The boolean contained within this message
+ * is set to true when the button is pressed, and false otherwise.
+ */
 class ButtonPublisher extends SensorPublisher {
     constructor(topic, button) {
-        // super should verify validity of topic?
         super(topic);
+        
+        // super should verify validity of topic?
+        if (!(topic instanceof ROSLIB.Topic)) {
+            throw TypeError('topic argument was not of type ROSLIB.Topic');
+        }
+        this.topic = topic;
 
-        // verify that button is an HTML button element
-        if (button === undefined || !(button instanceof window.HTMLButtonElement)) {
-            throw 'error';
+        if (!(button instanceof window.HTMLButtonElement)) {
+            throw TypeError('button argument was not of type HTMLButtonElement');
         }
 
         this.button = button;
@@ -26,22 +37,41 @@ class ButtonPublisher extends SensorPublisher {
      * Should publish data to ROS topic.
      * @param {*} event object containing sensor data.
      */
-    onReadData(event) {
-        throw 'onReading method not defined!';
+    onMouseDown() {
+        const msg = createBoolMsg(true)
+        this.topic.publish(msg);
+    }
+
+    onMouseUp() {
+        const msg = createBoolMsg(false)
+        this.topic.publish(msg);
+    }
+
+    /**
+     * Creates a new ROS std_msgs/Bool message, containing the supplied boolean value.
+     * @param {boolean} bool 
+     * @returns a new ROS std_msgs/Bool message, containing the supplied boolean value.
+     */
+    createBoolMsg(bool) {
+        return new ROSLIB.Message({
+            bool: bool
+        });
     }
 
     /**
      * Start the publishing of data to ROS.
      */
     start() {
-        throw 'start method not defined!';
+        this.button.addEventListener("mousedown", this.onMouseDown);
+        this.button.addEventListener("mouseup", this.onMouseUp);
     }
 
     /**
      * Stops the publishing of data to ROS.
      */
     stop() {
-        throw 'stop method not defined!';
+        this.button.removeEventListener("mousedown", this.onMouseDown);
+        this.button.removeEventListener("mouseup", this.onMouseUp);
     }
 
     /**
