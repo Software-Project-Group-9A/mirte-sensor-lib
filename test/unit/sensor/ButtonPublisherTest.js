@@ -1,18 +1,27 @@
 const assert = require('assert');
 
-// us JSDOM to simulate browser environment
+// Sinon for mocking
+// Allows for fake timers, which might be useful in future testing
+const sinon = require('sinon');
+
+// JSDOM for simulating browser environment
 const { JSDOM } = require('jsdom');
 const { window } = new JSDOM(``, {});
 const { document } = window;
 
+// Module to test
 var ButtonPublisher = require('../../../src/sensors/ButtonPublisher.js');
-
-console.log(window.HTMLButtonElement);
 
 // define JSDOM window in global scope 
 global.window = window;
+// create spy for Topic
 global.ROSLIB = {
-    Topic: function() {}
+    Topic: function() {
+        this.publish = function(msg) {}
+    },
+    Message: function(msg) {
+        this.msg = msg
+    }
 }
 
 describe("Test ButtonPublisher", function() {
@@ -70,19 +79,63 @@ describe("Test ButtonPublisher", function() {
         });
 
         it('should accept a ROSLIB.Topic and an HTML Button as arguments', function() {
-            var sensorInstance;
+            var publisher;
             const button = document.createElement('button');
 
             assert.doesNotThrow(
                 () => {
-                    sensorInstance = new ButtonPublisher(new ROSLIB.Topic(), button);
+                    publisher = new ButtonPublisher(new ROSLIB.Topic(), button);
                 },
                 (error) => {
                     return false;
                 }
             );
 
-            assert.equal(sensorInstance.button, button);
+            assert.equal(publisher.button, button);
+        });
+    });
+
+    describe("#start()", function() {
+        it("should subscribe onMouseUp and onMouseDown callbacks to correct events", function(){
+            const button = sinon.spy(document.createElement('button'));
+            const topic = new ROSLIB.Topic();
+            const publisher = new ButtonPublisher(topic, button);
+
+            publisher.start();
+
+            assert.equal(button.addEventListener.callCount, 2);
+        });
+    });
+
+    describe("#onMouseUp()", function() {
+        it("should publish a sts_msgs/Bool message to topic upon callback", function(){
+            const button = document.createElement('button');
+            const topic = sinon.spy(new ROSLIB.Topic());
+            const publisher = sinon.spy(new ButtonPublisher(topic, button));
+
+            publisher.start();
+            button.dispatchEvent(new window.Event('mouseup'));
+
+            const expectedMessage = new ROSLIB.Message({ bool: false });
+            assert.equal(publisher.onMouseUp.callCount, 1);
+            assert.equal(topic.publish.callCount, 1);
+            assert.deepEqual(topic.publish.getCall(0).args[0], expectedMessage);
+        });
+    });
+
+    describe("#onMouseDown()", function() {
+        it("should publish a sts_msgs/Bool message to topic upon callback", function(){
+            const button = document.createElement('button');
+            const topic = sinon.spy(new ROSLIB.Topic());
+            const publisher = sinon.spy(new ButtonPublisher(topic, button));
+
+            publisher.start();
+            button.dispatchEvent(new window.Event('mousedown'));
+
+            const expectedMessage = new ROSLIB.Message({ bool: true });
+            assert.equal(publisher.onMouseDown.callCount, 1);
+            assert.equal(topic.publish.callCount, 1);
+            assert.deepEqual(topic.publish.getCall(0).args[0], expectedMessage);
         });
     });
 });
