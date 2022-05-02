@@ -1,6 +1,6 @@
 const assert = require('assert');
 
-// Sinon for mocking
+// Sinon library for mocking
 // Allows for fake timers, which might be useful in future testing
 const sinon = require('sinon');
 
@@ -104,6 +104,8 @@ describe("Test ButtonPublisher", function() {
             publisher.start();
 
             assert.equal(button.addEventListener.callCount, 2);
+            assert(button.addEventListener.calledWith('mouseup', publisher.onMouseUp));
+            assert(button.addEventListener.calledWith('mousedown', publisher.onMouseDown));
         });
     });
 
@@ -136,6 +138,21 @@ describe("Test ButtonPublisher", function() {
             assert.equal(publisher.onMouseDown.callCount, 1);
             assert.equal(topic.publish.callCount, 1);
             assert.deepEqual(topic.publish.getCall(0).args[0], expectedMessage);
+        });
+    });
+
+    describe("#stop()", function() {
+        it("should unsubscribe onMouseUp and onMouseDown callbacks", function(){
+            const button = sinon.spy(document.createElement('button'));
+            const topic = sinon.spy(new ROSLIB.Topic());
+            const publisher = new ButtonPublisher(topic, button);
+
+            publisher.start();
+            publisher.stop();
+            button.dispatchEvent(new window.Event('mousedown'));
+            button.dispatchEvent(new window.Event('mouseup'));
+
+            assert.equal(topic.publish.callCount, 0);
         });
     });
 });

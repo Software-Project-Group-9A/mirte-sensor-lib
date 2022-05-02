@@ -2,12 +2,19 @@ const SensorPublisher = require('./SensorPublisher.js');
 
 /**
  * ButtonPublisher publishes the state of an HTML button element.
+ * This state is published every time the button changes state, 
+ * from pressed to unpressed, and vice versa.
  * 
  * The data resulting from the button interactions is published as a
  * ROS std_msgs/Bool message. The boolean contained within this message
  * is set to true when the button is pressed, and false otherwise.
  */
 class ButtonPublisher extends SensorPublisher {
+    /**
+     * Creates a new ButtonPublisher.
+     * @param {ROSLIB.Topic} topic topic to which to publish button data
+     * @param {HTMLButtonElement} button button of which to publish data
+     */
     constructor(topic, button) {
         super(topic);
         
@@ -15,26 +22,41 @@ class ButtonPublisher extends SensorPublisher {
         if (!(topic instanceof ROSLIB.Topic)) {
             throw new TypeError('topic argument was not of type ROSLIB.Topic');
         }
-        this.topic = topic;
 
         if (!(button instanceof window.HTMLButtonElement)) {
             throw new TypeError('button argument was not of type HTMLButtonElement');
         }
 
-        this.button = button;
-    }
+        /**
+         * topic to which to publish button data 
+         */
+         this.topic = topic;
 
-    /**
-     * Callback for when error occurs while reading sensor data.
-     * @param {*} event containing error info.
-     */
-    onError(event) {
-        throw 'onError method not defined!';
+        /**
+         * button of which to publish data
+         */
+        this.button = button;
+
+        /**
+         * Callback for when button is pressed.
+         */
+        this.onMouseDown = function() {
+            const msg = this.createBoolMsg(true);
+            this.topic.publish(msg);
+        }.bind(this);
+
+        /**
+         * Callback for when button is released.
+         */
+        this.onMouseUp = function() {
+            const msg = this.createBoolMsg(false);
+            this.topic.publish(msg);
+        }.bind(this);
     }
 
     /**
      * Creates a new ROS std_msgs/Bool message, containing the supplied boolean value.
-     * @param {boolean} bool 
+     * @param {boolean} bool boolean to include in message
      * @returns a new ROS std_msgs/Bool message, containing the supplied boolean value.
      */
     // TODO: should perhaps be it's own module, allong with other message objects we might need in this project
@@ -45,41 +67,19 @@ class ButtonPublisher extends SensorPublisher {
     }
 
     /**
-     * Callback for reading sensor data.
-     * Should publish data to ROS topic.
-     * @param {*} event object containing sensor data.
-     */
-    onMouseDown() {
-        const msg = this.createBoolMsg(true);
-        this.topic.publish(msg);
-    }
-
-    onMouseUp() {
-        const msg = this.createBoolMsg(false);
-        this.topic.publish(msg);
-    }
-
-    /**
      * Start the publishing of data to ROS.
      */
     start() {
-        this.button.addEventListener('mousedown', this.onMouseDown.bind(this));
-        this.button.addEventListener('mouseup', this.onMouseUp.bind(this));
+        this.button.addEventListener('mousedown', this.onMouseDown);
+        this.button.addEventListener('mouseup', this.onMouseUp);
     }
 
     /**
-     * Stops the publishing of data to ROS.
+     * Stop the publishing of data to ROS.
      */
     stop() {
         this.button.removeEventListener('mousedown', this.onMouseDown);
         this.button.removeEventListener('mouseup', this.onMouseUp);
-    }
-
-    /**
-     * Sets the maximum frequency at which new data can be published.
-     */
-    setPublishFrequency() {
-        throw 'setPublishFrequency method not defined!';
     }
 }
 
