@@ -1,6 +1,6 @@
 // Dependencies
 var Quaternion = require('quaternion');
-var ROSLIB = require('roslib');
+// var ROSLIB = require('roslib');
 const SensorPublisher = require('./SensorPublisher.js');
 
 
@@ -22,6 +22,7 @@ class IMU extends SensorPublisher {
      */
     constructor(topic) {
         super(topic);
+        
         var self = this;
         this.topic = topic;
         this.freq = 0.5;
@@ -156,6 +157,8 @@ class IMU extends SensorPublisher {
      */
     setPublishFrequency(hz) {
         this.freq = hz;
+        this.stop();
+        this.start();
     }
 
 }
