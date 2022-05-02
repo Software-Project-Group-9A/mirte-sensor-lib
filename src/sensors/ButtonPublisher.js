@@ -62,7 +62,7 @@ class ButtonPublisher extends SensorPublisher {
     // TODO: should perhaps be it's own module, allong with other message objects we might need in this project
     createBoolMsg(bool) {
         return new ROSLIB.Message({
-            bool: bool
+            data: bool
         });
     }
 
