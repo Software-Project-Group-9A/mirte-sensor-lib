@@ -3,18 +3,19 @@ const assert = require('assert');
 // Sinon library for mocking
 // Allows for fake timers, which might be useful in future testing
 const sinon = require('sinon');
+var jsdom = require('mocha-jsdom')
 
 // JSDOM for simulating browser environment
-const { JSDOM } = require('jsdom');
-const { window } = new JSDOM(``, {});
-const { document } = window;
+var { JSDOM } = require('jsdom');
+var { window } = new JSDOM(``, {});
+var { document } = window;
 
 // Module to test
 var ButtonPublisher = require('../../../src/sensors/ButtonPublisher.js');
 
 // define JSDOM window in global scope 
 global.window = window;
-// create spy for Topic
+// define dummy ROSLIB in global scope
 global.ROSLIB = {
     Topic: function() {
         this.publish = function(msg) {}

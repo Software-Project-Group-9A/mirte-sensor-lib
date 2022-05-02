@@ -1,21 +1,20 @@
 const SensorPublisher = require('./SensorPublisher.js');
 
 /**
- * ButtonPublisher publishes the state of an HTML button element.
- * This state is published every time the button changes state, 
- * from pressed to unpressed, and vice versa.
+ * SliderPublisher publishes the state of an HTML slider element.
+ * This state is published every time the slider is moved.
  * 
  * The data resulting from the button interactions is published as a
- * ROS std_msgs/Bool message. The boolean contained within this message
- * is set to true when the button is pressed, and false otherwise.
+ * ROS std_msgs/Int message. The int contained within this message
+ * ranges from 0.0 to 1.0.
  */
-class ButtonPublisher extends SensorPublisher {
+class SliderPublisher extends SensorPublisher {
     /**
      * Creates a new ButtonPublisher.
-     * @param {ROSLIB.Topic} topic topic to which to publish button data
-     * @param {HTMLButtonElement} button button of which to publish data
+     * @param {ROSLIB.Topic} topic topic to which to publish slider data
+     * @param {HTMLInputElement} slider slider of which to publish data, must have type 'range'
      */
-    constructor(topic, button) {
+    constructor(topic, slider) {
         super(topic);
         
         // TODO: super should verify validity of topic?
@@ -23,8 +22,12 @@ class ButtonPublisher extends SensorPublisher {
             throw new TypeError('topic argument was not of type ROSLIB.Topic');
         }
 
-        if (!(button instanceof window.HTMLButtonElement)) {
-            throw new TypeError('button argument was not of type HTMLButtonElement');
+        if (!(slider instanceof window.HTMLInputElement)) {
+            throw new TypeError('slider argument was not of type HTMLInputElement');
+        }
+
+        if (slider.type !== 'range') {
+            throw new EvalError('slider argument does not have type slider');
         }
 
         /**
@@ -33,23 +36,15 @@ class ButtonPublisher extends SensorPublisher {
          this.topic = topic;
 
         /**
-         * button of which to publish data
+         * slider of which to publish data
          */
-        this.button = button;
+        this.slider = slider;
 
         /**
          * Callback for when button is pressed.
          */
         this.onMouseDown = function() {
             const msg = this.createBoolMsg(true);
-            this.topic.publish(msg);
-        }.bind(this);
-
-        /**
-         * Callback for when button is released.
-         */
-        this.onMouseUp = function() {
-            const msg = this.createBoolMsg(false);
             this.topic.publish(msg);
         }.bind(this);
     }
@@ -91,4 +86,4 @@ class ButtonPublisher extends SensorPublisher {
     }
 }
 
-module.exports = ButtonPublisher;
+module.exports = SliderPublisher;

@@ -1,5 +1,3 @@
-const ButtonPublisher = require('./ButtonPublisher');
-
 /**
  * This file tells @function require what to import when requiring the entire sensors folder.
  * 
@@ -7,5 +5,6 @@ const ButtonPublisher = require('./ButtonPublisher');
  */
 module.exports = {
     TestSensor: require('./TestSensor'),
-    ButtonPublisher: require('./ButtonPublisher')
+    ButtonPublisher: require('./ButtonPublisher'),
+    SliderPublisher: require('./SliderPublisher')
 };
