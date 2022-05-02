@@ -10,7 +10,7 @@ const { window } = new JSDOM(``, {});
 const { document } = window;
 
 // Module to test
-var ButtonPublisher = require('../../../src/sensors/MagneticDeclinationPublisher.js');
+var MagneticDeclinationPublisher = require('../../../src/sensors/MagneticDeclinationPublisher.js');
 
 // define JSDOM window in global scope 
 global.window = global.window || window;
