@@ -118,7 +118,7 @@ describe("Test ButtonPublisher", function() {
             publisher.start();
             button.dispatchEvent(new window.Event('mouseup'));
 
-            const expectedMessage = new ROSLIB.Message({ bool: false });
+            const expectedMessage = new ROSLIB.Message({ data: false });
             assert.equal(publisher.onMouseUp.callCount, 1);
             assert.equal(topic.publish.callCount, 1);
             assert.deepEqual(topic.publish.getCall(0).args[0], expectedMessage);
@@ -134,7 +134,7 @@ describe("Test ButtonPublisher", function() {
             publisher.start();
             button.dispatchEvent(new window.Event('mousedown'));
 
-            const expectedMessage = new ROSLIB.Message({ bool: true });
+            const expectedMessage = new ROSLIB.Message({ data: true });
             assert.equal(publisher.onMouseDown.callCount, 1);
             assert.equal(topic.publish.callCount, 1);
             assert.deepEqual(topic.publish.getCall(0).args[0], expectedMessage);
