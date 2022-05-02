@@ -36,7 +36,7 @@ const isIOS = !(
     if (isIOS) {
       DeviceOrientationEvent.requestPermission()
         .then((response) => {
-          if (response === "granted") {
+          if (response === 'granted') {
             window.addEventListener('deviceorientation', (event) => {
               this.onReadOrientation(self, event);
             });  
@@ -45,10 +45,10 @@ const isIOS = !(
             this.start();
             console.log('started!');
           } else {
-            alert("has to be allowed!");
+            alert('has to be allowed!');
           }
         })
-        .catch(() => alert("not supported"));
+        .catch(() => alert('not supported'));
     } else {
       window.addEventListener('deviceorientation', (event) => {
         this.onReadOrientation(self, event);
@@ -66,29 +66,6 @@ const isIOS = !(
    */
   onError(event) {
       throw 'ERROR!';
-  }
-
-  /**
-     * Callback for reading orientation data.
-     * @param {IMU} self context of object that called callback.
-     * @param {*} event object containing sensor data.
-     */
-   onReadOrientation(self, event) {
-    self.alpha = event.alpha;
-    self.beta = event.beta;
-    self.gamma = event.gamma;
-    self.orientationReady = true;
-
-    navigator.geolocation.getCurrentPosition(locationHandler);
-  }
-
-  locationHandler(position) {
-    const { latitude, longitude } = position.coords;
-    pointDegree = calcDegreeToPoint(latitude, longitude);
-  
-    if (pointDegree < 0) {
-      pointDegree = pointDegree + 360;
-    }
   }
 
   calcDegreeToPoint(latitude, longitude) {
@@ -112,9 +89,34 @@ const isIOS = !(
     return Math.round(psi);
   }
 
+  locationHandler(position) {
+    const { latitude, longitude } = position.coords;
+    pointDegree = calcDegreeToPoint(latitude, longitude);
+  
+    if (pointDegree < 0) {
+      pointDegree = pointDegree + 360;
+    }
+  }
+
+  /**
+     * Callback for reading orientation data.
+     * @param {IMU} self context of object that called callback.
+     * @param {*} event object containing sensor data.
+     */
+   onReadOrientation(self, event) {
+    self.alpha = event.alpha;
+    self.beta = event.beta;
+    self.gamma = event.gamma;
+    self.orientationReady = true;
+
+    navigator.geolocation.getCurrentPosition(locationHandler);
+  }
+
+  
+
   createSnapshot() {
     console.log('**SNAP**');
-    compass = Math.abs(e.alpha - 360);
+    compass = Math.abs(this.alpha - 360);
 
     var magneticDecilinationMessage = new ROSLIB.Message({
       data : compass
@@ -144,10 +146,12 @@ const isIOS = !(
   }
 
   /**
-   * Sets the maximum frequency at which new data can be published.
-   */
-  setPublishFrequency() {
+     * Sets the maximum frequency at which new data can be published.
+     */
+   setPublishFrequency(hz) {
     this.freq = hz;
+    this.stop();
+    this.start();
   }
 }
 
