@@ -5,8 +5,6 @@
 */
 
 // Dependencies
-var Quaternion = require('quaternion');
-// var ROSLIB = require('roslib');
 const SensorPublisher = require('./SensorPublisher.js');
 
 
