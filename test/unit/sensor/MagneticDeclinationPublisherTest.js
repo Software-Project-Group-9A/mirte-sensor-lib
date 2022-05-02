@@ -13,8 +13,8 @@ const { document } = window;
 var ButtonPublisher = require('../../../src/sensors/MagneticDeclinationPublisher.js');
 
 // define JSDOM window in global scope 
-global.window = window;
-global.navigator = navigator;
+global.window = global.window || window;
+
 // create spy for Topic
 global.ROSLIB = {
     Topic: function() {
@@ -31,13 +31,11 @@ describe("Test MagneticDeclinationPublisher", function() {
         /* helper functions for checking whether correct error is raised */
         function expectInvalidTopic(error) {
             assert(error instanceof TypeError);
-            assert(error.message === 'topic argument was not of type ROSLIB.Topic')
+            assert.equal(error.message, 'topic argument was not of type ROSLIB.Topic')
 
             return true;
         }
 
-        /* tests for topic verification */
-        /* functionality should probably be moved into superclass SensorPublisher */
         it('should reject an undefined topic', function() {
             assert.throws(
                 () => {
@@ -55,7 +53,7 @@ describe("Test MagneticDeclinationPublisher", function() {
             );
         });
 
-        it('should accept a ROSLIB.Topic', function() {
+        it('should accept a ROSLIB.Topic and an HTML Button as arguments', function() {
             var publisher;
 
             assert.doesNotThrow(
@@ -69,37 +67,37 @@ describe("Test MagneticDeclinationPublisher", function() {
         });
     });
 
-    describe("#onError()", function() {
+    // describe("#onError()", function() {
     
-    });
+    // });
 
-    describe("#calcDegreeToPoint()", function() {
+    // describe("#calcDegreeToPoint()", function() {
     
-    });
+    // });
 
-    describe("#locationHandler()", function() {
+    // describe("#locationHandler()", function() {
     
-    });
+    // });
 
-    describe("#onReadOrientation()", function() {
+    // describe("#onReadOrientation()", function() {
     
-    });
+    // });
 
-    describe("#createSnapshot()", function() {
+    // describe("#createSnapshot()", function() {
     
-    });
+    // });
 
-    describe("#start()", function() {
+    // describe("#start()", function() {
         
-    });
+    // });
 
-    describe("#stop()", function() {
+    // describe("#stop()", function() {
         
-    });
+    // });
 
-    describe("#setPublishFrequency()", function() {
+    // describe("#setPublishFrequency()", function() {
         
-    });
+    // });
 
     
 });

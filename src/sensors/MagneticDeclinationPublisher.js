@@ -12,8 +12,8 @@ let compass;
 let pointDegree;
 
 const isIOS = !(
-  navigator.userAgent.match(/(iPod|iPhone|iPad)/) &&
-  navigator.userAgent.match(/AppleWebKit/)
+  window.navigator.userAgent.match(/(iPod|iPhone|iPad)/) &&
+  window.navigator.userAgent.match(/AppleWebKit/)
 );
 
  class MagneticDeclinationPublisher extends SensorPublisher {
@@ -23,6 +23,7 @@ const isIOS = !(
    */
   constructor(topic) {
     super(topic);
+    
     var self = this;
     this.topic = topic;
     this.freq = 0.5;
@@ -107,7 +108,7 @@ const isIOS = !(
     self.gamma = event.gamma;
     self.orientationReady = true;
 
-    navigator.geolocation.getCurrentPosition(this.locationHandler);
+    window.navigator.geolocation.getCurrentPosition(this.locationHandler);
   }
 
   
