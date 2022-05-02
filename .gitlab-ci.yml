@@ -17,6 +17,12 @@ build:
   script:
     - grunt build
 
+build:
+  stage: build
+  script:
+    - grunt checkstyle
+  allow_failure: true
+
 test:
   stage: test
   script:
