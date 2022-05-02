@@ -4,9 +4,11 @@
     https://answers.ros.org/question/65971/how-can-i-publish-an-integer-and-string-int16-string-using-roslibjs/
 */
 
-//Dependencies
-var ROSLIB = require('roslib');
+// Dependencies
+var Quaternion = require('quaternion');
+// var ROSLIB = require('roslib');
 const SensorPublisher = require('./SensorPublisher.js');
+
 
 let compass;
 let pointDegree;
