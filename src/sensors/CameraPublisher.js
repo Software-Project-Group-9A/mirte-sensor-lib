@@ -1,6 +1,7 @@
 var ROSLIB = require('roslib');
 const SensorPublisher = require('./SensorPublisher');
 
+//most template code from http://wiki.ros.org/roslibjs/Tutorials/Publishing%20video%20and%20IMU%20data%20with%20roslibjs
 /**
  * Template for object that publishes sensor data to the provided ROS topic.
  */
@@ -11,18 +12,17 @@ class CameraPublisher{
      */
     constructor(topic, devices) {
         if(typeof (topic) !== ROSLIB.Topic){
-            this.onError(TypeError);
+            this.onError(new TypeError());
         }
 
         var self = this;
         this.topic = topic;
-        this.cameras = [];
-        navigator.mediaDevices.enumerateDevices().then(devices => {
-            this.cameras.push(devices.filter((device) => device.kind === 'videoinput'));
-        });
-        console.log(this.cameras.length);
-        document.getElementById('light').innerHTML = `${this.cameras.length} and first one is ${this.cameras[0]}`;
-        console.log(this.cameras[0]);
+        this.cameras = devices;
+        this.frequency = 0;
+        this.cameraTimer = null;
+        this.cameraSource = this.cameras[0];
+        this.stream = null;
+        
         this.start();
     }
 
@@ -37,33 +37,76 @@ class CameraPublisher{
 
     /**
      * Callback for reading sensor data.
-     * Should publish data to ROS topic.
      * @param {*} event object containing sensor data.
      */
     onReadData(event) {
-        throw 'onReadData method not defined!';
+        this.cameras = this.cameras
+            .filter((device) => device.kind === 'videoinput')
+            .map((device) => device.toJSON);
     }
 
+    selectCamera(source) {
+        this.cameraSource = source;
+    }
+
+    takepicture() {
+        // canvas.width = width;
+        // canvas.height = height;
+    
+        // canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);   
+     
+        var data = this.stream.toDataURL('image/jpeg');
+        var imageMessage = new ROSLIB.Message({
+            format : 'jpeg',
+            data : data.replace('data:image/jpeg;base64,', '')
+        });
+    
+        this.topic.publish(imageMessage);
+    }
     /**
      * Start the publishing of data to ROS.
      */
     start() {
-        this.topic.subscribe();
+        navigator.getMedia(
+            {
+              video: {deviceId: this.cameraSource.deviceId},
+              audio: false
+            },
+            function(stream) {
+            //   cameraStream = stream;
+              this.stream = stream;
+            },
+            function(err) {
+              console.log('An error occured! ' + err);
+            //   window.alert("An error occured! " + err);
+            }
+          );
+        var delay = 1000/this.freq;
+        this.cameraTimer = setInterval(function(){
+            this.takepicture();
+       }, delay); 
     }
 
     /**
      * Stops the publishing of data to ROS.
      */
     stop() {
+        this.stream = null;
+        this.takepicture();  
         this.topic.unsubscribe();
     }
 
     /**
      * Sets the maximum frequency at which new data can be published.
      */
-    setPublishFrequency() {
-        throw 'setPublishFrequency method not defined!';
+    setPublishFrequency(hz) {
+        this.frequency = hz;
+        this.stop();
+        this.start();
     }
+
+
 }
+
 
 module.exports = SensorPublisher;

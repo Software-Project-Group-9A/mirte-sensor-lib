@@ -4,5 +4,6 @@
  * Any module to be exported to the library should have an entry in the object below.
  */
 module.exports = {
-    TestSensor: require('./TestSensor')
+    TestSensor: require('./TestSensor'),
+    CameraPublisher: require('./CameraPublisher')
 };
