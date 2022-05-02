@@ -31,31 +31,25 @@ class SliderPublisher extends SensorPublisher {
         this.slider = slider;
 
         /**
-         * Callback for when button is pressed.
+         * Callback for when slider is adjusted.
          */
-        this.onMouseDown = function() {
-            const msg = this.createBoolMsg(true);
+        // should this be throttled?
+        this.onInput = function() {
+            const sliderValue = this.slider.value;
+            const msg = this.createInt32Msg(sliderValue);
             this.topic.publish(msg);
         }.bind(this);
     }
 
     /**
-     * Creates a new ROS std_msgs/Bool message, containing the supplied boolean value.
-     * @param {boolean} bool boolean to include in message
-     * @returns a new ROS std_msgs/Bool message, containing the supplied boolean value.
+     * Creates a new ROS std_msgs/Int32 message, containing the supplied integer value.
+     * @param {number} number number to include in message
+     * @returns a new ROS std_msgs/Int32 message, containing the supplied boolean value.
      */
-    // TODO: should perhaps be it's own module, allong with other message objects we might need in this project
-    createBoolMsg(bool) {
+    // once again, should probably be moved
+    createInt32Msg(num) {
         return new ROSLIB.Message({
-            data: bool
-        });
-    }
-
-    createTopic(topicName, rosInstance) {
-        return new ROSLIB.Topic({
-            name: topicName,
-            ros: rosInstance,
-            messageType: 'std_msgs/Bool'
+            data: num
         });
     }
 
@@ -63,16 +57,14 @@ class SliderPublisher extends SensorPublisher {
      * Start the publishing of data to ROS.
      */
     start() {
-        this.button.addEventListener('mousedown', this.onMouseDown);
-        this.button.addEventListener('mouseup', this.onMouseUp);
+        this.slider.addEventListener('input', this.onInput);
     }
 
     /**
      * Stop the publishing of data to ROS.
      */
     stop() {
-        this.button.removeEventListener('mousedown', this.onMouseDown);
-        this.button.removeEventListener('mouseup', this.onMouseUp);
+        this.slider.removeEventListener('input', this.onInput);
     }
 }
 

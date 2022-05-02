@@ -8,13 +8,13 @@ var jsdom = require('mocha-jsdom')
 // JSDOM for simulating browser environment
 const { JSDOM } = require('jsdom');
 const { window } = new JSDOM(``, {});
-const { document } = window;
 
 // Module to test
 var ButtonPublisher = require('../../../src/sensors/ButtonPublisher.js');
 
 // define JSDOM window in global scope, if not already defined
 global.window = global.window || window;
+let { document } = global.window;
 
 // define dummy ROSLIB in global scope
 global.ROSLIB = {

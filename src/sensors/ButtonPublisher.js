@@ -17,20 +17,10 @@ class ButtonPublisher extends SensorPublisher {
      */
     constructor(topic, button) {
         super(topic);
-        
-        // TODO: super should verify validity of topic?
-        if (!(topic instanceof ROSLIB.Topic)) {
-            throw new TypeError('topic argument was not of type ROSLIB.Topic');
-        }
 
         if (!(button instanceof window.HTMLButtonElement)) {
             throw new TypeError('button argument was not of type HTMLButtonElement');
         }
-
-        /**
-         * topic to which to publish button data 
-         */
-         this.topic = topic;
 
         /**
          * button of which to publish data
