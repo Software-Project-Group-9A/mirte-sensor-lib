@@ -34,7 +34,7 @@ const isIOS = !(
     this.motionReady = false;
 
     if (isIOS) {
-      DeviceOrientationEvent.requestPermission()
+      window.DeviceOrientationEvent.requestPermission()
         .then((response) => {
           if (response === 'granted') {
             window.addEventListener('deviceorientation', (event) => {
