@@ -91,7 +91,7 @@ const isIOS = !(
 
   locationHandler(position) {
     const { latitude, longitude } = position.coords;
-    pointDegree = calcDegreeToPoint(latitude, longitude);
+    pointDegree = this.calcDegreeToPoint(latitude, longitude);
   
     if (pointDegree < 0) {
       pointDegree = pointDegree + 360;
@@ -109,7 +109,7 @@ const isIOS = !(
     self.gamma = event.gamma;
     self.orientationReady = true;
 
-    navigator.geolocation.getCurrentPosition(locationHandler);
+    navigator.geolocation.getCurrentPosition(this.locationHandler);
   }
 
   
