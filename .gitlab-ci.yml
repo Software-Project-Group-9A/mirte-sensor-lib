@@ -17,7 +17,7 @@ build:
   script:
     - grunt build
 
-build:
+checkstyle:
   stage: build
   script:
     - grunt checkstyle
