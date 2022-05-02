@@ -23,7 +23,7 @@ const isIOS = !(
    */
   constructor(topic) {
     super(topic);
-    
+
     var self = this;
     this.topic = topic;
     this.freq = 0.5;
@@ -47,7 +47,7 @@ const isIOS = !(
             alert('has to be allowed!');
           }
         })
-        .catch(() => alert('not supported'));
+        .catch(() => window.alert('not supported'));
     } else {
       window.addEventListener('deviceorientation', (event) => {
         this.onReadOrientation(self, event);

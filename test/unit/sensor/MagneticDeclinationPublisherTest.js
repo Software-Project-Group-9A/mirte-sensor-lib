@@ -53,9 +53,10 @@ describe("Test MagneticDeclinationPublisher", function() {
             );
         });
 
-        it('should accept a ROSLIB.Topic and an HTML Button as arguments', function() {
+        it('should accept a ROSLIB.Topic', function() {
             var publisher;
-
+            // Request permission is undefined
+            // global.window.DeviceOrientationEvent.requestPermission() = function() {return 'granted';};
             assert.doesNotThrow(
                 () => {
                     publisher = new MagneticDeclinationPublisher(new ROSLIB.Topic());
