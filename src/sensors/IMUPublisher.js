@@ -13,7 +13,7 @@ const SensorPublisher = require('./SensorPublisher.js');
 /**
  * Template for object that publishes sensor data to the provided ROS topic.
  */
-class IMU extends SensorPublisher {  
+class IMUPublisher extends SensorPublisher {  
 
     /**
      * Creates a new sensor publisher that publishes to the provided topic.
@@ -165,4 +165,4 @@ class IMU extends SensorPublisher {
 
 }
 
-module.exports = IMU;
+module.exports = IMUPublisher;

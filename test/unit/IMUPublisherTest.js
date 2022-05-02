@@ -18,8 +18,7 @@ global.ROSLIB = {
     }
 }
 
-var IMUPublisher = require('../../src/sensors/IMUPublisher.js');
-const IMU = require('../../src/sensors/IMUPublisher.js');
+const IMUPublisher = require('../../src/sensors/IMUPublisher.js');
 
 describe("Test IMU Publisher", function() {
 
