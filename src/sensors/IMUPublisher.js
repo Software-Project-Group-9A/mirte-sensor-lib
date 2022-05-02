@@ -3,12 +3,11 @@ var Quaternion = require('quaternion');
 // var ROSLIB = require('roslib');
 const SensorPublisher = require('./SensorPublisher.js');
 
-
 // Important documentation
 // http://docs.ros.org/en/lunar/api/sensor_msgs/html/msg/Imu.html
 // 
 
-// Great example
+// Great example used
 // http://wiki.ros.org/roslibjs/Tutorials/Publishing%20video%20and%20IMU%20data%20with%20roslibjs
 
 /**
@@ -21,12 +20,12 @@ class IMU extends SensorPublisher {
      * @param {Topic} topic a Topic from RosLibJS
      */
     constructor(topic) {
+        // Super should have topic verification! @pcarton
         super(topic);
         
         var self = this;
         this.topic = topic;
         this.freq = 0.5;
-        // this.timer;
 
         // First need to detect first device orientation.
         this.orientationReady = false;
@@ -45,8 +44,8 @@ class IMU extends SensorPublisher {
         }
 
         // start sensor
-        this.start();
-        console.log('started!');        
+        // this.start();
+        console.log('created!');        
     }
 
     /**
@@ -98,7 +97,10 @@ class IMU extends SensorPublisher {
      */
     createSnapshot() {
         console.log('**SNAP**');
-        
+        if (!this.orientationReady || !this.motionReady) {
+            throw 'snapShot was too early!';
+        }
+        // Convert rotation into quaternion.
         var alpha_rad = ((this.alpha + 360) / 360 * 2 * Math.PI) % (2 * Math.PI);
         var beta_rad = ((this.beta + 360) / 360 * 2 * Math.PI) % (2 * Math.PI);
         var gamma_rad = ((this.gamma + 360) / 360 * 2 * Math.PI) % (2 * Math.PI);
@@ -156,8 +158,8 @@ class IMU extends SensorPublisher {
      * Sets the maximum frequency at which new data can be published.
      */
     setPublishFrequency(hz) {
-        this.freq = hz;
         this.stop();
+        this.freq = hz;
         this.start();
     }
 

@@ -18,6 +18,8 @@
     "quaternion": "^1.3.0"
   },
   "dependencies": {
-    "roslib": "^1.2.0"
+    "jsdom": "^19.0.0",
+    "roslib": "^1.2.0",
+    "sinon": "^13.0.2"
   }
 }
