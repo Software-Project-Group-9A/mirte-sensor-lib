@@ -10,18 +10,24 @@ class CameraPublisher extends SensorPublisher{
      * Creates a new Camera publisher that publishes to the provided topic.
      * @param {Topic} topic a Topic from RosLibJS
      */
-    constructor(topic, devices) {
+    constructor(topic, camera) {
         
         super(topic);
         var self = this;
-        
         this.topic = topic;
-        this.cameras = devices;
+        this.camera = camera;
+        // this.capture = capture;
+        if(!this.camera || !this.capture){
+            this.onError(new Error());
+        }
+
         this.frequency = 0;
         this.cameraTimer = null;
-        this.cameraSource = this.cameras[0];
         this.stream = null;
-        
+    
+        window.addEventListener('camera', (event) => {
+            this.onReadData(event);
+        }).bind(this);
         this.start();
     }
 
@@ -39,38 +45,61 @@ class CameraPublisher extends SensorPublisher{
      * @param {*} event object containing sensor data.
      */
     onReadData(event) {
-        this.cameras = this.cameras
-            .filter((device) => device.kind === 'videoinput')
-            .map((device) => device.toJSON);
+        // this.cameras = this.cameras
+        //     .filter((device) => device.kind === 'videoinput')
+        //     .map((device) => device.toJSON);
+
     }
 
-    /**
-     * Method for selecting a different camera input.
-     * @param {*} source 
-     */
-    selectCamera(source) {
-        this.cameraSource = source;
-    }
+    // /**
+    //  * Method for selecting a different camera input.
+    //  * @param {*} source 
+    //  */
+    // selectCamera(source) {
+    //     this.cameraSource = source;
+    // }
 
     /**
      * Create a snapshot of the current videostream.
+     * 
+     * Resource used: https://web.dev/requestvideoframecallback-rvfc/
      */
     takepicture() {
-        // canvas.width = width;
-        // canvas.height = height;
-    
-        // canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);   
-     
-        var data = this.stream.toDataURL('image/jpeg');
-        var imageMessage = new ROSLIB.Message({
-            format : 'jpeg',
-            data : data.replace('data:image/jpeg;base64,', '')
-        });
-    
-        this.topic.publish(imageMessage);
+        var width = 640;
+        var height = this.video.videoHeight / (this.video.videoWidth/width);
+
+        this.canvas.width = width;
+        this.canvas.height = height;
+        let startTime = 0.0;
+
+        const updateCanvas = (now, metadata) => {
+            if (startTime === 0.0) {
+              startTime = now;
+            }
+        
+            this.canvas.getContext('2d').drawImage(this.stream, 0, 0, width, height);
+        
+            // const elapsed = (now - startTime) / 1000.0;
+            // const fps = (++paintCount / elapsed).toFixed(3);
+            // fpsInfo.innerText = !isFinite(fps) ? 0 : fps;
+            // metadataInfo.innerText = JSON.stringify(metadata, null, 2);
+
+            var data = this.canvas.toDataURL('image/jpeg');
+            var imageMessage = new ROSLIB.Message({
+                format : 'jpeg',
+                data : data.replace('data:image/jpeg;base64,', '')
+            });
+            this.topic.publish(imageMessage);
+
+            this.stream.requestVideoFrameCallback(updateCanvas);
+        };
+        this.stream.requestVideoFrameCallback(updateCanvas);
+
     }
     /**
      * Start the publishing of data to ROS.
+     * 
+     * Resource used: http://wiki.ros.org/roslibjs/Tutorials/Publishing%20video%20and%20IMU%20data%20with%20roslibjs
      */
     start() {
         navigator.getMedia(
