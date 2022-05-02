@@ -1,3 +1,9 @@
+/*
+ Used sources:
+    https://dev.to/orkhanjafarovr/real-compass-on-mobile-browsers-with-javascript-3emi
+    https://answers.ros.org/question/65971/how-can-i-publish-an-integer-and-string-int16-string-using-roslibjs/
+*/
+
 //Dependencies
 var Quaternion = require('quaternion');
 var ROSLIB = require('roslib');
@@ -107,9 +113,15 @@ const isIOS = !(
 
   createSnapshot() {
     console.log('**SNAP**');
-    compass = e.webkitCompassHeading || Math.abs(e.alpha - 360);
+    compass = Math.abs(e.alpha - 360);
 
-    //pointDegree == richting??
+    var magneticDecilinationMessage = new ROSLIB.Message({
+      data : compass
+    });
+
+    console.log(magneticDecilinationMessage);
+    // this.topic.publish(magneticDecilinationMessage);
+
   }
   
 
