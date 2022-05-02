@@ -98,20 +98,86 @@ describe("SliderPublisher", function() {
         });
 
         it('should accept a ROSLIB.Topic and an slider as arguments', function() {
-            //var publisher;
             const slider = createSlider();
-            //assert.equal(slider, 'HTMLInputElement');
+
             var publisher = new SliderPublisher(new ROSLIB.Topic(), slider);
-            // assert.doesNotThrow(
-            //     () => {
-                    
-            //     },
-            //     (error) => {
-            //         return false;
-            //     }
-            // );
 
             assert.equal(publisher.slider, slider);
         });
-    })
+    });
+
+    describe('#start()', function() {
+        it("should subscribe the onInput callback to the correct event", function() {
+            const slider = sinon.spy(createSlider());
+            var publisher = new SliderPublisher(new ROSLIB.Topic(), slider);
+            
+            publisher.start();
+
+            assert.equal(slider.addEventListener.callCount, 1);
+            assert(slider.addEventListener.calledWith('input', publisher.onInput));
+        });
+        it("should result in onInput being called at input event", function() {
+            const slider = createSlider();
+            var publisher = sinon.spy(new SliderPublisher(new ROSLIB.Topic(), slider));
+            
+            publisher.start();
+            slider.dispatchEvent(new window.Event('input'));
+
+            assert.equal(publisher.onInput.callCount, 1);
+        });
+    });
+
+    describe('#stop()', function() {
+        it("should remove the onInput callback from the correct event", function() {
+            const slider = sinon.spy(createSlider());
+            var publisher = new SliderPublisher(new ROSLIB.Topic(), slider);
+            
+            publisher.start();
+            publisher.stop();
+
+            assert.equal(slider.removeEventListener.callCount, 1);
+            assert(slider.removeEventListener.calledWith('input', publisher.onInput));
+        });
+        it("should prevent onInput from being called at input event", function() {
+            const slider = createSlider();
+            var publisher = sinon.spy(new SliderPublisher(new ROSLIB.Topic(), slider));
+            
+            publisher.start();
+            publisher.stop();
+            slider.dispatchEvent(new window.Event('input'));
+
+            assert.equal(publisher.onInput.callCount, 0);
+        });
+    });
+
+    describe('#onInput()', function() {
+        it("should publish a sts_msgs/Int32 message with the slider value to topic upon callback", function(){
+            const slider = createSlider();
+            const topic = sinon.spy(new ROSLIB.Topic(0, 100, 50)); 
+            var publisher = sinon.spy(new SliderPublisher(topic, slider));
+
+            publisher.start();
+            slider.dispatchEvent(new window.Event('input'));
+
+            const expectedMessage = new ROSLIB.Message({ data: 50 });
+            assert.equal(topic.publish.callCount, 1);
+            assert.deepEqual(topic.publish.getCall(0).args[0], expectedMessage);
+        });
+        it("should publish a message with the updated slider value when the slider changes", function(){
+            const slider = createSlider();
+            const topic = sinon.spy(new ROSLIB.Topic(0, 100, 50)); 
+            var publisher = sinon.spy(new SliderPublisher(topic, slider));
+
+            publisher.start();
+            slider.dispatchEvent(new window.Event('input'));
+            slider.value = 75
+            slider.dispatchEvent(new window.Event('input'));
+
+            const expectedFirstMessage = new ROSLIB.Message({ data: 50 });
+            const expectedSecondMessage = new ROSLIB.Message({ data: 75 });
+            assert.equal(topic.publish.callCount, 2);
+            assert.deepEqual(topic.publish.getCall(0).args[0], expectedFirstMessage);
+            assert.deepEqual(topic.publish.getCall(1).args[0], expectedSecondMessage);
+        });
+    });
 });

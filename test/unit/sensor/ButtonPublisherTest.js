@@ -112,6 +112,26 @@ describe("Test ButtonPublisher", function() {
             assert(button.addEventListener.calledWith('mouseup', publisher.onMouseUp));
             assert(button.addEventListener.calledWith('mousedown', publisher.onMouseDown));
         });
+        it("should result in onMouseDown being called at mousedown event", function(){
+            const button = document.createElement('button');
+            const topic = new ROSLIB.Topic();
+            const publisher = sinon.spy(new ButtonPublisher(topic, button));
+
+            publisher.start();
+            button.dispatchEvent(new window.Event('mousedown'));
+
+            assert.equal(publisher.onMouseDown.callCount, 1);
+        });
+        it("should result in onMouseDown being called at mousedown event", function(){
+            const button = document.createElement('button');
+            const topic = new ROSLIB.Topic();
+            const publisher = sinon.spy(new ButtonPublisher(topic, button));
+
+            publisher.start();
+            button.dispatchEvent(new window.Event('mouseup'));
+
+            assert.equal(publisher.onMouseUp.callCount, 1);
+        });
     });
 
     describe("#onMouseUp()", function() {
@@ -149,15 +169,37 @@ describe("Test ButtonPublisher", function() {
     describe("#stop()", function() {
         it("should unsubscribe onMouseUp and onMouseDown callbacks", function(){
             const button = sinon.spy(document.createElement('button'));
-            const topic = sinon.spy(new ROSLIB.Topic());
+            const topic = new ROSLIB.Topic();
             const publisher = new ButtonPublisher(topic, button);
 
             publisher.start();
             publisher.stop();
+
+            assert.equal(button.removeEventListener.callCount, 2);
+            assert(button.removeEventListener.calledWith('mousedown', publisher.onMouseDown));
+            assert(button.removeEventListener.calledWith('mouseup', publisher.onMouseUp));
+        });
+        it("should prevent onMouseDown from being called at mousedown event", function(){
+            const button = document.createElement('button');
+            const topic = new ROSLIB.Topic();
+            const publisher = sinon.spy(new ButtonPublisher(topic, button));
+
+            publisher.start();
+            publisher.stop();
             button.dispatchEvent(new window.Event('mousedown'));
+
+            assert.equal(publisher.onMouseDown.callCount, 0);
+        });
+        it("should prevent onMouseUp from being called at mouseup event", function(){
+            const button = document.createElement('button');
+            const topic = new ROSLIB.Topic();
+            const publisher = sinon.spy(new ButtonPublisher(topic, button));
+
+            publisher.start();
+            publisher.stop();
             button.dispatchEvent(new window.Event('mouseup'));
 
-            assert.equal(topic.publish.callCount, 0);
+            assert.equal(publisher.onMouseUp.callCount, 0);
         });
     });
 });
