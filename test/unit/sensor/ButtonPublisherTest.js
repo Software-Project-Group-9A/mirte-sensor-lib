@@ -6,15 +6,16 @@ const sinon = require('sinon');
 var jsdom = require('mocha-jsdom')
 
 // JSDOM for simulating browser environment
-var { JSDOM } = require('jsdom');
-var { window } = new JSDOM(``, {});
-var { document } = window;
+const { JSDOM } = require('jsdom');
+const { window } = new JSDOM(``, {});
+const { document } = window;
 
 // Module to test
 var ButtonPublisher = require('../../../src/sensors/ButtonPublisher.js');
 
-// define JSDOM window in global scope 
-global.window = window;
+// define JSDOM window in global scope, if not already defined
+global.window = global.window || window;
+
 // define dummy ROSLIB in global scope
 global.ROSLIB = {
     Topic: function() {
@@ -50,6 +51,9 @@ describe("Test ButtonPublisher", function() {
                 },
                 expectInvalidButton
             );
+        });
+        it('please', function() {
+            assert(document.createElement('button') instanceof window.HTMLButtonElement);
         });
         it('should reject any button argument that is not an HTML Button', function() {
             assert.throws(

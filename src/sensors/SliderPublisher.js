@@ -16,11 +16,6 @@ class SliderPublisher extends SensorPublisher {
      */
     constructor(topic, slider) {
         super(topic);
-        
-        // TODO: super should verify validity of topic?
-        if (!(topic instanceof ROSLIB.Topic)) {
-            throw new TypeError('topic argument was not of type ROSLIB.Topic');
-        }
 
         if (!(slider instanceof window.HTMLInputElement)) {
             throw new TypeError('slider argument was not of type HTMLInputElement');
@@ -29,11 +24,6 @@ class SliderPublisher extends SensorPublisher {
         if (slider.type !== 'range') {
             throw new EvalError('slider argument does not have type slider');
         }
-
-        /**
-         * topic to which to publish button data 
-         */
-         this.topic = topic;
 
         /**
          * slider of which to publish data
