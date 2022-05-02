@@ -1,5 +1,5 @@
 var assert = require('assert');
-var TestSensor = require('../../src/sensors/TestSensor.js');
+// var TestSensor = require('../../src/sensors/TestSensor.js');
 var CameraPublisher = require('../../src/sensors/CameraPublisher.js');
 
 describe("Test SensorPublisher", function() {

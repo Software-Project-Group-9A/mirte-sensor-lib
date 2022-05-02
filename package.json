@@ -15,5 +15,8 @@
     "grunt-mocha-test": "~0.13.3",
     "mocha": "~9.2.2",
     "nyc": "~15.1.0"
+  },
+  "dependencies": {
+    "roslib": "^1.2.0"
   }
 }

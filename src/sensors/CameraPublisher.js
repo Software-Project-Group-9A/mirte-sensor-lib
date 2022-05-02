@@ -5,17 +5,16 @@ const SensorPublisher = require('./SensorPublisher');
 /**
  * Template for object that publishes sensor data to the provided ROS topic.
  */
-class CameraPublisher{
+class CameraPublisher extends SensorPublisher{
     /**
-     * Creates a new sensor publisher that publishes to the provided topic.
+     * Creates a new Camera publisher that publishes to the provided topic.
      * @param {Topic} topic a Topic from RosLibJS
      */
     constructor(topic, devices) {
-        if(typeof (topic) !== ROSLIB.Topic){
-            this.onError(new TypeError());
-        }
-
+        
+        super(topic);
         var self = this;
+        
         this.topic = topic;
         this.cameras = devices;
         this.frequency = 0;
@@ -36,7 +35,7 @@ class CameraPublisher{
     }
 
     /**
-     * Callback for reading sensor data.
+     * Callback for reading cameras.
      * @param {*} event object containing sensor data.
      */
     onReadData(event) {
@@ -45,10 +44,17 @@ class CameraPublisher{
             .map((device) => device.toJSON);
     }
 
+    /**
+     * Method for selecting a different camera input.
+     * @param {*} source 
+     */
     selectCamera(source) {
         this.cameraSource = source;
     }
 
+    /**
+     * Create a snapshot of the current videostream.
+     */
     takepicture() {
         // canvas.width = width;
         // canvas.height = height;
