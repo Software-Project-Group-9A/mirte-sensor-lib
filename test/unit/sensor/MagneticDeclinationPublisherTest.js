@@ -14,6 +14,7 @@ var ButtonPublisher = require('../../../src/sensors/MagneticDeclinationPublisher
 
 // define JSDOM window in global scope 
 global.window = window;
+global.navigator = navigator;
 // create spy for Topic
 global.ROSLIB = {
     Topic: function() {
