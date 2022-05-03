@@ -21,8 +21,9 @@ class TextPublisher extends SensorPublisher {
     super(topic);
 
     // Set default options
-    this.options = options ?? {};
-    this.options.onEnter = this.options.onEnter ?? true;
+    this.options = options === undefined ? {} : options;
+    this.options.onEnter = this.options.onEnter === undefined ? true :
+                                                          this.options.onEnter;
 
     if (!(inputElement instanceof window.HTMLInputElement)) {
       throw new TypeError('input element was not of type HTMLInputElement');
