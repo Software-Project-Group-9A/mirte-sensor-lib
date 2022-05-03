@@ -130,7 +130,28 @@ describe('Test TextPublisher', function() {
 
   describe('#onKeyDown()', function() {
     it('should publish a sts_msgs/String message to topic upon callback' +
-        'with onEnter=true',
+        'with onEnter=false',
+    function() {
+      const inputElement = document.createElement('input');
+      const topic = sinon.spy(new ROSLIB.Topic());
+      const publisher = sinon.spy(new TextPublisher(topic, inputElement,
+          {onEnter: false}));
+
+      inputElement.value = 'test text';
+
+      publisher.start();
+      inputElement.dispatchEvent(new window.Event('onkeydown'));
+
+      const expectedMessage = new ROSLIB.Message({data: 'test text'});
+      assert.equal(publisher.onKeyDown.callCount, 1);
+      assert.equal(topic.publish.callCount, 1);
+      assert.deepEqual(topic.publish.getCall(0).args[0], expectedMessage);
+    });
+  });
+
+  describe('#onKeyDown()', function() {
+    it('should not publish a sts_msgs/String message to topic upon callback' +
+        'with onEnter=true and no enter',
     function() {
       const inputElement = document.createElement('input');
       const topic = sinon.spy(new ROSLIB.Topic());
@@ -140,6 +161,26 @@ describe('Test TextPublisher', function() {
 
       publisher.start();
       inputElement.dispatchEvent(new window.Event('onkeydown'));
+
+      assert.equal(publisher.onKeyDown.callCount, 1);
+      assert.equal(topic.publish.callCount, 0);
+    });
+  });
+
+  describe('#onKeyDown()', function() {
+    it('should publish a sts_msgs/String message to topic upon callback' +
+        'with onEnter=true and enter',
+    function() {
+      const inputElement = document.createElement('input');
+      const topic = sinon.spy(new ROSLIB.Topic());
+      const publisher = sinon.spy(new TextPublisher(topic, inputElement));
+
+      inputElement.value = 'test text';
+
+      publisher.start();
+      const keyDownEvent = new window.Event('onkeydown');
+      keyDownEvent.key = 'Enter';
+      inputElement.dispatchEvent(keyDownEvent);
 
       const expectedMessage = new ROSLIB.Message({data: 'test text'});
       assert.equal(publisher.onKeyDown.callCount, 1);

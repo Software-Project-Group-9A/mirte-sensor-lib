@@ -21,8 +21,8 @@ class TextPublisher extends SensorPublisher {
     super(topic);
 
     // Set default options
-    options = options || {};
-    options.onEnter = options.onEnter || true;
+    this.options = options ?? {};
+    this.options.onEnter = this.options.onEnter ?? true;
 
     if (!(inputElement instanceof window.HTMLInputElement)) {
       throw new TypeError('input element was not of type HTMLInputElement');
@@ -38,19 +38,12 @@ class TextPublisher extends SensorPublisher {
      */
     this.inputElement = inputElement;
 
-    if (options.onEnter === true) {
-      this.onKeyDown = function() {
+    this.onKeyDown = function(event) {
+      if (!this.options.onEnter || event.key === 'Enter') {
         const msg = this.createBoolMsg(this.inputElement.value);
         this.topic.publish(msg);
-      }.bind(this);
-    } else {
-      this.onKeyDown = function(event) {
-        if (event.key === 'Enter') {
-          const msg = this.createBoolMsg(this.inputElement.value);
-          this.topic.publish(msg);
-        }
-      }.bind(this);
-    }
+      }
+    }.bind(this);
   }
 
   /**
