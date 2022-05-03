@@ -1,3 +1,7 @@
+// Assumptions:
+    // A non-set timer is no problem.
+    // A covariance matrix can be set to all zeroes.
+
 // Dependencies
 var Quaternion = require('quaternion');
 // var ROSLIB = require('roslib');
@@ -43,9 +47,6 @@ class IMUPublisher extends SensorPublisher {
             window.alert('acceleration not supported!');
         }
 
-        // start sensor
-        // this.start();
-        console.log('created!');        
     }
 
     /**
@@ -96,7 +97,6 @@ class IMUPublisher extends SensorPublisher {
      * Resource used: http://wiki.ros.org/roslibjs/Tutorials/Publishing%20video%20and%20IMU%20data%20with%20roslibjs
      */
     createSnapshot() {
-        console.log('**SNAP**');
         if (!this.orientationReady || !this.motionReady) {
             throw 'snapShot was too early!';
         }
@@ -106,6 +106,7 @@ class IMUPublisher extends SensorPublisher {
         var gamma_rad = ((this.gamma + 360) / 360 * 2 * Math.PI) % (2 * Math.PI);
         var q = Quaternion.fromEuler(alpha_rad, beta_rad, gamma_rad, 'ZXY');
 
+        // Create imuMessage in ROS's IMU-message format.
         var imuMessage = new ROSLIB.Message(
             {
                 header: {
@@ -133,6 +134,7 @@ class IMUPublisher extends SensorPublisher {
             }
         );
 
+        // Publish message on designated topic.
         console.log(imuMessage);
         // this.topic.publish(imuMessage);
     }
@@ -158,8 +160,9 @@ class IMUPublisher extends SensorPublisher {
      * Sets the maximum frequency at which new data can be published.
      */
     setPublishFrequency(hz) {
-        this.stop();
         this.freq = hz;
+        // Restart timer with new frequency 
+        this.stop();
         this.start();
     }
 
