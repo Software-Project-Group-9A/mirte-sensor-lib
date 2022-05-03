@@ -4,10 +4,10 @@
  * If you use nodejs, this is the variable you get when you require('roslib')
  */
 var SENSORLIB = this.SENSORLIB || {
-    REVISION: '0.0.1'
+	REVISION: "0.0.1",
 };
 
 // Add sensors components
-Object.assign(SENSORLIB, require('./sensors'));
+Object.assign(SENSORLIB, require("./sensors"));
 
 global.SENSORLIB = SENSORLIB;
