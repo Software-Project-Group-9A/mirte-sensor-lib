@@ -7,13 +7,14 @@ const sinon = require('sinon');
 // JSDOM for simulating browser environment
 const {JSDOM} = require('jsdom');
 const {window} = new JSDOM(``, {});
-const {document} = window;
 
 // Module to test
 const TextPublisher = require('../../../src/sensors/TextPublisher.js');
 
 // define JSDOM window in global scope
-global.window = window;
+global.window = global.window || window;
+const {document} = global.window;
+
 // create spy for Topic
 global.ROSLIB = {
   Topic: function() {
