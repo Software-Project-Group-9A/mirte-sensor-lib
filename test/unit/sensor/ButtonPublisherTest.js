@@ -1,9 +1,6 @@
 const assert = require('assert');
-
 // Sinon library for mocking
-// Allows for fake timers, which might be useful in future testing
 const sinon = require('sinon');
-var jsdom = require('mocha-jsdom')
 
 // JSDOM for simulating browser environment
 const { JSDOM } = require('jsdom');

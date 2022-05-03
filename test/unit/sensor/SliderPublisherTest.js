@@ -42,7 +42,7 @@ describe("SliderPublisher", function() {
         function expectInvalidSlider(error) {
             assert(error instanceof TypeError);
             assert(error.message === 'slider argument was not of type HTMLInputElement'
-                || error.message === 'slider argument does not have type slider');
+                || error.message === 'slider argument does not have type range');
 
             return true;
         }
@@ -162,6 +162,17 @@ describe("SliderPublisher", function() {
             const expectedMessage = new ROSLIB.Message({ data: 50 });
             assert.equal(topic.publish.callCount, 1);
             assert.deepEqual(topic.publish.getCall(0).args[0], expectedMessage);
+        });
+        it("should publish a the slider as a number", function(){
+            const slider = createSlider();
+            const topic = sinon.spy(new ROSLIB.Topic(0, 100, 50)); 
+            var publisher = sinon.spy(new SliderPublisher(topic, slider));
+
+            publisher.start();
+            slider.dispatchEvent(new window.Event('input'));
+            const publishedMessage = topic.publish.getCall(0).args[0];
+
+            assert.equal(typeof publishedMessage.msg.data, 'number');
         });
         it("should publish a message with the updated slider value when the slider changes", function(){
             const slider = createSlider();

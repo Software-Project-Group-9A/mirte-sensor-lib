@@ -22,7 +22,7 @@ class SliderPublisher extends SensorPublisher {
         }
 
         if (slider.type !== 'range') {
-            throw new EvalError('slider argument does not have type slider');
+            throw new EvalError('slider argument does not have type range');
         }
 
         /**
@@ -35,7 +35,7 @@ class SliderPublisher extends SensorPublisher {
          */
         // should this be throttled?
         this.onInput = function() {
-            const sliderValue = this.slider.value;
+            const sliderValue = parseInt(this.slider.value);
             const msg = this.createInt32Msg(sliderValue);
             this.topic.publish(msg);
         }.bind(this);
