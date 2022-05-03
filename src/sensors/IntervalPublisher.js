@@ -26,9 +26,8 @@ class IntervalPublisher extends SensorPublisher {
      */
     start() {
         var delay = 1000/this.freq;
-        this.timer = setInterval(() => {
-            this.createSnapshot();
-        }, delay);
+        let snapshotCallback = this.createSnapshot.bind(this);
+        this.timer = setInterval(snapshotCallback, delay);
     }
 
     /**
