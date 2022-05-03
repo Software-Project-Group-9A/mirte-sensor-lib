@@ -4,11 +4,15 @@ const sinon = require('sinon');
 // JSDOM for simulating browser environment
 const { JSDOM } = require('jsdom');
 const { window } = new JSDOM(``, {});
-const { document } = window;
+
+const IntervalPublisher = require('../../../src/sensors/IntervalPublisher.js');
+
 
 // define JSDOM window in global scope 
-global.window = window;
-// create spy for Topic
+global.window = global.window || window;
+const { document } = global.window;
+
+// create dummy for ROS 
 global.ROSLIB = {
     Topic: function() {
         this.publish = function(msg) {}
@@ -18,7 +22,6 @@ global.ROSLIB = {
     }
 }
 
-const IntervalPublisher = require('../../../src/sensors/IntervalPublisher.js');
 
 function createIntervalPublisher() {
     const topic = new ROSLIB.Topic('boo!');    
