@@ -4,6 +4,6 @@
  * Any module to be exported to the library should have an entry in the object below.
  */
 module.exports = {
-	SliderPublisher: require("./SliderPublisher"),
-	ButtonPublisher: require("./ButtonPublisher"),
+  SliderPublisher: require('./SliderPublisher'),
+  ButtonPublisher: require('./ButtonPublisher'),
 };
