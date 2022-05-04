@@ -7,4 +7,5 @@
  */
 module.exports = {
   ButtonPublisher: require('./ButtonPublisher'),
+  TextPublisher: require('./TextPublisher'),
 };

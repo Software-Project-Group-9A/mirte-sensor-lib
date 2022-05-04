@@ -39,7 +39,7 @@ class TextPublisher extends SensorPublisher {
      */
     this.inputElement = inputElement;
 
-    this.onKeyDown = function(event) {
+    this.onKeyUp = function(event) {
       if (!this.options.onEnter || event.key === 'Enter') {
         const msg = this.createBoolMsg(this.inputElement.value);
         this.topic.publish(msg);
@@ -67,14 +67,14 @@ class TextPublisher extends SensorPublisher {
    * Start the publishing of data to ROS.
    */
   start() {
-    this.inputElement.addEventListener('onkeydown', this.onKeyDown);
+    this.inputElement.addEventListener('keyup', this.onKeyUp);
   }
 
   /**
    * Stop the publishing of data to ROS.
    */
   stop() {
-    this.inputElement.removeEventListener('onkeydown', this.onKeyDown);
+    this.inputElement.removeEventListener('keyup', this.onKeyUp);
   }
 }
 
