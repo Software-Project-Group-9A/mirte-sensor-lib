@@ -6,9 +6,7 @@
  * below.
  */
 module.exports = {
-  TestSensor: require('./TestSensor'),
   ButtonPublisher: require('./ButtonPublisher'),
   CameraPublisher: require('./CameraPublisher'),
   TextPublisher: require('./TextPublisher'),
-  
 };
