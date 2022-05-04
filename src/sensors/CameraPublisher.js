@@ -13,6 +13,7 @@ class CameraPublisher extends SensorPublisher{
     constructor(topic, camera) {
         
         super(topic);
+        
         var self = this;
         this.topic = topic;
         this.camera = camera;
@@ -25,10 +26,6 @@ class CameraPublisher extends SensorPublisher{
         this.cameraTimer = null;
         this.stream = null;
     
-        window.addEventListener('camera', (event) => {
-            this.onReadData(event);
-        }).bind(this);
-        this.start();
     }
 
     /**
@@ -51,14 +48,6 @@ class CameraPublisher extends SensorPublisher{
 
     }
 
-    // /**
-    //  * Method for selecting a different camera input.
-    //  * @param {*} source 
-    //  */
-    // selectCamera(source) {
-    //     this.cameraSource = source;
-    // }
-
     /**
      * Create a snapshot of the current videostream.
      * 
@@ -70,30 +59,20 @@ class CameraPublisher extends SensorPublisher{
 
         this.canvas.width = width;
         this.canvas.height = height;
-        let startTime = 0.0;
 
-        const updateCanvas = (now, metadata) => {
-            if (startTime === 0.0) {
-              startTime = now;
-            }
-        
-            this.canvas.getContext('2d').drawImage(this.stream, 0, 0, width, height);
-        
-            // const elapsed = (now - startTime) / 1000.0;
-            // const fps = (++paintCount / elapsed).toFixed(3);
-            // fpsInfo.innerText = !isFinite(fps) ? 0 : fps;
-            // metadataInfo.innerText = JSON.stringify(metadata, null, 2);
+        if(video.crossOrigin !== "anonymous") {
+            video.crossOrigin = "anonymous"
+        }
 
-            var data = this.canvas.toDataURL('image/jpeg');
-            var imageMessage = new ROSLIB.Message({
-                format : 'jpeg',
-                data : data.replace('data:image/jpeg;base64,', '')
-            });
-            this.topic.publish(imageMessage);
-
-            this.stream.requestVideoFrameCallback(updateCanvas);
-        };
-        this.stream.requestVideoFrameCallback(updateCanvas);
+        this.canvas.getContext('2d').drawImage(this.stream, 0, 0, width, height);
+    
+        var data = canvas.toDataURL('image/jpeg');
+        var imageMessage = new ROSLIB.Message({
+            format : 'jpeg',
+            data : data.replace('data:image/jpeg;base64,', '')
+        });
+        console.log(imageMessage)
+        this.topic.publish(imageMessage)
 
     }
     /**
@@ -104,16 +83,14 @@ class CameraPublisher extends SensorPublisher{
     start() {
         navigator.getMedia(
             {
-              video: {deviceId: this.cameraSource.deviceId},
+              video: {deviceId: this.camera.deviceId},
               audio: false
             },
             function(stream) {
-            //   cameraStream = stream;
               this.stream = stream;
             },
             function(err) {
               console.log('An error occured! ' + err);
-            //   window.alert("An error occured! " + err);
             }
           );
         var delay = 1000/this.freq;
