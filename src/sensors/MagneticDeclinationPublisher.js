@@ -11,7 +11,15 @@ const IntervalPublisher = require('./IntervalPublisher.js');
 let compass;
 let pointDegree;
 
- class MagneticDeclinationPublisher extends IntervalPublisher {
+/**
+ * MagneticDeclinationPublisher publishes the rotation as a compass
+ * By default it publishes data at the interval rate
+ * from parrent class IntervalPublisher
+ *
+ * The data resulting from the interactions is published as a
+ * ROS std_msgs/Int32 message.
+ */
+class MagneticDeclinationPublisher extends IntervalPublisher {
   /**
    * Creates a new sensor publisher that publishes to the provided topic.
    * @param {Topic} topic a Topic from RosLibJS
@@ -19,14 +27,14 @@ let pointDegree;
   constructor(topic) {
     super(topic);
 
-    var self = this;
+    const self = this;
     this.topic = topic;
 
     // First need to detect first device orientation.
     this.orientationReady = false;
     this.motionReady = false;
 
-    //No support for IOS yet
+    // No support for IOS yet
     window.addEventListener('deviceorientation', (event) => {
       this.onReadOrientation(self, event);
     });
@@ -37,16 +45,23 @@ let pointDegree;
    * @param {*} event containing error info.
    */
   onError(event) {
-      throw Error('ERROR!');
+    console.log('Error: ' + event);
+    throw Error('ERROR!');
   }
 
+  /**
+   * Callback for angle calculation
+   * @param {*} latitude from coordinates of Geolocation
+   * @param {*} longitude from coordinates of Geolocation
+   * @return {Int} angle between current position and the North
+   */
   calcDegreeToPoint(latitude, longitude) {
     // Qibla geolocation
     const point = {
       lat: 21.422487,
       lng: 39.826206,
     };
-  
+
     const phiK = (point.lat * Math.PI) / 180.0;
     const lambdaK = (point.lng * Math.PI) / 180.0;
     const phi = (latitude * Math.PI) / 180.0;
@@ -54,17 +69,23 @@ let pointDegree;
     const psi =
       (180.0 / Math.PI) *
       Math.atan2(
-        Math.sin(lambdaK - lambda),
-        Math.cos(phi) * Math.tan(phiK) -
-          Math.sin(phi) * Math.cos(lambdaK - lambda)
-      );
+          Math.sin(lambdaK - lambda),
+          Math.cos(phi) * Math.tan(phiK) -
+          Math.sin(phi) * Math.cos(lambdaK - lambda));
     return Math.round(psi);
   }
 
+  /**
+   * Gets the location and puts in variables
+   *
+   * Then calculates the degeree and makes sure
+   * it is between 0 and 360
+   * @param {Geolocation} position
+   */
   locationHandler(position) {
-    const { latitude, longitude } = position.coords;
+    const {latitude, longitude} = position.coords;
     pointDegree = this.calcDegreeToPoint(latitude, longitude);
-  
+
     if (pointDegree < 0) {
       pointDegree = pointDegree + 360;
     }
@@ -72,10 +93,12 @@ let pointDegree;
 
   /**
      * Callback for reading orientation data.
-     * @param {MagneticDeclinationPublisher} self context of object that called callback.
+     * @param {MagneticDeclinationPublisher} self
+     * context of object that called callback.
+     *
      * @param {*} event object containing sensor data.
      */
-   onReadOrientation(self, event) {
+  onReadOrientation(self, event) {
     self.alpha = event.alpha;
     self.beta = event.beta;
     self.gamma = event.gamma;
@@ -84,19 +107,20 @@ let pointDegree;
     window.navigator.geolocation.getCurrentPosition(this.locationHandler);
   }
 
-  
-
+  /**
+   * Puts the magnetic declination
+   * in a ROS message and publishes it
+   */
   createSnapshot() {
     console.log('**SNAP**');
     compass = Math.abs(this.alpha - 360);
 
-    var magneticDecilinationMessage = new ROSLIB.Message({
-      data : compass
+    const magneticDecilinationMessage = new ROSLIB.Message({
+      data: compass,
     });
 
     console.log(magneticDecilinationMessage);
     this.topic.publish(magneticDecilinationMessage);
-
   }
 }
 

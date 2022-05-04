@@ -1,5 +1,3 @@
-const MagneticDeclinationSensor = require('./MagneticDeclinationPublisher');
-
 /**
  * This file tells @function require what to import when requiring the entire
  * sensors folder.
@@ -10,4 +8,5 @@ const MagneticDeclinationSensor = require('./MagneticDeclinationPublisher');
 module.exports = {
   ButtonPublisher: require('./ButtonPublisher'),
   TextPublisher: require('./TextPublisher'),
+  MagneticDeclinationSensorPublisher: require('./MagneticDeclinationPublisher'),
 };
