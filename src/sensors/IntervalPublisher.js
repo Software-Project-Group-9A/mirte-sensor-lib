@@ -6,16 +6,20 @@ const SensorPublisher = require('./SensorPublisher');
 /**
  * Interface-like class that can be extended by sensors that need
  * their messages to be published at regular intervals.
+ * Usage requires provision of standard frequency for class in constructor
+ * and implementation of createSnapshot function.
  */
 class IntervalPublisher extends SensorPublisher {
   /**
      * Creates a new sensor publisher that publishes to
      * the provided topic with a Regular interval.
-     * @param {Topic} topic a Topic from RosLibJS
+     * @param {Topic} topic a Topic from RosLibJS on which to publish.
+     * @param {Int32} hz a standard frequency for this type of object.
      */
-  constructor(topic) {
+  constructor(topic, hz) {
     // Super should have topic verification! @pcarton
     super(topic);
+    this.freq = hz;
   }
 
   /**
