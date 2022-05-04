@@ -34,7 +34,7 @@ describe('SliderPublisher', function() {
    * @return {HTMLInputElement} input element of type range with supplied attributes
    */
   function createSlider(min = 0, max = 100, value = 50) {
-    const slider = document.createElement('INPUT');
+    const slider = document.createElement('input');
     slider.setAttribute('type', 'range');
     slider.setAttribute('min', min);
     slider.setAttribute('max', max);
@@ -83,9 +83,9 @@ describe('SliderPublisher', function() {
         new SliderPublisher(new ROSLIB.Topic(), 'not a button');
       }, expectInvalidSlider);
     });
-    it('should reject any slider argument that does not have field type set to slider', function() {
+    it('should reject any slider argument that does not have field type set to range', function() {
       assert.throws(() => {
-        new SliderPublisher(new ROSLIB.Topic(), 'not a button');
+        new SliderPublisher(new ROSLIB.Topic(), document.createElement('input'));
       }, expectInvalidSlider);
     });
 
@@ -160,8 +160,8 @@ describe('SliderPublisher', function() {
 
   describe('#onInput()', function() {
     it('should publish an std_msgs/Int32 message with the slider value to topic upon callback', function() {
-      const slider = createSlider();
-      const topic = sinon.spy(new ROSLIB.Topic(0, 100, 50));
+      const slider = createSlider(0, 100, 50);
+      const topic = sinon.spy(new ROSLIB.Topic());
       const publisher = sinon.spy(new SliderPublisher(topic, slider));
 
       publisher.start();

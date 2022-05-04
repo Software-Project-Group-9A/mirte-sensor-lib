@@ -22,7 +22,7 @@ class SliderPublisher extends SensorPublisher {
     }
 
     if (slider.type !== 'range') {
-      throw new EvalError('slider argument does not have type range');
+      throw new TypeError('slider argument does not have type range');
     }
 
     /**
@@ -33,7 +33,6 @@ class SliderPublisher extends SensorPublisher {
     /**
      * Callback for when slider is adjusted.
      */
-    // should this be throttled?
     this.onInput = function() {
       const sliderValue = parseInt(this.slider.value);
       const msg = this.createInt32Msg(sliderValue);
@@ -44,7 +43,7 @@ class SliderPublisher extends SensorPublisher {
   /**
    * Creates a new ROS std_msgs/Int32 message, containing the supplied integer value.
    * @param {number} num to include in message
-   * @return {ROSLIB.MEssage} a new ROS std_msgs/Int32 message, containing the supplied boolean value.
+   * @return {ROSLIB.Message} a new ROS std_msgs/Int32 message, containing the supplied boolean value.
    */
   createInt32Msg(num) {
     return new ROSLIB.Message({
