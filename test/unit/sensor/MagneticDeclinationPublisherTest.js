@@ -55,10 +55,6 @@ describe("Test MagneticDeclinationPublisher", function() {
 
         it('should accept a ROSLIB.Topic', function() {
             var publisher;
-            // Request permission is undefined
-            global.window.DeviceOrientationEvent = {};
-            global.window.DeviceOrientationEvent.requestPermission = {};
-            global.window.DeviceOrientationEvent.requestPermission.then() = function() {return 'granted';};
             assert.doesNotThrow(
                 () => {
                     publisher = new MagneticDeclinationPublisher(new ROSLIB.Topic());
@@ -70,17 +66,21 @@ describe("Test MagneticDeclinationPublisher", function() {
         });
     });
 
-    // describe("#onError()", function() {
-    
-    // });
+    describe("#calcDegreeToPoint()", function() {
+        it('should calculate the degree between point and current location',
+        function() {
+          const topic = sinon.spy(new ROSLIB.Topic());
+          const publisher = sinon.spy(new MagneticDeclinationPublisher(topic));
 
-    // describe("#calcDegreeToPoint()", function() {
-    
-    // });
+          publisher.start();
+          
+          assert.equal(publisher.calcDegreeToPoint(21.422487, 39.826206), 180);
+        });
+    });
 
-    // describe("#locationHandler()", function() {
+    describe("#locationHandler()", function() {
     
-    // });
+    });
 
     // describe("#onReadOrientation()", function() {
     
@@ -90,17 +90,4 @@ describe("Test MagneticDeclinationPublisher", function() {
     
     // });
 
-    // describe("#start()", function() {
-        
-    // });
-
-    // describe("#stop()", function() {
-        
-    // });
-
-    // describe("#setPublishFrequency()", function() {
-        
-    // });
-
-    
 });

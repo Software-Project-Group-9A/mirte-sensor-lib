@@ -5,18 +5,13 @@
 */
 
 // Dependencies
-const SensorPublisher = require('./SensorPublisher.js');
+const IntervalPublisher = require('./IntervalPublisher.js');
 
 
 let compass;
 let pointDegree;
 
-const isIOS = !(
-  window.navigator.userAgent.match(/(iPod|iPhone|iPad)/) &&
-  window.navigator.userAgent.match(/AppleWebKit/)
-);
-
- class MagneticDeclinationPublisher extends SensorPublisher {
+ class MagneticDeclinationPublisher extends IntervalPublisher {
   /**
    * Creates a new sensor publisher that publishes to the provided topic.
    * @param {Topic} topic a Topic from RosLibJS
@@ -26,37 +21,15 @@ const isIOS = !(
 
     var self = this;
     this.topic = topic;
-    this.freq = 0.5;
 
     // First need to detect first device orientation.
     this.orientationReady = false;
     this.motionReady = false;
 
-    if (isIOS) {
-      window.DeviceOrientationEvent.requestPermission()
-        .then((response) => {
-          if (response === 'granted') {
-            window.addEventListener('deviceorientation', (event) => {
-              this.onReadOrientation(self, event);
-            });  
-            
-            // start sensor
-            this.start();
-            console.log('started!');
-          } else {
-            alert('has to be allowed!');
-          }
-        })
-        .catch(() => window.alert('not supported'));
-    } else {
-      window.addEventListener('deviceorientation', (event) => {
-        this.onReadOrientation(self, event);
-      });
-
-      // start sensor
-      this.start();
-      console.log('started!');
-    }
+    //No support for IOS yet
+    window.addEventListener('deviceorientation', (event) => {
+      this.onReadOrientation(self, event);
+    });
   }
 
   /**
@@ -64,7 +37,7 @@ const isIOS = !(
    * @param {*} event containing error info.
    */
   onError(event) {
-      throw 'ERROR!';
+      throw Error('ERROR!');
   }
 
   calcDegreeToPoint(latitude, longitude) {
@@ -99,7 +72,7 @@ const isIOS = !(
 
   /**
      * Callback for reading orientation data.
-     * @param {IMU} self context of object that called callback.
+     * @param {MagneticDeclinationPublisher} self context of object that called callback.
      * @param {*} event object containing sensor data.
      */
    onReadOrientation(self, event) {
@@ -122,35 +95,8 @@ const isIOS = !(
     });
 
     console.log(magneticDecilinationMessage);
-    // this.topic.publish(magneticDecilinationMessage);
+    this.topic.publish(magneticDecilinationMessage);
 
-  }
-  
-
-  /**
-   * Start the publishing of data to ROS.
-   */
-  start() {
-    var delay = 1000/this.freq;
-    this.timer = setInterval(() => {
-        this.createSnapshot();
-    }, delay);
-  }
-
-  /**
-   * Stops the publishing of data to ROS.
-   */
-  stop() {
-    clearInterval(this.timer);
-  }
-
-  /**
-     * Sets the maximum frequency at which new data can be published.
-     */
-   setPublishFrequency(hz) {
-    this.freq = hz;
-    this.stop();
-    this.start();
   }
 }
 
