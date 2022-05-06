@@ -101,7 +101,6 @@ class IMUPublisher extends IntervalPublisher {
     const imuMessage = new ROSLIB.Message(
         {
           header: {
-            frame_id: 'imu_client',
           },
           orientation: {
             x: q.x,
