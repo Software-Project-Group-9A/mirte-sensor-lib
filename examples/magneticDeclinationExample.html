@@ -20,7 +20,7 @@
             var topic = new ROSLIB.Topic({
                 ros : ros,
                 name : '/magneticDeclination',
-                messageType: 'std_msgs/Bool'
+                messageType: 'std_msgs/Float32'
             });
 
             ros.connect('ws://localhost:9090');

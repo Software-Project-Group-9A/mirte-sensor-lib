@@ -8,5 +8,5 @@
 module.exports = {
   ButtonPublisher: require('./ButtonPublisher'),
   TextPublisher: require('./TextPublisher'),
-  MagneticDeclinationSensorPublisher: require('./MagneticDeclinationPublisher'),
+  MagneticDeclinationPublisher: require('./MagneticDeclinationPublisher'),
 };
