@@ -11,18 +11,25 @@ const IntervalPublisher = require('./IntervalPublisher');
 class CameraPublisher extends IntervalPublisher {
   /**
      * Creates a new Camera publisher that publishes to the provided topic.
-     * @param {Topic} topic a Topic from RosLibJS
-     * @param {Int32} hz the frequency to publish the camera data
+     * @param {ROSLIB.Topic} topic a Topic from RosLibJS
      * @param {HTMLVideoElement} camera camera of which to publish data from
+     * @param {Int32} hz the frequency to publish the camera data
      */
-  constructor(topic, hz, camera) {
+  constructor(topic, camera, hz = 100) {
     super(topic, hz);
 
-    if (!(camera instanceof window.HTMLVideoElement)) {
-      throw new TypeError('camera argument was not of type HTMLVideoElement');
-    }
+    // if (!(camera instanceof window.HTMLButtonElement)) {
+    //   throw new TypeError('camera argument was not
+    // of type HTMLVideoElement::'+
+    //   camera);
+    // }
     this.camera = camera;
-    this.canvas = document.createElement('canvas');
+    this.canvas = null;
+    if (document.querySelector('canvas')) {
+      this.canvas = document.querySelector('canvas');
+    } else {
+      this.canvas = document.createElement('canvas');
+    }
     this.cameraTimer = null;
     this.stream = null;
   }
@@ -41,10 +48,10 @@ class CameraPublisher extends IntervalPublisher {
   onReadData(_event) {
     const self = this;
     this.camera.addEventListener('loadedmetadata', function(e) {
-      console.log('width = '+self.camera.videoWidth);
-      self.canvas.width = self.camera.video.videoWidth;
-      self.canvas.height = self.camera.video.videoHeight;
-      console.log('so we get '+self.camera.canvas.width);
+      console.log('width = '+self.videoWidth);
+      self.canvas.width = self.video.videoWidth;
+      self.canvas.height = self.video.videoHeight;
+      console.log('so we get '+self.canvas.width);
     }).bind(this);
   }
 
@@ -55,14 +62,15 @@ class CameraPublisher extends IntervalPublisher {
      */
   createSnapshot() {
     this.canvas.getContext('2d')
-        .drawImage(this.stream, 0, 0, this.canvas.width, this.canvas.height);
+        .drawImage(this.camera, 0, 0, this.camera.videoWidth,
+            this.camera.videoHeight);
 
     const data = this.canvas.toDataURL('image/jpeg');
     const imageMessage = new ROSLIB.Message({
       format: 'jpeg',
       data: data.replace('data:image/jpeg;base64,', ''),
     });
-    console.log(imageMessage);
+    console.log(imageMessage.data);
     this.topic.publish(imageMessage);
   }
 
@@ -72,18 +80,18 @@ class CameraPublisher extends IntervalPublisher {
      * Resource used: http://wiki.ros.org/roslibjs/Tutorials/Publishing%20video%20and%20IMU%20data%20with%20roslibjs
      */
   start() {
-    const constraints = {
-      video: {deviceId: this.video.deviceId},
-      audio: false,
-    };
-    navigator.getUserMedia(constraints).then((stream) => {
-      this.stream = stream;
-      window.stream = stream;
+    this.stream = this.camera;
+    const self = this;
+    this.camera.addEventListener('loadedmetadata', function(e) {
+      console.log('width = '+self.camera.videoWidth);
+      self.canvas.width = self.camera.videoWidth;
+      self.canvas.height = self.camera.videoHeight;
+      console.log('so we get '+self.canvas.width);
     });
+
     const delay = 1000/this.freq;
     this.cameraTimer = setInterval(() => {
       this.createSnapshot();
-      window.requestAnimationFrame(this.createSnapshot);
     }, delay);
   }
 
@@ -91,9 +99,8 @@ class CameraPublisher extends IntervalPublisher {
      * Stops the publishing of data to ROS.
      */
   stop() {
-    this.stream = null;
-    this.createSnapshot();
     clearInterval(this.cameraTimer);
+    this.stream = null;
   }
 }
 
