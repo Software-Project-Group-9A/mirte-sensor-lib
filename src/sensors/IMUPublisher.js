@@ -121,7 +121,7 @@ class IMUPublisher extends IntervalPublisher {
             z: this.z,
           },
           linear_acceleration_covariance: [0, 0, 0, 0, 0, 0, 0, 0, 0],
-        }
+        },
     );
 
     // Publish message on designated topic.
