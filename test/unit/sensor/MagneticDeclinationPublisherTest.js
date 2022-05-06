@@ -82,13 +82,66 @@ describe('Test MagneticDeclinationPublisher', function() {
         });
   });
 
-  /* TODO
-  describe('#locationHandler()', function() {
 
+  describe('#locationHandler()', function() {
+    it('should handle the location',
+        function() {
+          const topic = sinon.spy(new ROSLIB.Topic());
+          const publisher = sinon.spy(new MagneticDeclinationPublisher(topic));
+
+          publisher.start();
+
+          global.position = {
+            'coords': {
+              'latitude': 21.422487,
+              'longitude': 39.826206,
+            },
+          };
+          publisher.locationHandler(position);
+
+          assert.equal(publisher.calcDegreeToPoint.callCount, 1);
+        });
   });
 
-  describe("#onReadOrientation()", function() {
 
+  /* TODO
+  describe('#onReadOrientation()', function() {
+    it('should find the current location',
+        function() {
+          const topic = sinon.spy(new ROSLIB.Topic());
+          const publisher = sinon.spy(new MagneticDeclinationPublisher(topic));
+
+          publisher.start();
+
+          global.self = {
+            'alpha': 1,
+            'beta': 1,
+            'gamma': 1,
+          };
+
+          global.eventParam = {
+            'alpha': 1,
+            'beta': 1,
+            'gamma': 1,
+          };
+
+          global.position = {
+            'coords': {
+              'latitude': 21.422487,
+              'longitude': 39.826206,
+            },
+          };
+
+          global.navigator = {
+            geolocation: {
+              getCurrentPosition: position,
+            },
+          };
+
+          publisher.onReadOrientation(self, eventParam);
+
+          assert.equal(publisher.locationHandler.callCount, 1);
+        });
   });
 
   describe("#createSnapshot()", function() {
