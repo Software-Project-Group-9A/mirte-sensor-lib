@@ -27,7 +27,6 @@ class MagneticDeclinationPublisher extends IntervalPublisher {
   constructor(topic) {
     super(topic);
 
-    const self = this;
     this.topic = topic;
 
     // First need to detect first device orientation.
@@ -36,7 +35,7 @@ class MagneticDeclinationPublisher extends IntervalPublisher {
 
     // No support for IOS yet
     window.addEventListener('deviceorientation', (event) => {
-      this.onReadOrientation(self, event);
+      this.onReadOrientation(event);
     });
   }
 
@@ -56,10 +55,10 @@ class MagneticDeclinationPublisher extends IntervalPublisher {
    * @return {Int} angle between current position and the North
    */
   calcDegreeToPoint(latitude, longitude) {
-    // Qibla geolocation
+    // North pole
     const point = {
-      lat: 21.422487,
-      lng: 39.826206,
+      lat: 90,
+      lng: 0,
     };
 
     const phiK = (point.lat * Math.PI) / 180.0;
@@ -93,16 +92,15 @@ class MagneticDeclinationPublisher extends IntervalPublisher {
 
   /**
      * Callback for reading orientation data.
-     * @param {MagneticDeclinationPublisher} self
      * context of object that called callback.
      *
      * @param {*} event object containing sensor data.
      */
-  onReadOrientation(self, event) {
-    self.alpha = event.alpha;
-    self.beta = event.beta;
-    self.gamma = event.gamma;
-    self.orientationReady = true;
+  onReadOrientation(event) {
+    this.alpha = event.alpha;
+    this.beta = event.beta;
+    this.gamma = event.gamma;
+    this.orientationReady = true;
 
     window.navigator.geolocation.getCurrentPosition(this.locationHandler);
   }
@@ -112,7 +110,6 @@ class MagneticDeclinationPublisher extends IntervalPublisher {
    * in a ROS message and publishes it
    */
   createSnapshot() {
-    console.log('**SNAP**');
     compass = Math.abs(this.alpha - 360);
 
     const magneticDecilinationMessage = new ROSLIB.Message({

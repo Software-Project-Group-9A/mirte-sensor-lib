@@ -78,7 +78,7 @@ describe('Test MagneticDeclinationPublisher', function() {
 
           publisher.start();
 
-          assert.equal(publisher.calcDegreeToPoint(21.422487, 39.826206), 180);
+          assert.equal(publisher.calcDegreeToPoint(90, 0), 0);
         });
   });
 
@@ -93,8 +93,8 @@ describe('Test MagneticDeclinationPublisher', function() {
 
           global.position = {
             'coords': {
-              'latitude': 21.422487,
-              'longitude': 39.826206,
+              'latitude': 52.008254,
+              'longitude': 4.370750,
             },
           };
           publisher.locationHandler(position);
