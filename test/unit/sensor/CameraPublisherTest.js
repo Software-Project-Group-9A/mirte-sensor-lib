@@ -1,4 +1,14 @@
 const assert = require('assert');
+
+// Sinon library for mocking
+// Allows for fake timers, which might be useful in future testing
+const sinon = require('sinon');
+
+// JSDOM for simulating browser environment
+const {JSDOM} = require('jsdom');
+const {window} = new JSDOM(``, {});
+
+// Module to test
 const CameraPublisher = require('../../../src/sensors/CameraPublisher.js');
 
 describe('Test CamerPublisher', function() {
@@ -19,7 +29,7 @@ describe('Test CamerPublisher', function() {
     /* test for button verification */
     it('should reject an undefined camera', function() {
       assert.throws( () => {
-        new ButtonPublisher(new ROSLIB.Topic(), undefined);
+        new CameraPublisher(new ROSLIB.Topic(), hz, undefined);
       },
       expectInvalidCamera,
       );
@@ -30,5 +40,24 @@ describe('Test CamerPublisher', function() {
 
       assert.equal(sensorInstance.topic, 'testTopic');
     });
+  });
+
+  describe('#start()', function() {
+    it('should subscribe onMouseUp and onMouseDown callbacks to correct events',
+        function() {
+          const camera = sinon.spy(document.createElement('button'));
+          const topic = new ROSLIB.Topic();
+          const publisher = new ButtonPublisher(topic, camera);
+
+          publisher.start();
+
+          assert.equal(camera.addEventListener.callCount, 2);
+          assert(camera.addEventListener.calledWith('mouseup',
+              publisher.onMouseUp));
+          assert(camera.addEventListener.calledWith('mousedown',
+              publisher.onMouseDown));
+
+          window.AbortController;
+        });
   });
 });
