@@ -7,12 +7,7 @@
  * below.
  */
 module.exports = {
-<<<<<<< HEAD
-    TestSensor: require('./TestSensor'),
-    IMUPublisher: require('./IMUPublisher')
-};
-=======
   ButtonPublisher: require('./ButtonPublisher'),
   TextPublisher: require('./TextPublisher'),
+  IMUPublisher: require('./IMUPublisher'),
 };
->>>>>>> origin/dev
