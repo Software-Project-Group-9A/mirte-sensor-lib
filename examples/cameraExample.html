@@ -1,0 +1,195 @@
+<head>
+  <!-- NOTE: No explicit ROS integration, only for ROS message -->
+<script type="application/javascript" src="https://github.com/RobotWebTools/roslibjs/releases/download/1.2.0/roslib.js"></script>
+<script type="application/javascript">
+const startDrawing = () => { 
+  const button = document.querySelector("button#play");
+  const ss = document.querySelector("button#ss");
+  const ss2 = document.querySelector("button#ss2");
+  const video = document.querySelector("video");
+  let canvas = document.createElement("canvas");
+  let width = null;
+  let height = null
+  
+  button.addEventListener('click', () => video.paused ? video.play() : video.pause());
+
+  if(video.crossOrigin !== "anonymous") {
+      video.crossOrigin = "anonymous"
+  }
+
+  video.addEventListener("loadedmetadata", function(e){
+    console.log("width = "+video.videoWidth+"\nheight = "+video.videoHeight)
+    width = video.videoWidth;
+    height = video.videoHeight;
+  })
+
+  let updateCan = function(){
+      canvas.getContext("2d").drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      let data = canvas.toDataURL('image/jpeg');
+      let imageMessage = new ROSLIB.Message({
+        format : 'jpeg',
+        data : data.replace('data:image/jpeg;base64,', '')
+      });
+      return imageMessage;
+
+      
+  };
+
+  video.crossorigin ="anonymous"
+  // updateCan();
+  let timer;
+  let started = true;
+  let i = 0;
+  function boop () {
+    canvas.width = width;
+    canvas.height = height;
+    console.log(canvas.width)
+    if(started){
+      timer = setInterval(() => {
+        let imageMessage = updateCan();
+        window.requestAnimationFrame(updateCan);
+        console.log(imageMessage.data)
+        console.log(i++)
+      }, 1000);  
+      started = false;
+      
+    }
+  }
+  ss.addEventListener('click', boop);
+  ss2.addEventListener('click', () => {
+    clearInterval(timer);
+    started = true;
+  })
+};
+
+
+window.addEventListener('load', startDrawing)
+</script>
+
+  <style>
+    html {
+    --primary-color: #ffeb3b;
+    --border-color: var(--primary-color);
+    --text-color: #333;
+    --background-color: #f3f;
+  }
+  html.dark {
+    --border-color: #ccc;
+    --text-color: #ccc;
+    --background-color: #181818;
+  }
+  </style> 
+</head>
+<body>
+<button class="switch">On / Off</button>
+<h2>
+Console output
+</h2>
+<div id="console">
+</div>
+<p id="error"></p>
+<p id="shake-count">0</p>
+<p id="acc-info"></p>
+<p>gyroscope</p>
+<button id="play" type="button">⏯</button>
+<button id="ss" type="button" style="  display: block;
+width: 100%;
+border: none;
+background-color: #3fba19;
+padding: 14px 28px;
+font-size: 16px;
+cursor: pointer;
+text-align: center;">📷</button>
+<button id="ss2" type="button" style="  display: block;
+width: 100%;
+border: none;
+background-color: #dd1717;
+padding: 14px 28px;
+font-size: 16px;
+cursor: pointer;
+text-align: center;">📷</button>
+<p id="gyro"></p>
+<p id="light"></p>
+<video id="my"autoplay></video>
+<label for="videoSource">Video source: </label><select id="videoSource"> </select>
+<button id="videoShow" onclick="showVid()">Show video</button>
+<button id="videoHide" onclick="hideVid()">Hide video</button>
+
+
+<br><br><br>
+
+<!-- <canvas ></canvas> -->
+<p><span id="fps-info">0</span>fps</p>
+<p><pre id="metadata-info"></pre></p>
+<script>
+
+console.log("started");
+const constraints = {
+  video: true,
+};
+
+const video = document.querySelector("video");
+const videoSelect = document.querySelector("select#videoSource");
+
+  let nav = navigator.mediaDevices.enumerateDevices()
+  .then(gotDevices)
+
+
+function showVid() {
+    nav.then(getStream)
+    .catch(handleError)
+
+    video.addEventListener("loadedmetadata", function(e){
+      // console.log("REAL REAL IS"+video.videoWidth)
+    })    
+}
+
+function hideVid() {
+  video.srcObject = null;
+}
+
+function gotDevices(deviceInfos) {
+  for (let i = 0; i !== deviceInfos.length; ++i) {
+    const deviceInfo = deviceInfos[i];
+    const option = document.createElement("option");
+    option.value = deviceInfo.deviceId;
+  	console.log(deviceInfo.deviceId);
+    if (deviceInfo.kind === "videoinput") {
+      option.text = deviceInfo.label || "camera " + (videoSelect.length + 1);
+      videoSelect.appendChild(option);
+    } else {
+      console.log("Found another kind of device: ", deviceInfo);
+    }
+  }
+}
+function getStream() {
+  if (window.stream) {
+    window.stream.getTracks().forEach(function (track) {
+      track.stop();
+    });
+  }
+
+  const constraints = {
+    video: {
+      deviceId: { exact: videoSelect.value },
+    }
+  };
+
+  navigator.mediaDevices
+    .getUserMedia(constraints)
+    .then(gotStream)
+    .catch(handleError);
+}
+function gotStream(stream) {
+  window.stream = stream; // make stream available to console
+  video.srcObject = stream;
+}
+
+function handleError(error) {
+  console.error("Error: ", error);
+}
+
+</script>
+<script type="application/javascript" src="sensors_deviceMotion.js"></script>
+</body>
