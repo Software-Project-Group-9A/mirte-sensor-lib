@@ -3,7 +3,7 @@
 // A covariance matrix can be set to all zeroes.
 
 // Dependencies
-// const Quaternion = require('quaternion');
+const Quaternion = require('quaternion');
 const IntervalPublisher = require('./IntervalPublisher.js');
 
 // Important documentation
@@ -21,22 +21,28 @@ class IMUPublisher extends IntervalPublisher {
      * @param {Topic} topic a Topic from RosLibJS
      */
   constructor(topic) {
-    super(topic, 4);
+    super(topic, 2);
     this.topic = topic;
 
     // First need to detect first device orientation.
     this.orientationReady = false;
     this.motionReady = false;
 
+    // Default values
+    // TODO: find way to disclose not used yet.
+    this.valpha = 0;
+    this.vbeta = 0;
+    this.vgamma = 0;
+
     // Enable callback for deviceOrientationEvent
     window.addEventListener('deviceorientation', (event) => {
-      this.onReadOrientation(event).bind(this);
+      this.onReadOrientation.bind(this)(event);
     });
-    console.log(window.DeviceMotionEvent);
+
     // Enable callback for deviceMotionEvent
     if (window.DeviceMotionEvent) {
       window.addEventListener('devicemotion', (event) => {
-        this.onReadMotion(event).bind(this);
+        this.onReadMotion.bind(this)(event);
       });
     } else {
       window.alert('acceleration not supported!');
@@ -49,10 +55,10 @@ class IMUPublisher extends IntervalPublisher {
      * @param {*} event object containing sensor data.
      */
   onReadOrientation(event) {
-    self.alpha = event.alpha;
-    self.beta = event.beta;
-    self.gamma = event.gamma;
-    self.orientationReady = true;
+    this.alpha = event.alpha;
+    this.beta = event.beta;
+    this.gamma = event.gamma;
+    this.orientationReady = true;
   }
 
   /**
@@ -64,16 +70,16 @@ class IMUPublisher extends IntervalPublisher {
     const acceleration = event.acceleration;
 
     // acceleration
-    self.x = acceleration.x;
-    self.y = acceleration.y;
-    self.z = acceleration.z;
+    this.x = acceleration.x;
+    this.y = acceleration.y;
+    this.z = acceleration.z;
 
     // rotation
-    self.valpha = rotation.alpha;
-    self.vbeta = rotation.beta;
-    self.vgamma = rotation.gamma;
+    this.valpha = rotation.alpha;
+    this.vbeta = rotation.beta;
+    this.vgamma = rotation.gamma;
 
-    self.motionReady = true;
+    this.motionReady = true;
   }
 
   /**
@@ -83,7 +89,7 @@ class IMUPublisher extends IntervalPublisher {
      */
   createSnapshot() {
     if (!this.orientationReady || !this.motionReady) {
-      throw Error('snapShot was too early!');
+      console.log('Motion or orientation not yet detected!');
     }
     // Convert rotation into quaternion.
     const alphaRad = ((this.alpha + 360) / 360 * 2 * Math.PI) % (2 * Math.PI);
@@ -116,12 +122,11 @@ class IMUPublisher extends IntervalPublisher {
             z: this.z,
           },
           linear_acceleration_covariance: [0, 0, 0, 0, 0, 0, 0, 0, 0],
-        },
+        }
     );
 
     // Publish message on designated topic.
-    console.log(imuMessage);
-    // this.topic.publish(imuMessage);
+    this.topic.publish(imuMessage);
   }
 }
 
