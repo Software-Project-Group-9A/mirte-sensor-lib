@@ -32,7 +32,7 @@ class SensorPublisher {
    * @param {*} event object containing sensor data.
    */
   onReadData(event) {
-    throw Error('onReading method not defined!');
+    throw Error('onReadData method not defined!');
   }
 
   /**
