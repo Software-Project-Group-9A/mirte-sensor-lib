@@ -33,6 +33,7 @@ class IntervalPublisher extends SensorPublisher {
      * Start the publishing of data to ROS with frequency of <freq> Hz.
      */
   start() {
+    super.start();
     const delay = 1000/this.freq;
     const snapshotCallback = this.createSnapshot.bind(this);
     this.timer = setInterval(snapshotCallback, delay);
@@ -42,6 +43,7 @@ class IntervalPublisher extends SensorPublisher {
      * Stops the publishing of data to ROS.
      */
   stop() {
+    super.stop();
     clearInterval(this.timer);
   }
 
