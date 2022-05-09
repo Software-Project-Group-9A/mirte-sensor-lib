@@ -34,7 +34,7 @@ describe('Test ButtonPublisher', function() {
     function expectInvalidButton(error) {
       assert(error instanceof TypeError);
       assert(
-          error.message === 'button argument was not of type HTMLButtonElement',
+          error.message === 'button argument was not of type HTMLButtonElement'
       );
 
       return true;

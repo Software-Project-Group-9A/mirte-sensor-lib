@@ -60,7 +60,7 @@ describe('Test TextPublisher', function() {
           () => {
             new TextPublisher(new ROSLIB.Topic(), undefined);
           },
-          expectInvalidInputElement,
+          expectInvalidInputElement
       );
     });
     it('should reject any input argument that is not an HTMLInputElement',

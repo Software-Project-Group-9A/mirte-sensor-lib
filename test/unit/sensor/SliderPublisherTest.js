@@ -53,7 +53,7 @@ describe('SliderPublisher', function() {
       assert(error instanceof TypeError);
       assert(
           error.message === 'slider argument was not of type HTMLInputElement' ||
-          error.message === 'slider argument does not have type range',
+          error.message === 'slider argument does not have type range'
       );
 
       return true;
