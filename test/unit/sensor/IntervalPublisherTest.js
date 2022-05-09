@@ -81,7 +81,6 @@ describe('Test IntervalPublisher', function() {
     });
 
     it('should construct with 10Hz when it is invalid', function() {
-      let publisher;
       const topic = new ROSLIB.Topic();
 
       assert.throws(() => {
