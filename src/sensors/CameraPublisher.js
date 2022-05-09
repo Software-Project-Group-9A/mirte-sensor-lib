@@ -1,6 +1,5 @@
 const IntervalPublisher = require('./IntervalPublisher');
 
-// most template code from http://wiki.ros.org/roslibjs/Tutorials/Publishing%20video%20and%20IMU%20data%20with%20roslibjs
 /**
  * CameraPublisher publishes the frame of a video stream.
  * This state is published at a set interval,
@@ -15,7 +14,7 @@ class CameraPublisher extends IntervalPublisher {
      * @param {HTMLVideoElement} camera camera of which to publish data from
      * @param {Int32} hz the frequency to publish the camera data
      */
-  constructor(topic, camera, hz = 100) {
+  constructor(topic, camera, hz = 10) {
     super(topic, hz);
 
     if (!(camera instanceof window.HTMLVideoElement)) {
@@ -23,7 +22,6 @@ class CameraPublisher extends IntervalPublisher {
     }
     this.camera = camera;
     this.canvas = null;
-    this.cameraTimer = null;
   }
 
   /**
@@ -33,61 +31,40 @@ class CameraPublisher extends IntervalPublisher {
   onError(_event) {
     throw new Error(_event);
   }
-  /**
-     * Callback for reading cameras.
-     * @param {*} _event object containing sensor data.
-     */
-  onReadData(_event) {
-    const self = this;
-    this.camera.addEventListener('loadedmetadata', function(e) {
-      console.log('width = '+self.videoWidth);
-      self.canvas.width = self.video.videoWidth;
-      self.canvas.height = self.video.videoHeight;
-      console.log('so we get '+self.canvas.width);
-    }).bind(this);
-  }
 
   /**
      * Create a snapshot of the current videostream.
-     *
-     * Resource used: https://web.dev/requestvideoframecallback-rvfc/
      */
   createSnapshot() {
-    this.canvas.getContext('2d')
-        .drawImage(this.camera, 0, 0, this.camera.videoWidth,
-            this.camera.videoHeight);
+    this.canvas.getContext('2d').drawImage(this.camera, 0, 0, this.canvas.videoWidth, this.canvas.videoHeight);
 
     const data = this.canvas.toDataURL('image/jpeg');
     const imageMessage = new ROSLIB.Message({
       format: 'jpeg',
       data: data.replace('data:image/jpeg;base64,', ''),
     });
-    // console.log(imageMessage.data);
+
     this.topic.publish(imageMessage);
   }
 
   /**
      * Start the publishing of camera data to ROS.
      *
-     * Resource used: http://wiki.ros.org/roslibjs/Tutorials/Publishing%20video%20and%20IMU%20data%20with%20roslibjs
+     * @throws {ReferenceError} if no available video source.
      */
   start() {
-    super.start();
-    const self = this;
-    if (document.querySelector('canvas')) {
-      this.canvas = document.querySelector('canvas');
+    if (!this.camera.srcObject) {
+      throw new ReferenceError('No video source found.');
+    }
+    if (window.document.querySelector('canvas')) {
+      this.canvas = window.document.querySelector('canvas');
     } else {
-      this.canvas = document.createElement('canvas');
+      this.canvas = window.document.createElement('canvas');
+      this.canvas.width = this.camera.videoWidth;
+      this.canvas.height = this.camera.videoHeight;
     }
 
-    this.camera.addEventListener('loadedmetadata', function(e) {
-      self.canvas.width = self.camera.videoWidth;
-      self.canvas.height = self.camera.videoHeight;
-    });
-
-
-    const delay = 1000/this.freq;
-    this.cameraTimer = setInterval(this.createSnapshot, delay);
+    super.start();
   }
 
   /**

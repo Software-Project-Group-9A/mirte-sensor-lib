@@ -23,36 +23,22 @@ global.ROSLIB = {
   },
 };
 
-/**
- * Helper method to create a standard CameraPublisher.
- * @return {CameraPublisher} a new CameraPublisher that is
- * initialised with a basic video.
- */
-function createStandardCamera() {
-  const topic = new ROSLIB.Topic(new ROSLIB.Topic());
-  // Setup CameraPublisher object
-  const video = document.createElement('video');
-  const camera = new CameraPublisher(topic, video);
-  return camera;
-}
-
 describe('Test CamerPublisher', function() {
   describe('#constructor(topic, camera)', function() {
     /**
-     * Helper functions for checking whether correct error is raised for
+     * Helper function for checking whether correct error is raised for
      * invalid buttons.
      * @param {Error} error The raised error.
      * @return {boolean} true if valid.
      */
     function expectInvalidCamera(error) {
       assert(error instanceof TypeError);
-      assert(error.message === 'camera argument was not of type '+
-      'HTMLVideoElement');
+      assert(error.message === 'camera argument was not of type HTMLVideoElement');
       return true;
     }
 
     /**
-     * Helper functions for checking whether correct error is raised for
+     * Helper function for checking whether correct error is raised for
      * invalid topics.
      * @param {Error} error The raised error.
      * @return {boolean} true if valid.
@@ -63,6 +49,7 @@ describe('Test CamerPublisher', function() {
 
       return true;
     }
+
     /* test for topic verification */
     it('should reject an undefined topic', function() {
       assert.throws( () => {
@@ -90,39 +77,33 @@ describe('Test CamerPublisher', function() {
       );
     });
     it('should accept publisher with topic and camera', function() {
-      // let camera;
-      const videoElem = document.createElement('video');
-      // assert(videoElem instanceof window.HTMLVideoElement);
-      const camera2 = createStandardCamera();
-      assert.doesNotThrow(
-          () => {
-            camera = new CameraPublisher(new ROSLIB.Topic(), videoElem);
-          },
-          (error) => {
-            return false;
-          },
-      );
-      console.log('IS'+camera);
-      console.log('IS'+camera2);
+      const topic = new ROSLIB.Topic(new ROSLIB.Topic());
+      const video = document.createElement('video');
+      const camera = new CameraPublisher(topic, video);
+      assert.equal(camera.freq, 10);
+      assert.equal(camera.camera, video);
+      assert.equal(camera.canvas, null);
     });
   });
 
   describe('#start()', function() {
-    it('should call to createsnapshot once',
-        function() {
-          const camera = sinon.spy(document.createElement('video'));
-          // const std = createStandardCamera();
-          // window.document = dom.window.document;
+    /**
+     * Helper function for checking whether correct error is raised for
+     * invalid buttons.
+     * @param {Error} error The raised error.
+     * @return {boolean} true if valid.
+     */
+    function expectInvalidSource(error) {
+      assert(error instanceof ReferenceError);
+      assert(error.message === 'No video source found.');
+      return true;
+    }
+    it('should throw an error if there is no video source', function() {
+      const camera = document.createElement('video');
+      const topic = sinon.spy(new ROSLIB.Topic());
+      const publisher = sinon.spy(new CameraPublisher(topic, camera));
 
-          // const canvas = document.createElement('canvas');
-          document.createElement('canvas');
-          const publisher = sinon.stub(new CameraPublisher(new ROSLIB.Topic(),
-              camera));
-
-          // console.log("type = "+typeof(camera));
-          publisher.start();
-
-          assert.equal(camera.addEventListener.callCount, 0);
-        });
+      assert.throws(() => publisher.start(), expectInvalidSource);
+    });
   });
 });
