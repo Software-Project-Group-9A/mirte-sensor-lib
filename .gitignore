@@ -1,0 +1,14 @@
+.idea
+.project
+.settings
+.vagrant
+.prettierrc
+node_modules
+
+# grunt task directories
+.nyc_output
+
+# build files
+build
+doc
+utils
