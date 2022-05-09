@@ -45,14 +45,9 @@ class ButtonPublisher extends SensorPublisher {
   }
 
   /**
-   * TODO: should perhaps be it's own module, allong with other message objects
-   * we might need in this project
-   *
-   * Creates a new ROS std_msgs/Bool message, containing the supplied boolean
-   * value.
+   * Creates a new ROS std_msgs/Bool message, containing the supplied boolean value.
    * @param {boolean} bool boolean to include in message
-   * @return {ROSLIB.Message} a new ROS std_msgs/Bool message, containing the
-   * supplied boolean value.
+   * @return {ROSLIB.Message} a new std_msgs/Bool message, containing the supplied boolean value.
    */
   createBoolMsg(bool) {
     return new ROSLIB.Message({

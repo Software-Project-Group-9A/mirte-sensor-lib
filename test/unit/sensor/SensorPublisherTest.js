@@ -1,12 +1,7 @@
 const assert = require('assert');
 
-// Sinon library for mocking
-// Allows for fake timers, which might be useful in future testing
-// const sinon = require('sinon');
-
 // Module to test
 const SensorPublisher = require('../../../src/sensors/SensorPublisher.js');
-
 
 // dummy ROSLIB
 global.ROSLIB = {
@@ -35,22 +30,15 @@ describe('Test SensorPublisher', function() {
 
     /* tests for topic verification */
     it('should reject an undefined topic', function() {
-      assert.throws(
-          () => {
-            new SensorPublisher(undefined);
-          },
-          expectInvalidTopic,
-      );
+      assert.throws(() => {
+        new SensorPublisher(undefined);
+      }, expectInvalidTopic);
     });
-    it('should reject any topic argument that is not a ROSLIB.Topic instance',
-        function() {
-          assert.throws(
-              () => {
-                new SensorPublisher('not a topic');
-              },
-              expectInvalidTopic,
-          );
-        });
+    it('should reject any topic argument that is not a ROSLIB.Topic instance', function() {
+      assert.throws(() => {
+        new SensorPublisher('not a topic');
+      }, expectInvalidTopic);
+    });
 
     it('should accept a ROSLIB.Topic', function() {
       let publisher;
