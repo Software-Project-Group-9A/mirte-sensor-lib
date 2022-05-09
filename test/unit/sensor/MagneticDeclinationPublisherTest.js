@@ -78,7 +78,7 @@ describe('Test MagneticDeclinationPublisher', function() {
 
           publisher.start();
 
-          assert.equal(publisher.calcDegreeToPoint(90, 0), 0);
+          assert.equal(publisher.calcDegreeToPoint(86.5, 164.04), 0);
         });
   });
 
@@ -103,8 +103,6 @@ describe('Test MagneticDeclinationPublisher', function() {
         });
   });
 
-
-  /* TODO
   describe('#onReadOrientation()', function() {
     it('should find the current location',
         function() {
@@ -113,39 +111,66 @@ describe('Test MagneticDeclinationPublisher', function() {
 
           publisher.start();
 
-          global.self = {
-            'alpha': 1,
-            'beta': 1,
-            'gamma': 1,
-          };
-
           global.eventParam = {
             'alpha': 1,
             'beta': 1,
             'gamma': 1,
           };
 
-          global.position = {
-            'coords': {
-              'latitude': 21.422487,
-              'longitude': 39.826206,
+          const mockGeolocation = {
+            getCurrentPosition: function() {
+              position = {
+                'coords': {
+                  'latitude': 52.008254,
+                  'longitude': 4.370750,
+                },
+              };
+              return position;
             },
           };
 
-          global.navigator = {
-            geolocation: {
-              getCurrentPosition: position,
-            },
-          };
+          global.window.navigator.geolocation = mockGeolocation;
 
-          publisher.onReadOrientation(self, eventParam);
+          publisher.onReadOrientation(eventParam);
 
-          assert.equal(publisher.locationHandler.callCount, 1);
+          assert.equal(publisher.alpha, 1);
+          assert.equal(publisher.beta, 1);
+          assert.equal(publisher.gamma, 1);
+          assert(publisher.onReadOrientation);
         });
   });
 
-  describe("#createSnapshot()", function() {
 
+  describe('#createSnapshot()', function() {
+    const topic = sinon.spy(new ROSLIB.Topic());
+    const publisher = sinon.spy(new MagneticDeclinationPublisher(topic));
+
+    global.eventParam = {
+      'alpha': 0,
+      'beta': 1,
+      'gamma': 1,
+    };
+
+    const mockGeolocation = {
+      getCurrentPosition: function() {
+        position = {
+          'coords': {
+            'latitude': 52.008254,
+            'longitude': 4.370750,
+          },
+        };
+        return position;
+      },
+    };
+
+    global.window.navigator.geolocation = mockGeolocation;
+
+    publisher.start();
+    publisher.onReadOrientation(eventParam);
+    publisher.createSnapshot();
+
+    const expectedMessage = new ROSLIB.Message({data: 360});
+    assert.equal(topic.publish.callCount, 1);
+    assert.deepEqual(topic.publish.getCall(0).args[0], expectedMessage);
   });
-  */
 });
