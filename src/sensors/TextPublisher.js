@@ -39,9 +39,14 @@ class TextPublisher extends SensorPublisher {
      */
     this.inputElement = inputElement;
 
+    this.onInput = function() {
+      const msg = this.createStrMsg(this.inputElement.value);
+      this.topic.publish(msg);
+    }.bind(this);
+
     this.onKeyUp = function(event) {
-      if (!this.options.onEnter || event.key === 'Enter') {
-        const msg = this.createBoolMsg(this.inputElement.value);
+      if (event.key === 'Enter') {
+        const msg = this.createStrMsg(this.inputElement.value);
         this.topic.publish(msg);
       }
     }.bind(this);
@@ -57,7 +62,7 @@ class TextPublisher extends SensorPublisher {
    * @return {ROSLIB.Message} a new ROS std_msgs/String message, containing the
    * supplied text value.
    */
-  createBoolMsg(str) {
+  createStrMsg(str) {
     return new ROSLIB.Message({
       data: str,
     });
@@ -68,7 +73,11 @@ class TextPublisher extends SensorPublisher {
    */
   start() {
     super.start();
-    this.inputElement.addEventListener('keyup', this.onKeyUp);
+    if (this.options.onEnter) {
+      this.inputElement.addEventListener('keyup', this.onKeyUp);
+    } else {
+      this.inputElement.addEventListener('input', this.onInput);
+    }
   }
 
   /**
@@ -76,7 +85,11 @@ class TextPublisher extends SensorPublisher {
    */
   stop() {
     super.stop();
-    this.inputElement.removeEventListener('keyup', this.onKeyUp);
+    if (this.options.onEnter) {
+      this.inputElement.removeEventListener('keyup', this.onKeyUp);
+    } else {
+      this.inputElement.removeEventListener('input', this.onInput);
+    }
   }
 }
 
