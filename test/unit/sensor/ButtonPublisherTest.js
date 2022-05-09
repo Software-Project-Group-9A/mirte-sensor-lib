@@ -115,17 +115,18 @@ describe('Test ButtonPublisher', function() {
           button.addEventListener.calledWith('mousedown', publisher.onMouseDown),
       );
     });
-    it('should result in onMouseDown being called at mousedown event', function() {
+    it('should result in onMouseDown being called at mousedown event 1', function() {
       const button = document.createElement('button');
       const topic = new ROSLIB.Topic();
       const publisher = sinon.spy(new ButtonPublisher(topic, button));
 
       publisher.start();
+
       button.dispatchEvent(new window.Event('mousedown'));
 
       assert.equal(publisher.onMouseDown.callCount, 1);
     });
-    it('should result in onMouseDown being called at mousedown event', function() {
+    it('should result in onMouseDown being called at mousedown event 2', function() {
       const button = document.createElement('button');
       const topic = new ROSLIB.Topic();
       const publisher = sinon.spy(new ButtonPublisher(topic, button));

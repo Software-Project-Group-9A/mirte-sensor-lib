@@ -42,6 +42,7 @@ describe('Test IntervalPublisher', function() {
       const clock = sinon.useFakeTimers();
       // Setup IMU object
       const IVPublisher = createIntervalPublisher();
+      IVPublisher.start();
       IVPublisher.createSnapshot = sinon.spy();
 
       // Act and Assert
@@ -67,6 +68,7 @@ describe('Test IntervalPublisher', function() {
       // Arrange
       const clock = sinon.useFakeTimers();
       const IVPublisher = createIntervalPublisher();
+      IVPublisher.start();
       IVPublisher.createSnapshot = sinon.spy();
 
       // Act
@@ -141,6 +143,7 @@ describe('Test IntervalPublisher', function() {
     it('should accept a non-existent timer', function() {
       // Arrange
       const IVPublisher = createIntervalPublisher();
+      IVPublisher.start();
       IVPublisher.timer = undefined;
 
       // Act

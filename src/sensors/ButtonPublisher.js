@@ -59,6 +59,7 @@ class ButtonPublisher extends SensorPublisher {
    * Start the publishing of data to ROS.
    */
   start() {
+    super.start();
     this.button.addEventListener('mousedown', this.onMouseDown);
     this.button.addEventListener('mouseup', this.onMouseUp);
   }
@@ -67,6 +68,7 @@ class ButtonPublisher extends SensorPublisher {
    * Stop the publishing of data to ROS.
    */
   stop() {
+    super.stop();
     this.button.removeEventListener('mousedown', this.onMouseDown);
     this.button.removeEventListener('mouseup', this.onMouseUp);
   }
