@@ -69,6 +69,26 @@ describe('Test SensorPublisher', function() {
       return true;
     }
 
+    /**
+     * Helper functions for checking whether correct error is raised.
+     * @param {Error} error The raised error.
+     * @return {boolean} true if valid.
+     */
+    function expectAlreadyStoped(error) {
+      assert(error.message === 'Publisher did not start yet');
+
+      return true;
+    }
+
+    it('should start before stop', function() {
+      const topic = new ROSLIB.Topic();
+      publisher = new SensorPublisher(topic);
+
+      assert.throws(() => {
+        publisher.stop();
+      }, expectAlreadyStoped);
+    });
+
 
     it('should start only one time', function() {
       const topic = new ROSLIB.Topic();
@@ -78,6 +98,16 @@ describe('Test SensorPublisher', function() {
       assert.throws(() => {
         publisher.start();
       }, expectAlreadyStarted);
+    });
+
+    it('should stop only one time', function() {
+      const topic = new ROSLIB.Topic();
+      publisher = new SensorPublisher(topic);
+      publisher.start();
+      publisher.stop();
+      assert.throws(() => {
+        publisher.stop();
+      }, expectAlreadyStoped);
     });
   });
 });
