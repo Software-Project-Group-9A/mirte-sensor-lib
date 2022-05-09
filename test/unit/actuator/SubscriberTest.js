@@ -1,11 +1,11 @@
 const assert = require('assert');
 
 // Module to test
-const SensorPublisher = require('../../../src/sensors/SensorPublisher.js');
+const Subscriber = require('../../../src/actuators/Subscriber.js');
 
 require('../../globalSetup.js');
 
-describe('Test SensorPublisher', function() {
+describe('Test Subscriber', function() {
   describe('#constructor(topic)', function() {
     /**
      * Helper functions for checking whether correct error is raised for
@@ -23,29 +23,29 @@ describe('Test SensorPublisher', function() {
     /* tests for topic verification */
     it('should reject an undefined topic', function() {
       assert.throws(() => {
-        new SensorPublisher(undefined);
+        new Subscriber(undefined);
       }, expectInvalidTopic);
     });
     it('should reject any topic argument that is not a ROSLIB.Topic instance', function() {
       assert.throws(() => {
-        new SensorPublisher('not a topic');
+        new Subscriber('not a topic');
       }, expectInvalidTopic);
     });
 
     it('should accept a ROSLIB.Topic', function() {
-      let publisher;
+      let subscriber;
       const topic = new ROSLIB.Topic();
 
       assert.doesNotThrow(
           () => {
-            publisher = new SensorPublisher(topic);
+            subscriber = new Subscriber(topic);
           },
           (error) => {
             return false;
           },
       );
 
-      assert.equal(publisher.topic, topic);
+      assert.equal(subscriber.topic, topic);
     });
   });
 
@@ -56,7 +56,7 @@ describe('Test SensorPublisher', function() {
      * @return {boolean} true if valid.
      */
     function expectAlreadyStarted(error) {
-      assert(error.message === 'Publisher already started');
+      assert(error.message === 'Subscriber already started');
 
       return true;
     }
@@ -67,38 +67,38 @@ describe('Test SensorPublisher', function() {
      * @return {boolean} true if valid.
      */
     function expectAlreadyStoped(error) {
-      assert(error.message === 'Publisher did not start yet');
+      assert(error.message === 'Subscriber did not start yet');
 
       return true;
     }
 
     it('should start before stop', function() {
       const topic = new ROSLIB.Topic();
-      publisher = new SensorPublisher(topic);
+      const subscriber = new Subscriber(topic);
 
       assert.throws(() => {
-        publisher.stop();
+        subscriber.stop();
       }, expectAlreadyStoped);
     });
 
 
     it('should start only one time', function() {
       const topic = new ROSLIB.Topic();
-      publisher = new SensorPublisher(topic);
-      publisher.start();
+      const subscriber = new Subscriber(topic);
+      subscriber.start();
 
       assert.throws(() => {
-        publisher.start();
+        subscriber.start();
       }, expectAlreadyStarted);
     });
 
     it('should stop only one time', function() {
       const topic = new ROSLIB.Topic();
-      publisher = new SensorPublisher(topic);
-      publisher.start();
-      publisher.stop();
+      const subscriber = new Subscriber(topic);
+      subscriber.start();
+      subscriber.stop();
       assert.throws(() => {
-        publisher.stop();
+        subscriber.stop();
       }, expectAlreadyStoped);
     });
   });

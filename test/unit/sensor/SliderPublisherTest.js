@@ -15,15 +15,7 @@ const SliderPublisher = require('../../../src/sensors/SliderPublisher.js');
 global.window = global.window || window;
 const {document} = global.window;
 
-// define dummy ROSLIB in global scope
-global.ROSLIB = global.ROSLIB || {
-  Topic: function() {
-    this.publish = function(msg) {};
-  },
-  Message: function(msg) {
-    this.msg = msg;
-  },
-};
+require('../../globalSetup.js');
 
 describe('SliderPublisher', function() {
   /**

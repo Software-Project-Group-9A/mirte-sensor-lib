@@ -12,15 +12,7 @@ const IntervalPublisher = require('../../../src/sensors/IntervalPublisher.js');
 global.window = global.window || window;
 // const {document} = global.window;
 
-// create dummy for ROS
-global.ROSLIB = {
-  Topic: function() {
-    this.publish = function(msg) {};
-  },
-  Message: function(msg) {
-    this.msg = msg;
-  },
-};
+require('../../globalSetup.js');
 
 /**
  * Helper method to create a new Interval Publisher implementation.

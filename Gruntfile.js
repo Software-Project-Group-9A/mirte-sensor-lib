@@ -36,7 +36,10 @@ module.exports = function(grunt) {
           captureFile: 'build/report/mochaTest/results.txt',
           noFail: false,
         },
-        src: ['test/**/*.js'],
+        src: [
+          'test/unit/*.js',
+          'test/unit/**/*.js',
+        ],
       },
     },
     uglify: {
