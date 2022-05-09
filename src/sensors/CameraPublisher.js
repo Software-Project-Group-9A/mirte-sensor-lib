@@ -18,20 +18,12 @@ class CameraPublisher extends IntervalPublisher {
   constructor(topic, camera, hz = 100) {
     super(topic, hz);
 
-    // if (!(camera instanceof window.HTMLButtonElement)) {
-    //   throw new TypeError('camera argument was not
-    // of type HTMLVideoElement::'+
-    //   camera);
-    // }
+    if (!(camera instanceof window.HTMLVideoElement)) {
+      throw new TypeError('camera argument was not of type HTMLVideoElement');
+    }
     this.camera = camera;
     this.canvas = null;
-    if (document.querySelector('canvas')) {
-      this.canvas = document.querySelector('canvas');
-    } else {
-      this.canvas = document.createElement('canvas');
-    }
     this.cameraTimer = null;
-    this.stream = null;
   }
 
   /**
@@ -70,7 +62,7 @@ class CameraPublisher extends IntervalPublisher {
       format: 'jpeg',
       data: data.replace('data:image/jpeg;base64,', ''),
     });
-    console.log(imageMessage.data);
+    // console.log(imageMessage.data);
     this.topic.publish(imageMessage);
   }
 
@@ -80,27 +72,29 @@ class CameraPublisher extends IntervalPublisher {
      * Resource used: http://wiki.ros.org/roslibjs/Tutorials/Publishing%20video%20and%20IMU%20data%20with%20roslibjs
      */
   start() {
-    this.stream = this.camera;
+    super.start();
     const self = this;
+    if (document.querySelector('canvas')) {
+      this.canvas = document.querySelector('canvas');
+    } else {
+      this.canvas = document.createElement('canvas');
+    }
+
     this.camera.addEventListener('loadedmetadata', function(e) {
-      console.log('width = '+self.camera.videoWidth);
       self.canvas.width = self.camera.videoWidth;
       self.canvas.height = self.camera.videoHeight;
-      console.log('so we get '+self.canvas.width);
     });
 
+
     const delay = 1000/this.freq;
-    this.cameraTimer = setInterval(() => {
-      this.createSnapshot();
-    }, delay);
+    this.cameraTimer = setInterval(this.createSnapshot, delay);
   }
 
   /**
-     * Stops the publishing of data to ROS.
-     */
+   * Stops the publishing of data to ROS.
+   */
   stop() {
-    clearInterval(this.cameraTimer);
-    this.stream = null;
+    super.stop();
   }
 }
 
