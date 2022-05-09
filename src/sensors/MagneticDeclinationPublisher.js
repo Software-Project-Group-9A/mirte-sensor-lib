@@ -112,11 +112,11 @@ class MagneticDeclinationPublisher extends IntervalPublisher {
   createSnapshot() {
     compass = Math.abs(this.alpha - 360);
 
-    const magneticDecilinationMessage = new ROSLIB.Message({
+    const MagneticDeclinationMessage = new ROSLIB.Message({
       data: compass,
     });
 
-    this.topic.publish(magneticDecilinationMessage);
+    this.topic.publish(MagneticDeclinationMessage);
   }
 }
 
