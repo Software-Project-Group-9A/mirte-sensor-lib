@@ -124,6 +124,7 @@ describe('Test IntervalPublisher', function() {
       assert.throws(() => {
         IVPublisher.setPublishFrequency(0 /* Hz*/ );
       }, expectInvalidFrequency);
+      assert.equal(IVPublisher.freq, 10);
     });
   });
 
