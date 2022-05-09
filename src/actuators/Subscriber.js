@@ -21,6 +21,8 @@ class Subscriber {
      * start/stop status of subscriber
      */
     this.started = false;
+
+    this.onMessage = this.onMessage.bind(this);
   }
 
   /**
@@ -38,7 +40,7 @@ class Subscriber {
     if (this.started) {
       throw new Error('Subscriber already started');
     }
-    this.topic.subscribe(this.onMessage.bind(this));
+    this.topic.subscribe(this.onMessage);
     this.started = true;
   }
 
@@ -49,7 +51,7 @@ class Subscriber {
     if (!this.started) {
       throw new Error('Subscriber did not start yet');
     }
-    this.topic.unsubscribe(this.onMessage.bind(this));
+    this.topic.unsubscribe(this.onMessage);
     this.started = false;
   }
 }

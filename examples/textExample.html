@@ -41,7 +41,8 @@
             var onKeyPublisher = new SENSORLIB.TextPublisher(onKeyPressTopic, document.getElementById("textInput"), {onEnter: false});
             onKeyPublisher.start();
             var textSubscriber = new SENSORLIB.TextSubscriber(onEnterTopic, document.getElementById("textOutput"));
-            textSubscriber.start();
         </script>
+        <button onclick="textSubscriber.start()">subscribe</button>
+        <button onclick="textSubscriber.stop()">unsubscribe</button>
     </body>
 </html>
