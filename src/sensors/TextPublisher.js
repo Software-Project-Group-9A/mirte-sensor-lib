@@ -67,6 +67,7 @@ class TextPublisher extends SensorPublisher {
    * Start the publishing of data to ROS.
    */
   start() {
+    super.start();
     this.inputElement.addEventListener('keyup', this.onKeyUp);
   }
 
@@ -74,6 +75,7 @@ class TextPublisher extends SensorPublisher {
    * Stop the publishing of data to ROS.
    */
   stop() {
+    super.stop();
     this.inputElement.removeEventListener('keyup', this.onKeyUp);
   }
 }

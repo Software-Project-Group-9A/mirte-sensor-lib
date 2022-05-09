@@ -55,6 +55,7 @@ class SliderPublisher extends SensorPublisher {
    * Start the publishing of data to ROS.
    */
   start() {
+    super.start();
     this.slider.addEventListener('input', this.onInput);
   }
 
@@ -62,6 +63,7 @@ class SliderPublisher extends SensorPublisher {
    * Stop the publishing of data to ROS.
    */
   stop() {
+    super.stop();
     this.slider.removeEventListener('input', this.onInput);
   }
 }

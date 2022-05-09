@@ -56,4 +56,28 @@ describe('Test SensorPublisher', function() {
       assert.equal(publisher.topic, topic);
     });
   });
+
+  describe('#start()', function() {
+    /**
+     * Helper functions for checking whether correct error is raised.
+     * @param {Error} error The raised error.
+     * @return {boolean} true if valid.
+     */
+    function expectAlreadyStarted(error) {
+      assert(error.message === 'Publisher already started');
+
+      return true;
+    }
+
+
+    it('should start only one time', function() {
+      const topic = new ROSLIB.Topic();
+      publisher = new SensorPublisher(topic);
+      publisher.start();
+
+      assert.throws(() => {
+        publisher.start();
+      }, expectAlreadyStarted);
+    });
+  });
 });
