@@ -107,8 +107,6 @@ describe('Test Subscriber', function() {
       const subscriber = new Subscriber(topic);
       subscriber.start();
 
-      console.log(expectAlreadyStarted);
-
       assert.throws(() => {
         subscriber.start();
       }, expectAlreadyStarted);

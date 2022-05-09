@@ -32,7 +32,7 @@ describe('Test TextSubscriber', function() {
       return true;
     }
 
-    /* test for button verification */
+    /* test for HTML element verification */
     it('should reject an undefined element', function() {
       assert.throws(() => {
         new TextSubscriber(new ROSLIB.Topic(), undefined);
@@ -58,6 +58,17 @@ describe('Test TextSubscriber', function() {
       );
 
       assert.equal(subscriber.HTMLElement, div);
+    });
+
+    it('should set innerHTML when the the callback gets called', function() {
+      const div = document.createElement('div');
+      div.innerHTML = 'test';
+
+      const subscriber = new TextSubscriber(new ROSLIB.Topic(), div);
+
+      subscriber.onMessage({data: 'test message'});
+
+      assert.equal(div.innerHTML, 'test message');
     });
   });
 });

@@ -29,8 +29,6 @@ class TextSubscriber extends Subscriber {
    * @param {ROSLIB.Message} msg the received message
    */
   onMessage(msg) {
-    console.log(msg);
-    console.log(this);
     this.HTMLElement.innerHTML = msg.data;
   }
 }
