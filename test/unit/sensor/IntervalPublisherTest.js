@@ -35,8 +35,74 @@ function createIntervalPublisher() {
 }
 
 describe('Test IntervalPublisher', function() {
+  describe('#constructor(topic)', function() {
+    /**
+     * Helper functions for checking whether correct error is raised for
+     * invalid topics.
+     * @param {Error} error The raised error.
+     * @return {boolean} true if valid.
+     */
+    function expectInvalidFrequency(error) {
+      assert(error instanceof Error);
+
+      return true;
+    }
+
+    /* tests for topic verification */
+    it('should construct with 10Hz when not defined', function() {
+      let publisher;
+      const topic = new ROSLIB.Topic();
+
+      assert.doesNotThrow(
+          () => {
+            publisher = new IntervalPublisher(topic);
+          },
+          (error) => {
+            return false;
+          },
+      );
+
+      assert.equal(publisher.freq, 10);
+    });
+    it('should construct with other Hz when defined', function() {
+      let publisher;
+      const topic = new ROSLIB.Topic();
+
+      assert.doesNotThrow(
+          () => {
+            publisher = new IntervalPublisher(topic, 20);
+          },
+          (error) => {
+            return false;
+          },
+      );
+
+      assert.equal(publisher.freq, 20);
+    });
+
+    it('should construct with 10Hz when it is invalid', function() {
+      const topic = new ROSLIB.Topic();
+
+      assert.throws(() => {
+        new IntervalPublisher(topic, 0);
+      }, expectInvalidFrequency);
+    });
+  });
+
+
   // setPublishFrequency tests
   describe('#setPublishFrequency(hz)', function() {
+    /**
+     * Helper functions for checking whether correct error is raised.
+     * @param {Error} error The raised error.
+     * @return {boolean} true if valid.
+     */
+    function expectInvalidFrequency(error) {
+      assert(error instanceof Error);
+
+      return true;
+    }
+
     it('Frequency of 1 Hz works correctly', function() {
       // Arrange
       const clock = sinon.useFakeTimers();
@@ -100,6 +166,20 @@ describe('Test IntervalPublisher', function() {
       // Assert
       assert.equal(IVPublisher.stop.callCount, 3);
       assert.equal(IVPublisher.start.callCount, 3);
+    });
+
+    it('Frequency of 0 Hz does not work', function() {
+      // Setup IMU object
+      const IVPublisher = createIntervalPublisher();
+      IVPublisher.start();
+
+      // Act and Assert
+      IVPublisher.setPublishFrequency(10 /* Hz*/ );
+
+      assert.throws(() => {
+        IVPublisher.setPublishFrequency(0 /* Hz*/ );
+      }, expectInvalidFrequency);
+      assert.equal(IVPublisher.freq, 10);
     });
   });
 
