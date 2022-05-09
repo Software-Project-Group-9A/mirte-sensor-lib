@@ -57,8 +57,8 @@ class MagneticDeclinationPublisher extends IntervalPublisher {
   calcDegreeToPoint(latitude, longitude) {
     // North pole
     const point = {
-      lat: 90,
-      lng: 0,
+      lat: 86.5,
+      lng: 164.04,
     };
 
     const phiK = (point.lat * Math.PI) / 180.0;
@@ -116,7 +116,6 @@ class MagneticDeclinationPublisher extends IntervalPublisher {
       data: compass,
     });
 
-    console.log(magneticDecilinationMessage);
     this.topic.publish(magneticDecilinationMessage);
   }
 }
