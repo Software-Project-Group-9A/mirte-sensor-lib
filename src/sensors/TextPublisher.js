@@ -40,10 +40,8 @@ class TextPublisher extends SensorPublisher {
     this.inputElement = inputElement;
 
     this.onInput = function() {
-      if (!this.options.onEnter) {
-        const msg = this.createStrMsg(this.inputElement.value);
-        this.topic.publish(msg);
-      }
+      const msg = this.createStrMsg(this.inputElement.value);
+      this.topic.publish(msg);
     }.bind(this);
 
     this.onKeyUp = function(event) {
