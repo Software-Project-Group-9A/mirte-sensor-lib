@@ -18,7 +18,13 @@ class IntervalPublisher extends SensorPublisher {
      */
   constructor(topic, hz = 10) {
     super(topic);
-    this.freq = hz;
+    if (hz <= 0) {
+      this.freq = 10;
+      throw new Error('Cannot construct with frequency ' + hz +
+        ' Hz, frequency took standard value 10');
+    } else {
+      this.freq = hz;
+    }
   }
 
   /**
