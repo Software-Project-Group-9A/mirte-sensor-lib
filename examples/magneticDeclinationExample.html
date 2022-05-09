@@ -5,10 +5,6 @@
         <script src="http://static.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
         <script src="../build/RosSensorLib.min.js"></script>
         <script>
-            const compassCircle = document.querySelector(".compass-circle");
-            const startBtn = document.querySelector(".start-btn");
-            const myPoint = document.querySelector(".my-point");
-
             var ros = new ROSLIB.Ros();
 
             ros.on('connection', function() {document.getElementById("connection_info").innerHTML = "Connected to webserver."});
@@ -25,62 +21,9 @@
 
             ros.connect('ws://localhost:9090');
         </script>
-
-        <style>
-            .compass {
-                position: relative;
-                width: 320px;
-                height: 320px;
-                border-radius: 50%;
-                box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-                margin: auto;
-            }
-
-            .compass > .arrow {
-                position: absolute;
-                width: 0;
-                height: 0;
-                top: -20px;
-                left: 50%;
-                transform: translateX(-50%);
-                border-style: solid;
-                border-width: 30px 20px 0 20px;
-                border-color: red transparent transparent transparent;
-                z-index: 1;
-            }
-
-            .compass > .compass-circle,
-            .compass > .my-point {
-                position: absolute;
-                width: 80%;
-                height: 80%;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                transition: transform 0.1s ease-out;
-                background: url(https://cdn.onlinewebfonts.com/svg/img_467023.png) center
-                    no-repeat;
-                background-size: contain;
-            }
-
-            .compass > .my-point {
-                opacity: 0;
-                width: 20%;
-                height: 20%;
-                background: rgb(8, 223, 69);
-                border-radius: 50%;
-                transition: opacity 0.5s ease-out;
-            }
-        </style>
     </head>
     <body>
         <h1 id='connection_info'></h1>
-        <div class="compass">
-            <div class="arrow"></div>
-            <div class="compass-circle"></div>
-            <div class="my-point"></div>
-        </div>
-        <button class="start-btn">Start compass</button>
         <script>
             var publisher = new SENSORLIB.MagneticDeclinationPublisher(topic);
             publisher.start();
