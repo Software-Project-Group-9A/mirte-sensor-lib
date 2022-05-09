@@ -36,7 +36,7 @@ class CameraPublisher extends IntervalPublisher {
      * Create a snapshot of the current videostream.
      */
   createSnapshot() {
-    this.canvas.getContext('2d').drawImage(this.camera, 0, 0, this.canvas.videoWidth, this.canvas.videoHeight);
+    this.canvas.getContext('2d').drawImage(this.camera, 0, 0, this.canvas.width, this.canvas.height);
 
     const data = this.canvas.toDataURL('image/jpeg');
     const imageMessage = new ROSLIB.Message({
