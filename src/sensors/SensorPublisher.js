@@ -46,9 +46,8 @@ class SensorPublisher {
   start() {
     if (this.started) {
       throw new Error('Publisher already started');
-    } else {
-      this.started = true;
     }
+    this.started = true;
   }
 
   /**
@@ -57,9 +56,8 @@ class SensorPublisher {
   stop() {
     if (!this.started) {
       throw new Error('Publisher did not start yet');
-    } else {
-      this.started = false;
     }
+    this.started = false;
   }
 
   /**
