@@ -1,30 +1,10 @@
 const assert = require('assert');
 
-// JSDOM for simulating browser environment
-// const {JSDOM} = require('jsdom');
-// const {window} = new JSDOM(``, {});
-
 // Module to test
 const Subscriber = require('../../../src/actuators/Subscriber.js');
 
 require('../../globalSetup.js');
 
-/*
-// define JSDOM window in global scope, if not already defined
-global.window = global.window || window;
-const {document} = global.window;
-
-// define dummy ROSLIB in global scope
-global.ROSLIB = {
-  Topic: function() {
-    this.publish = function(msg) {};
-    this.subscribe = function(callback) {};
-  },
-  Message: function(msg) {
-    this.msg = msg;
-  },
-};
-*/
 describe('Test Subscriber', function() {
   describe('#constructor(topic)', function() {
     /**

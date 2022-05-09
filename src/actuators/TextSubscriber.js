@@ -10,7 +10,7 @@ const Subscriber = require('./Subscriber.js');
 class TextSubscriber extends Subscriber {
   /**
    * Creates a new TextSubscriber.
-   * @param {ROSLIB.Topic} topic topic to which to publish text data
+   * @param {ROSLIB.Topic} topic topic to which to subscribe to
    * @param {HTMLElement} HTMLElement HTML element in which the messages will be displayed.
    */
   constructor(topic, HTMLElement) {

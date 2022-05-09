@@ -13,7 +13,7 @@ class Subscriber {
     }
 
     /**
-     * topic to which to publish button data
+     * topic to which to subscribe to
      */
     this.topic = topic;
 
