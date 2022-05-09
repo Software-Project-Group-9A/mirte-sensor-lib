@@ -3,15 +3,7 @@ const assert = require('assert');
 // Module to test
 const SensorPublisher = require('../../../src/sensors/SensorPublisher.js');
 
-// dummy ROSLIB
-global.ROSLIB = {
-  Topic: function() {
-    this.publish = function(msg) {};
-  },
-  Message: function(msg) {
-    this.msg = msg;
-  },
-};
+require('../../globalSetup.js');
 
 describe('Test SensorPublisher', function() {
   describe('#constructor(topic)', function() {

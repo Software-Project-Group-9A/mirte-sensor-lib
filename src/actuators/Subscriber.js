@@ -39,6 +39,7 @@ class Subscriber {
       throw new Error('Subscriber already started');
     }
     this.topic.subscribe(this.onMessage.bind(this));
+    this.started = true;
   }
 
   /**
@@ -49,6 +50,7 @@ class Subscriber {
       throw new Error('Subscriber did not start yet');
     }
     this.topic.unsubscribe(this.onMessage.bind(this));
+    this.started = false;
   }
 }
 

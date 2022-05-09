@@ -17,7 +17,7 @@ class TextSubscriber extends Subscriber {
     super(topic);
 
     if (!(HTMLElement instanceof window.HTMLElement)) {
-      throw new TypeError('input element was not of type HTMLElement');
+      throw new TypeError('HTMLElement argument was not of type HTMLElement');
     }
 
     this.HTMLElement = HTMLElement;
