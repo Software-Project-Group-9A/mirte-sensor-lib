@@ -13,15 +13,7 @@ const CameraPublisher = require('../../../src/sensors/CameraPublisher.js');
 global.window = global.window || window;
 const {document} = global.window;
 
-// define dummy ROSLIB in global scope
-global.ROSLIB = {
-  Topic: function() {
-    this.publish = function(msg) {};
-  },
-  Message: function(msg) {
-    this.msg = msg;
-  },
-};
+require('../../globalSetup.js');
 
 describe('Test CamerPublisher', function() {
   describe('#constructor(topic, camera)', function() {
