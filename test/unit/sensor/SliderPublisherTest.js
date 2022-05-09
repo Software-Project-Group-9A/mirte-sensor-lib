@@ -123,7 +123,7 @@ describe('SliderPublisher', function() {
     it('should result in onInput being called at input event', function() {
       const slider = createSlider();
       const publisher = sinon.spy(
-          new SliderPublisher(new ROSLIB.Topic(), slider),
+          new SliderPublisher(new ROSLIB.Topic(), slider)
       );
 
       publisher.start();
@@ -147,7 +147,7 @@ describe('SliderPublisher', function() {
     it('should prevent onInput from being called at input event', function() {
       const slider = createSlider();
       const publisher = sinon.spy(
-          new SliderPublisher(new ROSLIB.Topic(), slider),
+          new SliderPublisher(new ROSLIB.Topic(), slider)
       );
 
       publisher.start();
