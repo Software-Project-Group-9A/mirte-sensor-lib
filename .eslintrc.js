@@ -12,5 +12,6 @@ module.exports = {
   },
   'rules': {
     'linebreak-style': 0,
+    'max-len': [1, 120],
   },
 };

@@ -2,6 +2,7 @@
 .project
 .settings
 .vagrant
+.prettierrc
 node_modules
 
 # grunt task directories
