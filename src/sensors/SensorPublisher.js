@@ -18,7 +18,7 @@ class SensorPublisher {
     this.topic = topic;
 
     /**
-     * Class variable for start and stop
+     * start/stop status of sensor
      */
     this.started = false;
   }
