@@ -3,7 +3,8 @@
 // A covariance matrix can be set to all zeroes.
 
 // Dependencies
-const Quaternion = require('quaternion');
+// const Quaternion = require('quaternion');
+const THREE = require('three');
 const IntervalPublisher = require('./IntervalPublisher.js');
 
 // Important documentation
@@ -95,8 +96,10 @@ class IMUPublisher extends IntervalPublisher {
     const alphaRad = ((this.alpha + 360) / 360 * 2 * Math.PI) % (2 * Math.PI);
     const betaRad = ((this.beta + 360) / 360 * 2 * Math.PI) % (2 * Math.PI);
     const gammaRad = ((this.gamma + 360) / 360 * 2 * Math.PI) % (2 * Math.PI);
-    const q = Quaternion.fromEuler(alphaRad, betaRad, gammaRad, 'ZXY');
-
+    const eurlerpose = new THREE.Euler(betaRad, gammaRad, alphaRad);
+    const q = new THREE.Quaternion();
+    q.setFromEuler(eurlerpose);
+    console.log(q);
     // Create imuMessage in ROS's IMU-message format.
     const imuMessage = new ROSLIB.Message(
         {

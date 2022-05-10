@@ -1,11 +1,13 @@
 const assert = require('assert');
 const sinon = require('sinon');
+const THREE = require('three');
 
 // JSDOM for simulating browser environment
 const {JSDOM} = require('jsdom');
 const {window} = new JSDOM(``, {});
 
 const IMUPublisher = require('../../../src/sensors/IMUPublisher.js');
+const exp = require('constants');
 
 // define JSDOM window in global scope
 global.window = global.window || window;
@@ -84,8 +86,86 @@ describe('Test IMU Publisher', function() {
 
   // createSnapshot tests
   describe('#createSnapshot()', function() {
-    it('throws an exception when not both flags are true');
-    it('publishes to the topic.');
-    it('does quarternions correctly.');
+    /**
+     * Asserts that acual is in range of expected 
+     * @param {*} actual 
+     * @param {*} expected 
+     * @param {*} range 
+     */
+    function closeTo(actual, expected, range) {
+      console.log('lower bound: ' + (expected - range) + ' upper bound: ' + (expected + range) + ' actual: ' + actual);
+      assert( expected - range <= actual );
+      assert( expected + range >= actual );
+    }
+
+    it('publishes to the topic.', function() {
+      global.window.DeviceMotionEvent = true;
+      // Arrange
+      const topic = new ROSLIB.Topic('boo!');
+      // Spy on topic
+      const topicSpy = sinon.spy(topic);
+      // Setup IMU object
+      const IMU = new IMUPublisher(topic);
+      IMU.orientationReady = true;
+      IMU.motionReady = true;
+
+      // Act
+      IMU.createSnapshot();
+
+      // Arrange
+      assert.equal(topicSpy.publish.callCount, 1);
+    });
+
+    it('does 0.0 deg quarternions correctly.', function() {
+      // Arrange
+      global.window.DeviceMotionEvent = true;
+      const topic = new ROSLIB.Topic('boo!');
+      // Spy on topic
+      const topicSpy = sinon.spy(topic);
+      // Setup IMU object
+      const imu = new IMUPublisher(topic);
+      imu.orientationReady = true;
+      imu.motionReady = true;
+      imu.alpha = 0.0;
+      imu.beta = 0.0;
+      imu.gamma = 0.0;
+
+      // Act
+      imu.createSnapshot();
+      const msg = topicSpy.publish.args[0];
+
+      // Assert
+      const msgQuat= msg[0].msg.orientation;
+      assert.deepEqual(msgQuat, {x: 0, y: 0, z: 0, w: 1});
+    });
+
+    it('does different deg quarternions correctly.', function() {
+      // Arrange
+      global.window.DeviceMotionEvent = true;
+      const topic = new ROSLIB.Topic('boo!');
+      // Spy on topic
+      const topicSpy = sinon.spy(topic);
+      // Setup IMU object
+      const imu = new IMUPublisher(topic);
+      imu.orientationReady = true;
+      imu.motionReady = true;
+      imu.beta = 45.0; // 45 degrees over X-axis (Pitch)
+      imu.gamma = 75.0; // 75 degrees over Y-axis (Pitch)
+      imu.alpha = 90.0; // 90 degrees over Z-axis (Yaw)
+
+      // Act
+      imu.createSnapshot();
+      const msg = topicSpy.publish.args[0];
+
+      // Assert
+      const msgCords = msg[0].msg.orientation;
+      const msgQuat = new THREE.Quaternion(msgCords.x, msgCords.y, msgCords.z, msgCords.w);
+      const q = new THREE.Euler().setFromQuaternion(msgQuat);
+
+      const rad = 180/ Math.PI;
+      closeTo(q.x * rad, 45.0, 0.05); // x axis should be beta
+      closeTo(q.y * rad, 75.0, 0.05); // y axis should be gamma
+      closeTo(q.z * rad, 90.0, 0.05); // z axis should be alpha
+    });
   });
 });
