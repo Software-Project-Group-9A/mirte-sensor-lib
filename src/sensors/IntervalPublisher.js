@@ -14,7 +14,7 @@ class IntervalPublisher extends SensorPublisher {
      * Creates a new sensor publisher that publishes to
      * the provided topic with a Regular interval.
      * @param {Topic} topic a Topic from RosLibJS on which to publish.
-     * @param {Int32} hz a standard frequency for this type of object.
+     * @param {Number} hz a standard frequency for this type of object.
      */
   constructor(topic, hz = 10) {
     super(topic);
@@ -53,7 +53,7 @@ class IntervalPublisher extends SensorPublisher {
 
   /**
   * Sets the maximum frequency at which new data can be published.
-  * @param {Int32} hz frequency to be used.
+  * @param {Number} hz frequency to be used.
   */
   setPublishFrequency(hz) {
     if (hz <= 0) {
