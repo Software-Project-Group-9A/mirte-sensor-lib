@@ -102,7 +102,7 @@ module.exports = function(grunt) {
 
   grunt.registerTask('test', ['mochaTest']);
   grunt.registerTask('dev', ['browserify', 'watch']);
-  grunt.registerTask('build', ['browserify', 'jshint', 'uglify']);
+  grunt.registerTask('build', ['browserify', /*'jshint',*/ 'uglify']);
   grunt.registerTask('build_and_watch', ['watch']);
   grunt.registerTask('doc', ['clean', 'jsdoc']);
   grunt.registerTask('checkstyle', ['eslint']);

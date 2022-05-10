@@ -1,5 +1,5 @@
 const IntervalPublisher = require('./IntervalPublisher');
-const NotSupportedError = require('  ../error/NotSupportedError');
+const NotSupportedError = require('../error/NotSupportedError');
 
 /**
  * GPSPublisher publishes the geolocation data of the
@@ -29,17 +29,18 @@ class GPSPublisher extends IntervalPublisher {
   constructor(topic, hz) {
     super(topic, hz);
 
-    if (!navigation.geolocation) {
+    if (!navigator.geolocation) {
       throw new NotSupportedError('Unable to create GPSPublisher, ' +
         'Geolocation API not supported');
     }
   }
 
   /**
-   * Whether the publisher has started publisher
+   *
+   * @param {*} pos
    */
-  get hasStarted() {
-    return this.#hasStarted;
+   onSucces(pos) {
+    this.#position = pos;
   }
 
   /**
@@ -48,24 +49,21 @@ class GPSPublisher extends IntervalPublisher {
   start() {
     super.start();
 
+    const successCallback = this.onSucces.bind(this);
+    const errorCallback = this.onError.bind(this);
+
     this.#watchId = navigator.geolocation.watchPosition(
-      this.onSuccess.bind(this),
-      this.onError.bind(this)/* , options?*/);
+      successCallback,
+      errorCallback);
   }
 
   /**
    *
    */
   stop() {
-    navigator.geolocation.clearWatch(this.#watchId);
-  }
+    super.stop();
 
-  /**
-   *
-   * @param {*} pos
-   */
-  onSucces(pos) {
-    this.#position = pos;
+    navigator.geolocation.clearWatch(this.#watchId);
   }
 
   /**
@@ -79,7 +77,7 @@ class GPSPublisher extends IntervalPublisher {
    * @param {*} error
    */
   onError(error) {
-
+    throw error;
   }
 
   /**
@@ -112,7 +110,7 @@ class GPSPublisher extends IntervalPublisher {
 
     // create and publish message
     const coordinates = this.#position.coords;
-    const message = createNavSatMessage(coordinates);
+    const message = this.createNavSatMessage(coordinates);
     this.topic.publish(message);
   }
 }
