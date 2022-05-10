@@ -36,7 +36,7 @@ class SliderPublisher extends IntervalPublisher {
 
   /**
    * Creates a new ROS std_msgs/Int32 message, containing the supplied integer value.
-   * @param {number} num to include in message
+   * @param {Number} num to include in message
    * @return {ROSLIB.Message} a new ROS std_msgs/Int32 message, containing the supplied boolean value.
    */
   createInt32Msg(num) {
