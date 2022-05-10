@@ -150,5 +150,17 @@ describe('SliderPublisher', function() {
       assert.deepEqual(topic.publish.getCall(0).args[0], expectedFirstMessage);
       assert.deepEqual(topic.publish.getCall(1).args[0], expectedSecondMessage);
     });
+    it('should not publish doubke messages', function() {
+      const slider = createSlider();
+      const topic = sinon.spy(new ROSLIB.Topic(0, 100, 50));
+      const publisher = sinon.spy(new SliderPublisher(topic, slider));
+
+      publisher.createSnapshot();
+      publisher.createSnapshot();
+
+      const expectedFirstMessage = new ROSLIB.Message({data: 50});
+      assert.equal(topic.publish.callCount, 1);
+      assert.deepEqual(topic.publish.getCall(0).args[0], expectedFirstMessage);
+    });
   });
 });

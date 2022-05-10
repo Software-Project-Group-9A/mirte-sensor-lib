@@ -29,6 +29,9 @@ class SliderPublisher extends IntervalPublisher {
      * slider of which to publish data
      */
     this.slider = slider;
+
+    // Value to prevent double messages
+    this.oldValue;
   }
 
   /**
@@ -48,6 +51,13 @@ class SliderPublisher extends IntervalPublisher {
      */
   createSnapshot() {
     const sliderValue = parseInt(this.slider.value);
+
+    if (sliderValue == this.oldValue) {
+      return;
+    }
+
+    this.oldValue = sliderValue;
+
     const msg = this.createInt32Msg(sliderValue);
     this.topic.publish(msg);
   }
