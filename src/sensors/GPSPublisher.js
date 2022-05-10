@@ -1,6 +1,5 @@
 const IntervalPublisher = require('./IntervalPublisher');
 const NotSupportedError = require('../error/NotSupportedError');
-const assert = require('assert');
 
 /**
  * GPSPublisher publishes the geolocation data of the
@@ -38,15 +37,18 @@ class GPSPublisher extends IntervalPublisher {
     }
   }
 
+  /**
+   * Returns the message type this publisher publishes its data.
+   */
   static get messageType() {
     return 'sensor_msgs/NavSatFix';
   }
 
   /**
-   *
-   * @param {*} pos
+   * Callback for reading position data
+   * @param {Geolocation.GeolocationPosition} pos latest geolocation position of device
    */
-   onSucces(pos) {
+  onSucces(pos) {
     this.#position = pos;
   }
 
@@ -60,8 +62,8 @@ class GPSPublisher extends IntervalPublisher {
     const errorCallback = this.onError.bind(this);
 
     this.#watchId = window.navigator.geolocation.watchPosition(
-      successCallback,
-      errorCallback);
+        successCallback,
+        errorCallback);
   }
 
   /**
