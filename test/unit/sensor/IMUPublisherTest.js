@@ -6,28 +6,14 @@ const THREE = require('three');
 const {JSDOM} = require('jsdom');
 const {window} = new JSDOM(``, {});
 
+// Module to test
 const IMUPublisher = require('../../../src/sensors/IMUPublisher.js');
-const exp = require('constants');
 
-// define JSDOM window in global scope
+// define JSDOM window in global scope, if not already defined
 global.window = global.window || window;
 // const {document} = global.window;
+require('../../globalSetup.js');
 
-// create dummy for ROS
-global.ROSLIB = {
-  Topic: function() {
-    this.publish = function(msg) {};
-  },
-  Message: function(msg) {
-    this.msg = msg;
-  },
-};
-
-global.Quaternion = {
-  fromEuler: function() {
-    return true;
-  },
-};
 /**
  * Helper method to quickly get a working IMU going.
  * @return {IMUPublisher} a new IMU that is initialized and
@@ -87,10 +73,10 @@ describe('Test IMU Publisher', function() {
   // createSnapshot tests
   describe('#createSnapshot()', function() {
     /**
-     * Asserts that acual is in range of expected 
-     * @param {*} actual 
-     * @param {*} expected 
-     * @param {*} range 
+     * Asserts that acual is in range of expected
+     * @param {*} actual the value found during the test
+     * @param {*} expected the value that is expected
+     * @param {*} range the range actual can be off
      */
     function closeTo(actual, expected, range) {
       console.log('lower bound: ' + (expected - range) + ' upper bound: ' + (expected + range) + ' actual: ' + actual);
