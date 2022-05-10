@@ -2,6 +2,9 @@
 // A non-set timer is no problem.
 // A covariance matrix can be set to all zeroes.
 
+// To check:
+// Use on IOS with requesting permission
+
 // Dependencies
 const THREE = require('three');
 const IntervalPublisher = require('./IntervalPublisher.js');
@@ -47,7 +50,6 @@ class IMUPublisher extends IntervalPublisher {
       });
     } else {
       window.alert('acceleration not supported!');
-      throw Error('Faulty! No Motion Event!');
     }
   }
 
@@ -106,6 +108,7 @@ class IMUPublisher extends IntervalPublisher {
     const imuMessage = new ROSLIB.Message(
         {
           header: {
+            frame_id: 'world',
           },
           orientation: {
             x: q.x,
