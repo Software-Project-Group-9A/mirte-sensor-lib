@@ -3,7 +3,6 @@
 // A covariance matrix can be set to all zeroes.
 
 // Dependencies
-// const Quaternion = require('quaternion');
 const THREE = require('three');
 const IntervalPublisher = require('./IntervalPublisher.js');
 
@@ -25,12 +24,16 @@ class IMUPublisher extends IntervalPublisher {
     super(topic, 2);
     this.topic = topic;
 
-    // First need to detect first device orientation.
+    // Flags used to detect whether callbacks
+    // have been invoked.
     this.orientationReady = false;
     this.motionReady = false;
 
     // Default values
-    // TODO: find way to disclose not used yet.
+    this.alpha = 0;
+    this.beta = 0;
+    this.gamma = 0;
+
     this.valpha = 0;
     this.vbeta = 0;
     this.vgamma = 0;
@@ -70,12 +73,12 @@ class IMUPublisher extends IntervalPublisher {
     const rotation = event.rotationRate;
     const acceleration = event.acceleration;
 
-    // acceleration
+    // Read acceleration
     this.x = acceleration.x;
     this.y = acceleration.y;
     this.z = acceleration.z;
 
-    // rotation
+    // Read rotation
     this.valpha = rotation.alpha;
     this.vbeta = rotation.beta;
     this.vgamma = rotation.gamma;
@@ -89,18 +92,19 @@ class IMUPublisher extends IntervalPublisher {
      * Resource used: http://wiki.ros.org/roslibjs/Tutorials/Publishing%20video%20and%20IMU%20data%20with%20roslibjs
      */
   createSnapshot() {
-    if (!this.orientationReady || !this.motionReady) {
-      console.log('Motion or orientation not yet detected!');
-    }
     // Convert rotation into quaternion.
     const alphaRad = ((this.alpha + 360) / 360 * 2 * Math.PI) % (2 * Math.PI);
     const betaRad = ((this.beta + 360) / 360 * 2 * Math.PI) % (2 * Math.PI);
     const gammaRad = ((this.gamma + 360) / 360 * 2 * Math.PI) % (2 * Math.PI);
     const eurlerpose = new THREE.Euler(betaRad, gammaRad, alphaRad);
+
+    // Create Quaternion based on device orientation
     const q = new THREE.Quaternion();
     q.setFromEuler(eurlerpose);
-    console.log(q);
+
     // Create imuMessage in ROS's IMU-message format.
+    // For definition of message type see following source:
+    // http://docs.ros.org/en/lunar/api/sensor_msgs/html/msg/Imu.html
     const imuMessage = new ROSLIB.Message(
         {
           header: {
@@ -111,19 +115,22 @@ class IMUPublisher extends IntervalPublisher {
             z: q.z,
             w: q.w,
           },
-          orientation_covariance: [0, 0, 0, 0, 0, 0, 0, 0, 0],
+          // According to the definition of this message,
+          // an undefined asset should have value -1 at index 0 of it's covariance matrix
+          orientation_covariance: [this.orientationReady ? 0 : -1, 0, 0, 0, 0, 0, 0, 0, 0],
           angular_velocity: {
             x: this.vbeta,
             y: this.vgamma,
             z: this.valpha,
           },
-          angular_velocity_covariance: [0, 0, 0, 0, 0, 0, 0, 0, 0],
+          // Idem for acceleration and rotation.
+          angular_velocity_covariance: [this.motionReady ? 0 : -1, 0, 0, 0, 0, 0, 0, 0, 0],
           linear_acceleration: {
             x: this.x,
             y: this.y,
             z: this.z,
           },
-          linear_acceleration_covariance: [0, 0, 0, 0, 0, 0, 0, 0, 0],
+          linear_acceleration_covariance: [this.motionReady ? 0 : -1, 0, 0, 0, 0, 0, 0, 0, 0],
         }
     );
 
