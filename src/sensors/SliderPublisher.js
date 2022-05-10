@@ -31,7 +31,7 @@ class SliderPublisher extends IntervalPublisher {
     this.slider = slider;
 
     // Value to prevent double messages
-    this.oldValue;
+    this.oldValue = null;
   }
 
   /**
@@ -52,7 +52,7 @@ class SliderPublisher extends IntervalPublisher {
   createSnapshot() {
     const sliderValue = parseInt(this.slider.value);
 
-    if (sliderValue == this.oldValue) {
+    if (sliderValue === this.oldValue) {
       return;
     }
 
