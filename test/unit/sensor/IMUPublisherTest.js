@@ -59,9 +59,7 @@ describe('Test IMU Publisher', function() {
       global.window.DeviceMotionEvent = false;
 
       // Act
-      assert.throws(() => {
-        createStandardIMU();
-      }, Error);
+      createStandardIMU();
 
       // Arrange
       assert.equal(global.window.addEventListener.callCount, 1);
@@ -72,6 +70,8 @@ describe('Test IMU Publisher', function() {
 
   // createSnapshot tests
   describe('#createSnapshot()', function() {
+    global.window.DeviceMotionEvent = true;
+
     /**
      * Asserts that acual is in range of expected
      * @param {Number} actual the value found during the test
@@ -85,7 +85,6 @@ describe('Test IMU Publisher', function() {
     }
 
     it('publishes to the topic.', function() {
-      global.window.DeviceMotionEvent = true;
       // Arrange
       const topic = new ROSLIB.Topic('boo!');
       // Spy on topic
@@ -104,7 +103,6 @@ describe('Test IMU Publisher', function() {
 
     it('does 0.0 deg quarternions correctly.', function() {
       // Arrange
-      global.window.DeviceMotionEvent = true;
       const topic = new ROSLIB.Topic('boo!');
       // Spy on topic
       const topicSpy = sinon.spy(topic);
@@ -127,7 +125,6 @@ describe('Test IMU Publisher', function() {
 
     it('does different deg quarternions correctly.', function() {
       // Arrange
-      global.window.DeviceMotionEvent = true;
       const topic = new ROSLIB.Topic('boo!');
       // Spy on topic
       const topicSpy = sinon.spy(topic);
@@ -147,11 +144,69 @@ describe('Test IMU Publisher', function() {
       const msgCords = msg[0].msg.orientation;
       const msgQuat = new THREE.Quaternion(msgCords.x, msgCords.y, msgCords.z, msgCords.w);
       const q = new THREE.Euler().setFromQuaternion(msgQuat);
-
+      // Check if angles are valid
       const rad = 180/ Math.PI;
       closeTo(q.x * rad, 45.0, 0.05); // x axis should be beta
       closeTo(q.y * rad, 75.0, 0.05); // y axis should be gamma
       closeTo(q.z * rad, 90.0, 0.05); // z axis should be alpha
+      // Check if ROS-messages recognises data as defined.
+      assert.equal(msg[0].msg.orientation_covariance[0], 0);
+      assert.equal(msg[0].msg.angular_velocity_covariance[0], 0);
+      assert.equal(msg[0].msg.linear_acceleration_covariance[0], 0);
+    });
+
+    it('has -1 hardcoded in the covar-matrix when phone orientattion has not occured', function() {
+      const topic = new ROSLIB.Topic('boo!');
+      // Spy on topic
+      const topicSpy = sinon.spy(topic);
+      const imu = new IMUPublisher(topic);
+      imu.orientationReady = false;
+      imu.motionReady = true;
+
+      // Act
+      imu.createSnapshot();
+      const msg = topicSpy.publish.args[0];
+
+      // Assert
+      assert.equal(msg[0].msg.orientation_covariance[0], -1);
+      assert.equal(msg[0].msg.angular_velocity_covariance[0], 0);
+      assert.equal(msg[0].msg.linear_acceleration_covariance[0], 0);
+    });
+
+    it('has -1 hardcoded in the covar-matrix when motion event has not yet occured', function() {
+      const topic = new ROSLIB.Topic('boo!');
+      // Spy on topic
+      const topicSpy = sinon.spy(topic);
+      const imu = new IMUPublisher(topic);
+      imu.orientationReady = true;
+      imu.motionReady = false;
+
+      // Act
+      imu.createSnapshot();
+      const msg = topicSpy.publish.args[0];
+
+      // Assert
+      assert.equal(msg[0].msg.orientation_covariance[0], 0);
+      assert.equal(msg[0].msg.angular_velocity_covariance[0], -1);
+      assert.equal(msg[0].msg.linear_acceleration_covariance[0], -1);
+    });
+
+    it('has -1 hardcoded in the covar-matrix when neither events have occured', function() {
+      const topic = new ROSLIB.Topic('boo!');
+      // Spy on topic
+      const topicSpy = sinon.spy(topic);
+      const imu = new IMUPublisher(topic);
+      imu.orientationReady = false;
+      imu.motionReady = false;
+
+      // Act
+      imu.createSnapshot();
+      const msg = topicSpy.publish.args[0];
+
+      // Assert
+      assert.equal(msg[0].msg.orientation_covariance[0], -1);
+      assert.equal(msg[0].msg.angular_velocity_covariance[0], -1);
+      assert.equal(msg[0].msg.linear_acceleration_covariance[0], -1);
     });
   });
 });
