@@ -13,15 +13,7 @@ const ButtonPublisher = require('../../../src/sensors/ButtonPublisher.js');
 global.window = global.window || window;
 const {document} = global.window;
 
-// define dummy ROSLIB in global scope
-global.ROSLIB = {
-  Topic: function() {
-    this.publish = function(msg) {};
-  },
-  Message: function(msg) {
-    this.msg = msg;
-  },
-};
+require('../../globalSetup.js');
 
 describe('Test ButtonPublisher', function() {
   describe('#constructor(topic, button)', function() {
@@ -57,11 +49,6 @@ describe('Test ButtonPublisher', function() {
       assert.throws(() => {
         new ButtonPublisher(new ROSLIB.Topic(), undefined);
       }, expectInvalidButton);
-    });
-    it('please', function() {
-      assert(
-          document.createElement('button') instanceof window.HTMLButtonElement
-      );
     });
     it('should reject any button argument that is not an HTML Button', function() {
       assert.throws(() => {

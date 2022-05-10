@@ -10,5 +10,7 @@ const SENSORLIB = this.SENSORLIB || {
 
 // Add sensors components
 Object.assign(SENSORLIB, require('./sensors'));
+// Add actuator components
+Object.assign(SENSORLIB, require('./actuators'));
 
 global.SENSORLIB = SENSORLIB;

@@ -29,13 +29,20 @@
         </script>
     </head>
     <body>
-        <h1 id='connection_info'></h1>
+        <h1>Connection Info: </h1>
+        <h2 id='connection_info'></h2>
+        <h1>Text Publisher Input</h1>
         <input id="textInput">
+        <h1>Text Subscriber Output</h1>
+        <p id="textOutput"></p>
         <script>
             var onEnterPublisher = new SENSORLIB.TextPublisher(onEnterTopic, document.getElementById("textInput"));
             onEnterPublisher.start();
             var onKeyPublisher = new SENSORLIB.TextPublisher(onKeyPressTopic, document.getElementById("textInput"), {onEnter: false});
             onKeyPublisher.start();
+            var textSubscriber = new SENSORLIB.TextSubscriber(onEnterTopic, document.getElementById("textOutput"));
         </script>
+        <button onclick="textSubscriber.start()">subscribe</button>
+        <button onclick="textSubscriber.stop()">unsubscribe</button>
     </body>
 </html>

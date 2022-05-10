@@ -18,7 +18,11 @@ class IntervalPublisher extends SensorPublisher {
      */
   constructor(topic, hz = 10) {
     super(topic);
-    this.freq = hz;
+    if (hz <= 0) {
+      throw new Error('Cannot construct with frequency ' + hz);
+    } else {
+      this.freq = hz;
+    }
   }
 
   /**
@@ -52,6 +56,11 @@ class IntervalPublisher extends SensorPublisher {
   * @param {Int32} hz frequency to be used.
   */
   setPublishFrequency(hz) {
+    if (hz <= 0) {
+      throw new Error('Publisher cannot publish on frequency ' + hz +
+        ' Hz, frequency remained ' + this.freq);
+    }
+
     this.freq = hz;
     // Restart timer with new frequency
     this.stop();
