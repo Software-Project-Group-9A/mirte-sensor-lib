@@ -34,6 +34,7 @@ describe('Test IMU Publisher', function() {
     const sandbox = sinon.createSandbox();
 
     beforeEach(function() {
+      global.window.alert = function() {};
       sandbox.spy(global.window);
     });
 
@@ -79,7 +80,8 @@ describe('Test IMU Publisher', function() {
      * @param {Number} range the range actual can be off
      */
     function closeTo(actual, expected, range) {
-      console.log('lower bound: ' + (expected - range) + ' upper bound: ' + (expected + range) + ' actual: ' + actual);
+      // console.log('lower bound: ' + (expected - range) +
+      //    ' upper bound: ' + (expected + range) + ' actual: ' + actual);
       assert( expected - range <= actual );
       assert( expected + range >= actual );
     }
