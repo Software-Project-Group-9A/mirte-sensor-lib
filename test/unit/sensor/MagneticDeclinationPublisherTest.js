@@ -7,7 +7,6 @@ const sinon = require('sinon');
 // JSDOM for simulating browser environment
 const {JSDOM} = require('jsdom');
 const {window} = new JSDOM(``, {});
-// const {document} = window;
 
 // Module to test
 const MagneticDeclinationPublisher =
@@ -16,15 +15,7 @@ const MagneticDeclinationPublisher =
 // define JSDOM window in global scope
 global.window = global.window || window;
 
-// create spy for Topic
-global.ROSLIB = {
-  Topic: function() {
-    this.publish = function(msg) {};
-  },
-  Message: function(msg) {
-    this.msg = msg;
-  },
-};
+require('../../globalSetup.js');
 
 describe('Test MagneticDeclinationPublisher', function() {
   describe('#constructor(topic)', function() {
