@@ -2,9 +2,10 @@
     <head>
         <script src="http://static.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
         <script src="http://static.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
-        <script src="RosSensorLib.js"></script>
+        <script src="../build/RosSensorLib.js"></script>
     </head>
     <body>
+        <h1 id='connection_info'></h1>
         <input id="slider" type="range" min=0 max=200 value=50>
         <script>
             /* Connect to ROS*/

@@ -1,4 +1,4 @@
-const SensorPublisher = require('./SensorPublisher.js');
+const IntervalPublisher = require('./IntervalPublisher.js');
 
 /**
  * SliderPublisher publishes the state of an HTML slider element.
@@ -8,7 +8,7 @@ const SensorPublisher = require('./SensorPublisher.js');
  * ROS std_msgs/Int message. The int contained within this message
  * ranges from 0.0 to 1.0.
  */
-class SliderPublisher extends SensorPublisher {
+class SliderPublisher extends IntervalPublisher {
   /**
    * Creates a new ButtonPublisher.
    * @param {ROSLIB.Topic} topic topic to which to publish slider data
@@ -30,19 +30,13 @@ class SliderPublisher extends SensorPublisher {
      */
     this.slider = slider;
 
-    /**
-     * Callback for when slider is adjusted.
-     */
-    this.onInput = function() {
-      const sliderValue = parseInt(this.slider.value);
-      const msg = this.createInt32Msg(sliderValue);
-      this.topic.publish(msg);
-    }.bind(this);
+    // Value to prevent double messages
+    this.oldValue = null;
   }
 
   /**
    * Creates a new ROS std_msgs/Int32 message, containing the supplied integer value.
-   * @param {number} num to include in message
+   * @param {Number} num to include in message
    * @return {ROSLIB.Message} a new ROS std_msgs/Int32 message, containing the supplied boolean value.
    */
   createInt32Msg(num) {
@@ -52,19 +46,20 @@ class SliderPublisher extends SensorPublisher {
   }
 
   /**
-   * Start the publishing of data to ROS.
-   */
-  start() {
-    super.start();
-    this.slider.addEventListener('input', this.onInput);
-  }
+     * Captures sensor-data at current timeframe and
+     * publishes this to the topic instantly.
+     */
+  createSnapshot() {
+    const sliderValue = parseInt(this.slider.value);
 
-  /**
-   * Stop the publishing of data to ROS.
-   */
-  stop() {
-    super.stop();
-    this.slider.removeEventListener('input', this.onInput);
+    if (sliderValue === this.oldValue) {
+      return;
+    }
+
+    this.oldValue = sliderValue;
+
+    const msg = this.createInt32Msg(sliderValue);
+    this.topic.publish(msg);
   }
 }
 
