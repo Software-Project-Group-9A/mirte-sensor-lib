@@ -27,7 +27,6 @@ class MagneticDeclinationPublisher extends IntervalPublisher {
 
     // First need to detect first device orientation.
     this.orientationReady = false;
-    this.motionReady = false;
 
     // Prevents double message publishing
     this.oldCompass = null;
@@ -63,6 +62,9 @@ class MagneticDeclinationPublisher extends IntervalPublisher {
    * in a ROS message and publishes it
    */
   createSnapshot() {
+    if (!this.orientationReady) {
+      throw Error('Orientation is not read yet!');
+    }
     const compass = Math.abs(this.alpha - 360);
     // Check if compass changed
     if (compass === this.oldCompass) {
