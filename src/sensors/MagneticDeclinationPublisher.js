@@ -41,7 +41,7 @@ class MagneticDeclinationPublisher extends IntervalPublisher {
 
   /**
    * Callback for when error occurs while reading sensor data.
-   * @param {*} event containing error info.
+   * @param {Error} event containing error info.
    */
   onError(event) {
     console.log('Error: ' + event);
@@ -50,9 +50,9 @@ class MagneticDeclinationPublisher extends IntervalPublisher {
 
   /**
    * Callback for angle calculation
-   * @param {*} latitude from coordinates of Geolocation
-   * @param {*} longitude from coordinates of Geolocation
-   * @return {Int} angle between current position and the North
+   * @param {Number} latitude from coordinates of Geolocation
+   * @param {Number} longitude from coordinates of Geolocation
+   * @return {Number} angle between current position and the North
    */
   calcDegreeToPoint(latitude, longitude) {
     // North pole
@@ -94,7 +94,7 @@ class MagneticDeclinationPublisher extends IntervalPublisher {
      * Callback for reading orientation data.
      * context of object that called callback.
      *
-     * @param {*} event object containing sensor data.
+     * @param {DeviceOrientationEvent} event object containing sensor data.
      */
   onReadOrientation(event) {
     this.alpha = event.alpha;
