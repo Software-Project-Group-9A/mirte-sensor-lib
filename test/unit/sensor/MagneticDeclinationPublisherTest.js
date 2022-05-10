@@ -140,7 +140,7 @@ describe('Test MagneticDeclinationPublisher', function() {
       assert.equal(topic.publish.callCount, 1);
       assert.deepEqual(topic.publish.getCall(0).args[0], expectedMessage);
     });
-    it('should not create double snapshot', function() {
+    it('should not create duplicate snapshot', function() {
       const topic = sinon.spy(new ROSLIB.Topic());
       const publisher = sinon.spy(new MagneticDeclinationPublisher(topic));
 
