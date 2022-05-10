@@ -7,10 +7,6 @@
 // Dependencies
 const IntervalPublisher = require('./IntervalPublisher.js');
 
-
-let compass;
-let pointDegree;
-
 /**
  * MagneticDeclinationPublisher publishes the rotation as a compass
  * By default it publishes data at the interval rate
@@ -32,6 +28,9 @@ class MagneticDeclinationPublisher extends IntervalPublisher {
     // First need to detect first device orientation.
     this.orientationReady = false;
     this.motionReady = false;
+
+    // Prevents double message publishing
+    this.oldCompass;
 
     // No support for IOS yet
     window.addEventListener('deviceorientation', (event) => {
@@ -83,7 +82,7 @@ class MagneticDeclinationPublisher extends IntervalPublisher {
    */
   locationHandler(position) {
     const {latitude, longitude} = position.coords;
-    pointDegree = this.calcDegreeToPoint(latitude, longitude);
+    let pointDegree = this.calcDegreeToPoint(latitude, longitude);
 
     if (pointDegree < 0) {
       pointDegree = pointDegree + 360;
@@ -110,7 +109,13 @@ class MagneticDeclinationPublisher extends IntervalPublisher {
    * in a ROS message and publishes it
    */
   createSnapshot() {
-    compass = Math.abs(this.alpha - 360);
+    const compass = Math.abs(this.alpha - 360);
+    // Check if compass changed
+    if (compass == this.oldCompass) {
+      return;
+    }
+
+    this.oldCompass = compass;
 
     const MagneticDeclinationMessage = new ROSLIB.Message({
       data: compass,

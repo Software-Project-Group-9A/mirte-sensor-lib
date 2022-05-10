@@ -142,35 +142,69 @@ describe('Test MagneticDeclinationPublisher', function() {
 
 
   describe('#createSnapshot()', function() {
-    const topic = sinon.spy(new ROSLIB.Topic());
-    const publisher = sinon.spy(new MagneticDeclinationPublisher(topic));
+    it('should create snapshot', function() {
+      const topic = sinon.spy(new ROSLIB.Topic());
+      const publisher = sinon.spy(new MagneticDeclinationPublisher(topic));
 
-    global.eventParam = {
-      'alpha': 0,
-      'beta': 1,
-      'gamma': 1,
-    };
+      global.eventParam = {
+        'alpha': 0,
+        'beta': 1,
+        'gamma': 1,
+      };
 
-    const mockGeolocation = {
-      getCurrentPosition: function() {
-        position = {
-          'coords': {
-            'latitude': 52.008254,
-            'longitude': 4.370750,
-          },
-        };
-        return position;
-      },
-    };
+      const mockGeolocation = {
+        getCurrentPosition: function() {
+          position = {
+            'coords': {
+              'latitude': 52.008254,
+              'longitude': 4.370750,
+            },
+          };
+          return position;
+        },
+      };
 
-    global.window.navigator.geolocation = mockGeolocation;
+      global.window.navigator.geolocation = mockGeolocation;
 
-    publisher.start();
-    publisher.onReadOrientation(eventParam);
-    publisher.createSnapshot();
+      publisher.onReadOrientation(eventParam);
+      publisher.createSnapshot();
 
-    const expectedMessage = new ROSLIB.Message({data: 360});
-    assert.equal(topic.publish.callCount, 1);
-    assert.deepEqual(topic.publish.getCall(0).args[0], expectedMessage);
+      const expectedMessage = new ROSLIB.Message({data: 360});
+      assert.equal(topic.publish.callCount, 1);
+      assert.deepEqual(topic.publish.getCall(0).args[0], expectedMessage);
+    });
+    it('should not create double snapshot', function() {
+      const topic = sinon.spy(new ROSLIB.Topic());
+      const publisher = sinon.spy(new MagneticDeclinationPublisher(topic));
+
+      global.eventParam = {
+        'alpha': 0,
+        'beta': 1,
+        'gamma': 1,
+      };
+
+      const mockGeolocation = {
+        getCurrentPosition: function() {
+          position = {
+            'coords': {
+              'latitude': 52.008254,
+              'longitude': 4.370750,
+            },
+          };
+          return position;
+        },
+      };
+
+      global.window.navigator.geolocation = mockGeolocation;
+
+      publisher.onReadOrientation(eventParam);
+      publisher.createSnapshot();
+      publisher.onReadOrientation(eventParam);
+      publisher.createSnapshot();
+
+      const expectedMessage = new ROSLIB.Message({data: 360});
+      assert.equal(topic.publish.callCount, 1);
+      assert.deepEqual(topic.publish.getCall(0).args[0], expectedMessage);
+    });
   });
 });
