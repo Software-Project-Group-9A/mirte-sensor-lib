@@ -70,39 +70,6 @@ describe('Test MagneticDeclinationPublisher', function() {
     });
   });
 
-  describe('#calcDegreeToPoint()', function() {
-    it('should calculate the degree between point and current location',
-        function() {
-          const topic = sinon.spy(new ROSLIB.Topic());
-          const publisher = sinon.spy(new MagneticDeclinationPublisher(topic));
-
-          publisher.start();
-
-          assert.equal(publisher.calcDegreeToPoint(86.5, 164.04), 0);
-        });
-  });
-
-
-  describe('#locationHandler()', function() {
-    it('should handle the location',
-        function() {
-          const topic = sinon.spy(new ROSLIB.Topic());
-          const publisher = sinon.spy(new MagneticDeclinationPublisher(topic));
-
-          publisher.start();
-
-          global.position = {
-            'coords': {
-              'latitude': 52.008254,
-              'longitude': 4.370750,
-            },
-          };
-          publisher.locationHandler(position);
-
-          assert.equal(publisher.calcDegreeToPoint.callCount, 1);
-        });
-  });
-
   describe('#onReadOrientation()', function() {
     it('should find the current location',
         function() {
@@ -134,8 +101,6 @@ describe('Test MagneticDeclinationPublisher', function() {
           publisher.onReadOrientation(eventParam);
 
           assert.equal(publisher.alpha, 1);
-          assert.equal(publisher.beta, 1);
-          assert.equal(publisher.gamma, 1);
           assert(publisher.onReadOrientation);
         });
   });
