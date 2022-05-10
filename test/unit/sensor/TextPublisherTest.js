@@ -15,15 +15,7 @@ const TextPublisher = require('../../../src/sensors/TextPublisher.js');
 global.window = global.window || window;
 const {document} = global.window;
 
-// create spy for Topic
-global.ROSLIB = {
-  Topic: function() {
-    this.publish = function(msg) {};
-  },
-  Message: function(msg) {
-    this.msg = msg;
-  },
-};
+require('../../globalSetup.js');
 
 describe('Test TextPublisher', function() {
   describe('#constructor(topic, inputElement)', function() {

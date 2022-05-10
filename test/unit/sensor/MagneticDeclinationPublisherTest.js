@@ -7,7 +7,6 @@ const sinon = require('sinon');
 // JSDOM for simulating browser environment
 const {JSDOM} = require('jsdom');
 const {window} = new JSDOM(``, {});
-// const {document} = window;
 
 // Module to test
 const MagneticDeclinationPublisher =
@@ -16,15 +15,7 @@ const MagneticDeclinationPublisher =
 // define JSDOM window in global scope
 global.window = global.window || window;
 
-// create spy for Topic
-global.ROSLIB = {
-  Topic: function() {
-    this.publish = function(msg) {};
-  },
-  Message: function(msg) {
-    this.msg = msg;
-  },
-};
+require('../../globalSetup.js');
 
 describe('Test MagneticDeclinationPublisher', function() {
   describe('#constructor(topic)', function() {
@@ -70,39 +61,6 @@ describe('Test MagneticDeclinationPublisher', function() {
     });
   });
 
-  describe('#calcDegreeToPoint()', function() {
-    it('should calculate the degree between point and current location',
-        function() {
-          const topic = sinon.spy(new ROSLIB.Topic());
-          const publisher = sinon.spy(new MagneticDeclinationPublisher(topic));
-
-          publisher.start();
-
-          assert.equal(publisher.calcDegreeToPoint(86.5, 164.04), 0);
-        });
-  });
-
-
-  describe('#locationHandler()', function() {
-    it('should handle the location',
-        function() {
-          const topic = sinon.spy(new ROSLIB.Topic());
-          const publisher = sinon.spy(new MagneticDeclinationPublisher(topic));
-
-          publisher.start();
-
-          global.position = {
-            'coords': {
-              'latitude': 52.008254,
-              'longitude': 4.370750,
-            },
-          };
-          publisher.locationHandler(position);
-
-          assert.equal(publisher.calcDegreeToPoint.callCount, 1);
-        });
-  });
-
   describe('#onReadOrientation()', function() {
     it('should find the current location',
         function() {
@@ -134,14 +92,23 @@ describe('Test MagneticDeclinationPublisher', function() {
           publisher.onReadOrientation(eventParam);
 
           assert.equal(publisher.alpha, 1);
-          assert.equal(publisher.beta, 1);
-          assert.equal(publisher.gamma, 1);
           assert(publisher.onReadOrientation);
         });
   });
 
 
   describe('#createSnapshot()', function() {
+    /**
+     * helper functions for checking whether correct error is raised
+     * @param {*} error
+     * @return {bool}
+     */
+    function orientationNotReady(error) {
+      assert.equal(error.message,
+          'Orientation is not read yet!');
+      return true;
+    }
+
     it('should create snapshot', function() {
       const topic = sinon.spy(new ROSLIB.Topic());
       const publisher = sinon.spy(new MagneticDeclinationPublisher(topic));
@@ -205,6 +172,37 @@ describe('Test MagneticDeclinationPublisher', function() {
       const expectedMessage = new ROSLIB.Message({data: 360});
       assert.equal(topic.publish.callCount, 1);
       assert.deepEqual(topic.publish.getCall(0).args[0], expectedMessage);
+    });
+    it('should not create snapshot when orientation is not read yet', function() {
+      const topic = sinon.spy(new ROSLIB.Topic());
+      const publisher = sinon.spy(new MagneticDeclinationPublisher(topic));
+
+      global.eventParam = {
+        'alpha': 0,
+        'beta': 1,
+        'gamma': 1,
+      };
+
+      const mockGeolocation = {
+        getCurrentPosition: function() {
+          position = {
+            'coords': {
+              'latitude': 52.008254,
+              'longitude': 4.370750,
+            },
+          };
+          return position;
+        },
+      };
+
+      global.window.navigator.geolocation = mockGeolocation;
+
+      assert.throws(
+          () => {
+            publisher.createSnapshot();
+          },
+          orientationNotReady,
+      );
     });
   });
 });

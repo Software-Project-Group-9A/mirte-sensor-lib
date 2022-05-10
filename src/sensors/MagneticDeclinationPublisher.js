@@ -27,7 +27,6 @@ class MagneticDeclinationPublisher extends IntervalPublisher {
 
     // First need to detect first device orientation.
     this.orientationReady = false;
-    this.motionReady = false;
 
     // Prevents double message publishing
     this.oldCompass = null;
@@ -48,48 +47,6 @@ class MagneticDeclinationPublisher extends IntervalPublisher {
   }
 
   /**
-   * Helper method for angle calculation
-   * @param {Number} latitude from coordinates of Geolocation
-   * @param {Number} longitude from coordinates of Geolocation
-   * @return {Number} angle between current position and the North
-   */
-  calcDegreeToPoint(latitude, longitude) {
-    // North pole
-    const point = {
-      lat: 86.5,
-      lng: 164.04,
-    };
-
-    const phiK = (point.lat * Math.PI) / 180.0;
-    const lambdaK = (point.lng * Math.PI) / 180.0;
-    const phi = (latitude * Math.PI) / 180.0;
-    const lambda = (longitude * Math.PI) / 180.0;
-    const psi =
-      (180.0 / Math.PI) *
-      Math.atan2(
-          Math.sin(lambdaK - lambda),
-          Math.cos(phi) * Math.tan(phiK) -
-          Math.sin(phi) * Math.cos(lambdaK - lambda));
-    return Math.round(psi);
-  }
-
-  /**
-   * Gets the location and puts in variables
-   *
-   * Then calculates the degeree and makes sure
-   * it is between 0 and 360
-   * @param {Geolocation} position
-   */
-  locationHandler(position) {
-    const {latitude, longitude} = position.coords;
-    let pointDegree = this.calcDegreeToPoint(latitude, longitude);
-
-    if (pointDegree < 0) {
-      pointDegree = pointDegree + 360;
-    }
-  }
-
-  /**
      * Callback for reading orientation data.
      * context of object that called callback.
      *
@@ -97,11 +54,7 @@ class MagneticDeclinationPublisher extends IntervalPublisher {
      */
   onReadOrientation(event) {
     this.alpha = event.alpha;
-    this.beta = event.beta;
-    this.gamma = event.gamma;
     this.orientationReady = true;
-
-    window.navigator.geolocation.getCurrentPosition(this.locationHandler);
   }
 
   /**
@@ -109,6 +62,9 @@ class MagneticDeclinationPublisher extends IntervalPublisher {
    * in a ROS message and publishes it
    */
   createSnapshot() {
+    if (!this.orientationReady) {
+      throw Error('Orientation is not read yet!');
+    }
     const compass = Math.abs(this.alpha - 360);
     // Check if compass changed
     if (compass === this.oldCompass) {
