@@ -15,15 +15,7 @@ const TextPublisher = require('../../../src/sensors/TextPublisher.js');
 global.window = global.window || window;
 const {document} = global.window;
 
-// create spy for Topic
-global.ROSLIB = {
-  Topic: function() {
-    this.publish = function(msg) {};
-  },
-  Message: function(msg) {
-    this.msg = msg;
-  },
-};
+require('../../globalSetup.js');
 
 describe('Test TextPublisher', function() {
   describe('#constructor(topic, inputElement)', function() {
@@ -114,7 +106,7 @@ describe('Test TextPublisher', function() {
   });
 
   describe('#start()', function() {
-    it('should subscribe onKeyPress callback to correct events',
+    it('should subscribe onKeyUp callback to correct events',
         function() {
           const inputElement = sinon.spy(document.createElement('input'));
           const topic = new ROSLIB.Topic();
@@ -125,6 +117,21 @@ describe('Test TextPublisher', function() {
           assert.equal(inputElement.addEventListener.callCount, 1);
           assert(inputElement.addEventListener.calledWith('keyup',
               publisher.onKeyUp));
+        });
+  });
+
+  describe('#start()', function() {
+    it('should subscribe onInput callback to correct events',
+        function() {
+          const inputElement = sinon.spy(document.createElement('input'));
+          const topic = new ROSLIB.Topic();
+          const publisher = new TextPublisher(topic, inputElement, {onEnter: false});
+
+          publisher.start();
+
+          assert.equal(inputElement.addEventListener.callCount, 1);
+          assert(inputElement.addEventListener.calledWith('input',
+              publisher.onInput));
         });
   });
 
@@ -141,9 +148,10 @@ describe('Test TextPublisher', function() {
 
       publisher.start();
       inputElement.dispatchEvent(new window.Event('keyup'));
+      inputElement.dispatchEvent(new window.Event('input'));
 
       const expectedMessage = new ROSLIB.Message({data: 'test text'});
-      assert.equal(publisher.onKeyUp.callCount, 1);
+      assert.equal(publisher.onInput.callCount, 1);
       assert.equal(topic.publish.callCount, 1);
       assert.deepEqual(topic.publish.getCall(0).args[0], expectedMessage);
     });
@@ -161,6 +169,7 @@ describe('Test TextPublisher', function() {
 
       publisher.start();
       inputElement.dispatchEvent(new window.Event('keyup'));
+      inputElement.dispatchEvent(new window.Event('input'));
 
       assert.equal(publisher.onKeyUp.callCount, 1);
       assert.equal(topic.publish.callCount, 0);
@@ -179,6 +188,7 @@ describe('Test TextPublisher', function() {
 
       publisher.start();
       const keyDownEvent = new window.Event('keyup');
+      inputElement.dispatchEvent(new window.Event('input'));
       keyDownEvent.key = 'Enter';
       inputElement.dispatchEvent(keyDownEvent);
 
@@ -198,6 +208,7 @@ describe('Test TextPublisher', function() {
       publisher.start();
       publisher.stop();
       inputElement.dispatchEvent(new window.Event('keyup'));
+      inputElement.dispatchEvent(new window.Event('input'));
 
       assert.equal(topic.publish.callCount, 0);
     });

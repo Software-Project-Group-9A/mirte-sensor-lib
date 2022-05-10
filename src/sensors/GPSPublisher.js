@@ -28,11 +28,17 @@ class GPSPublisher extends IntervalPublisher {
    */
   constructor(topic, hz) {
     super(topic, hz);
+    this.topic.messageType = GPSPublisher.messageType;
 
-    if (!navigator.geolocation) {
+    // check support for API
+    if (!window.navigator.geolocation) {
       throw new NotSupportedError('Unable to create GPSPublisher, ' +
         'Geolocation API not supported');
     }
+  }
+
+  static get messageType() {
+    return 'sensor_msgs/NavSatFix';
   }
 
   /**
@@ -52,7 +58,7 @@ class GPSPublisher extends IntervalPublisher {
     const successCallback = this.onSucces.bind(this);
     const errorCallback = this.onError.bind(this);
 
-    this.#watchId = navigator.geolocation.watchPosition(
+    this.#watchId = window.navigator.geolocation.watchPosition(
       successCallback,
       errorCallback);
   }
@@ -63,7 +69,7 @@ class GPSPublisher extends IntervalPublisher {
   stop() {
     super.stop();
 
-    navigator.geolocation.clearWatch(this.#watchId);
+    window.navigator.geolocation.clearWatch(this.#watchId);
   }
 
   /**
