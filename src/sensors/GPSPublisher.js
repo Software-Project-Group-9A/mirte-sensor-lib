@@ -10,11 +10,6 @@ const NotSupportedError = require('  ../error/NotSupportedError');
  */
 class GPSPublisher extends IntervalPublisher {
   /**
-   * Whether the publisher has started publisher
-   */
-  #hasStarted;
-
-  /**
    * Id of geolocation watch callback
    */
   #watchId;
@@ -51,29 +46,18 @@ class GPSPublisher extends IntervalPublisher {
    * Start the publishing of data to ROS with frequency of <freq> Hz.
    */
   start() {
-    if (this.hasStarted) {
-      throw new EvalError('Publisher was already started');
-    }
+    super.start();
 
     this.#watchId = navigator.geolocation.watchPosition(
-        this.onSuccess.bind(this),
-        this.onError.bind(this)/* , options?*/);
-
-    super.start();
-    this.#hasStarted = true;
+      this.onSuccess.bind(this),
+      this.onError.bind(this)/* , options?*/);
   }
 
   /**
    *
    */
   stop() {
-    if (this.hasStarted) {
-      throw new EvalError('Publisher was not yet started');
-    }
-
     navigator.geolocation.clearWatch(this.#watchId);
-    super.stop();
-    this.#hasStarted = false;
   }
 
   /**
