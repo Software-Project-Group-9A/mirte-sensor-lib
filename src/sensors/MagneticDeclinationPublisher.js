@@ -48,7 +48,7 @@ class MagneticDeclinationPublisher extends IntervalPublisher {
   }
 
   /**
-   * Callback for angle calculation
+   * Helper method for angle calculation
    * @param {Number} latitude from coordinates of Geolocation
    * @param {Number} longitude from coordinates of Geolocation
    * @return {Number} angle between current position and the North
