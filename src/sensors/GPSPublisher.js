@@ -1,5 +1,6 @@
 const IntervalPublisher = require('./IntervalPublisher');
 const NotSupportedError = require('../error/NotSupportedError');
+const assert = require('assert');
 
 /**
  * GPSPublisher publishes the geolocation data of the

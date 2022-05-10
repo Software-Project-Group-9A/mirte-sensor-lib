@@ -18,12 +18,12 @@ const {document} = global.window;
 require('../../globalSetup.js');
 
 function createGeolocationMock() {
-  return sinon.mock(
-    {
-      watchPosition: function(succes, error, options) {},
-      clearWatch: function(watchId) {},
-    }
-  );
+  const geolocation = {
+    watchPosition: function(success, error, options) { return 1;},
+    clearWatch: function(watchId) {},
+  };
+
+  return sinon.spy(geolocation);
 }
 
 describe("GPSPublisher", function() {
@@ -58,14 +58,30 @@ describe("GPSPublisher", function() {
   });
   describe("#start", function() {
     it("should add the correct callbacks to geolocation", function() {
-      global.window.navigator.geolocation = createGeolocationMock();
+      const geolocation = createGeolocationMock();
+      global.window.navigator.geolocation = geolocation; 
       const topic = new ROSLIB.Topic();
       const frequency = 10;
 
-      //assert.equal(global.window.navigator.geolocation, false);
+      const publisher = new GPSPublisher(topic, frequency);
+      publisher.start();
+
+      assert.equal(geolocation.watchPosition.callCount, 1);
+    });
+  });
+  describe("#start", function() {
+    it("should add remove the correct callbacks from geolocation", function() {
+      const geolocation = createGeolocationMock();
+      global.window.navigator.geolocation = geolocation; 
+      const topic = new ROSLIB.Topic();
+      const frequency = 10;
 
       const publisher = new GPSPublisher(topic, frequency);
       publisher.start();
+      publisher.stop();
+
+      assert.equal(geolocation.clearWatch.callCount, 1);
+      assert.equal(geolocation.clearWatch.lastCall.firstArg, 1);
     });
   });
 
