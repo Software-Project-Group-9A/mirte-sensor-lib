@@ -30,7 +30,7 @@ class MagneticDeclinationPublisher extends IntervalPublisher {
     this.motionReady = false;
 
     // Prevents double message publishing
-    this.oldCompass;
+    this.oldCompass = null;
 
     // No support for IOS yet
     window.addEventListener('deviceorientation', (event) => {
@@ -111,7 +111,7 @@ class MagneticDeclinationPublisher extends IntervalPublisher {
   createSnapshot() {
     const compass = Math.abs(this.alpha - 360);
     // Check if compass changed
-    if (compass == this.oldCompass) {
+    if (compass === this.oldCompass) {
       return;
     }
 
