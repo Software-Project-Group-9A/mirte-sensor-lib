@@ -42,7 +42,7 @@ describe('Test Subscriber', function() {
           },
           (error) => {
             return false;
-          },
+          }
       );
 
       assert.equal(subscriber.topic, topic);

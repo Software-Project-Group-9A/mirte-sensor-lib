@@ -51,7 +51,7 @@ describe('Test IntervalPublisher', function() {
           },
           (error) => {
             return false;
-          },
+          }
       );
 
       assert.equal(publisher.freq, 10);
@@ -66,7 +66,7 @@ describe('Test IntervalPublisher', function() {
           },
           (error) => {
             return false;
-          },
+          }
       );
 
       assert.equal(publisher.freq, 20);
