@@ -74,9 +74,9 @@ describe('Test IMU Publisher', function() {
   describe('#createSnapshot()', function() {
     /**
      * Asserts that acual is in range of expected
-     * @param {*} actual the value found during the test
-     * @param {*} expected the value that is expected
-     * @param {*} range the range actual can be off
+     * @param {Number} actual the value found during the test
+     * @param {Number} expected the value that is expected
+     * @param {Number} range the range actual can be off
      */
     function closeTo(actual, expected, range) {
       console.log('lower bound: ' + (expected - range) + ' upper bound: ' + (expected + range) + ' actual: ' + actual);
