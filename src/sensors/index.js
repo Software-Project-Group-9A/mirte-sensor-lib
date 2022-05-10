@@ -8,4 +8,5 @@ module.exports = {
   IMUPublisher: require('./IMUPublisher'),
   SliderPublisher: require('./SliderPublisher'),
   TextPublisher: require('./TextPublisher'),
+  MagneticDeclinationPublisher: require('./MagneticDeclinationPublisher'),
 };

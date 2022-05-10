@@ -102,62 +102,13 @@ describe('SliderPublisher', function() {
     });
   });
 
-  describe('#start()', function() {
-    it('should subscribe the onInput callback to the correct event', function() {
-      const slider = sinon.spy(createSlider());
-      const publisher = new SliderPublisher(new ROSLIB.Topic(), slider);
-
-      publisher.start();
-
-      assert.equal(slider.addEventListener.callCount, 1);
-      assert(slider.addEventListener.calledWith('input', publisher.onInput));
-    });
-    it('should result in onInput being called at input event', function() {
-      const slider = createSlider();
-      const publisher = sinon.spy(
-          new SliderPublisher(new ROSLIB.Topic(), slider)
-      );
-
-      publisher.start();
-      slider.dispatchEvent(new window.Event('input'));
-
-      assert.equal(publisher.onInput.callCount, 1);
-    });
-  });
-
-  describe('#stop()', function() {
-    it('should remove the onInput callback from the correct event', function() {
-      const slider = sinon.spy(createSlider());
-      const publisher = new SliderPublisher(new ROSLIB.Topic(), slider);
-
-      publisher.start();
-      publisher.stop();
-
-      assert.equal(slider.removeEventListener.callCount, 1);
-      assert(slider.removeEventListener.calledWith('input', publisher.onInput));
-    });
-    it('should prevent onInput from being called at input event', function() {
-      const slider = createSlider();
-      const publisher = sinon.spy(
-          new SliderPublisher(new ROSLIB.Topic(), slider)
-      );
-
-      publisher.start();
-      publisher.stop();
-      slider.dispatchEvent(new window.Event('input'));
-
-      assert.equal(publisher.onInput.callCount, 0);
-    });
-  });
-
-  describe('#onInput()', function() {
-    it('should publish an std_msgs/Int32 message with the slider value to topic upon callback', function() {
+  describe('#createSnapshot()', function() {
+    it('should publish an std_msgs/Int32 message with the slider value to topic', function() {
       const slider = createSlider(0, 100, 50);
       const topic = sinon.spy(new ROSLIB.Topic());
       const publisher = sinon.spy(new SliderPublisher(topic, slider));
 
-      publisher.start();
-      slider.dispatchEvent(new window.Event('input'));
+      publisher.createSnapshot();
 
       const expectedMessage = new ROSLIB.Message({data: 50});
       assert.equal(topic.publish.callCount, 1);
@@ -168,8 +119,8 @@ describe('SliderPublisher', function() {
       const topic = sinon.spy(new ROSLIB.Topic(0, 100, 50));
       const publisher = sinon.spy(new SliderPublisher(topic, slider));
 
-      publisher.start();
-      slider.dispatchEvent(new window.Event('input'));
+      publisher.createSnapshot();
+
       const publishedMessage = topic.publish.getCall(0).args[0];
 
       assert.equal(typeof publishedMessage.msg.data, 'number');
@@ -179,16 +130,29 @@ describe('SliderPublisher', function() {
       const topic = sinon.spy(new ROSLIB.Topic(0, 100, 50));
       const publisher = sinon.spy(new SliderPublisher(topic, slider));
 
-      publisher.start();
-      slider.dispatchEvent(new window.Event('input'));
+      publisher.createSnapshot();
+
       slider.value = 75;
-      slider.dispatchEvent(new window.Event('input'));
+
+      publisher.createSnapshot();
 
       const expectedFirstMessage = new ROSLIB.Message({data: 50});
       const expectedSecondMessage = new ROSLIB.Message({data: 75});
       assert.equal(topic.publish.callCount, 2);
       assert.deepEqual(topic.publish.getCall(0).args[0], expectedFirstMessage);
       assert.deepEqual(topic.publish.getCall(1).args[0], expectedSecondMessage);
+    });
+    it('should not publish double messages', function() {
+      const slider = createSlider();
+      const topic = sinon.spy(new ROSLIB.Topic(0, 100, 50));
+      const publisher = sinon.spy(new SliderPublisher(topic, slider));
+
+      publisher.createSnapshot();
+      publisher.createSnapshot();
+
+      const expectedFirstMessage = new ROSLIB.Message({data: 50});
+      assert.equal(topic.publish.callCount, 1);
+      assert.deepEqual(topic.publish.getCall(0).args[0], expectedFirstMessage);
     });
   });
 });
