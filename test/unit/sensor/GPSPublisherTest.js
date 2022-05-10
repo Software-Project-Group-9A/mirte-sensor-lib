@@ -16,6 +16,15 @@ global.window = global.window || window;
 
 require('../../globalSetup.js');
 
+// const clock;
+// // fake timer
+// if (global.Data.isFake === true) {
+  
+// } else {
+//   clock = 
+// }
+
+
 /**
  * Utility function for creating geolocation mock
  * @return {Sinon.spy} geolocation spy
@@ -23,6 +32,7 @@ require('../../globalSetup.js');
 function createGeolocationSpy() {
   const geolocation = {
     watchPosition: function(success, error, options) {
+      this.onSuccess = success;
       return 1;
     },
     clearWatch: function(watchId) {},
@@ -32,7 +42,7 @@ function createGeolocationSpy() {
 }
 
 describe('GPSPublisher', function() {
-  describe('#constructor', function() {
+  describe('#constructor(topic, freq)', function() {
     it('should create a new instance if the geolocation API is supported', function() {
       // mock navigator instance
       global.window.navigator.geolocation = createGeolocationSpy();
@@ -61,7 +71,7 @@ describe('GPSPublisher', function() {
       assert.throws(() => new GPSPublisher(topic, frequency), NotSupportedError);
     });
   });
-  describe('#start', function() {
+  describe('#start()', function() {
     it('should add the correct callbacks to geolocation', function() {
       const geolocation = createGeolocationSpy();
       global.window.navigator.geolocation = geolocation;
@@ -74,7 +84,7 @@ describe('GPSPublisher', function() {
       assert.equal(geolocation.watchPosition.callCount, 1);
     });
   });
-  describe('#start', function() {
+  describe('#start()', function() {
     it('should add remove the correct callbacks from geolocation', function() {
       const geolocation = createGeolocationSpy();
       global.window.navigator.geolocation = geolocation;
@@ -87,6 +97,23 @@ describe('GPSPublisher', function() {
 
       assert.equal(geolocation.clearWatch.callCount, 1);
       assert.equal(geolocation.clearWatch.lastCall.firstArg, 1);
+    });
+  });
+  describe('#createSnapshot()', function() {
+    it('should publish no message if there is not yet any location data', function() {
+      const clock = sinon.useFakeTimers();
+      const geolocation = createGeolocationSpy();
+      global.window.navigator.geolocation = geolocation;
+      const topic = sinon.spy(new ROSLIB.Topic());
+      const frequency = 10;
+
+      const publisher = new GPSPublisher(topic, frequency);
+      publisher.start();
+
+      clock.tick(200);
+
+      assert.equal(topic.publish.callCount, 1);
+      clock.restore();
     });
   });
 

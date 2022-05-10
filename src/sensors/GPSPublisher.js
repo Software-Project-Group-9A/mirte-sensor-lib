@@ -71,7 +71,6 @@ class GPSPublisher extends IntervalPublisher {
    */
   stop() {
     super.stop();
-
     window.navigator.geolocation.clearWatch(this.#watchId);
   }
 
@@ -109,7 +108,8 @@ class GPSPublisher extends IntervalPublisher {
   }
 
   /**
-   *
+   * Creates a snapshot of the current position of the device, and publishes
+   * this data as a sensor_msgs/NavSatFix message.
    */
   createSnapshot() {
     // position has not yet been set, do not publish
