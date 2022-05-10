@@ -7,4 +7,5 @@ module.exports = {
   SliderPublisher: require('./SliderPublisher'),
   ButtonPublisher: require('./ButtonPublisher'),
   TextPublisher: require('./TextPublisher'),
+  MagneticDeclinationPublisher: require('./MagneticDeclinationPublisher'),
 };
