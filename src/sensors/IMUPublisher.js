@@ -6,14 +6,10 @@
 const THREE = require('three');
 const IntervalPublisher = require('./IntervalPublisher.js');
 
-// Important documentation
-// http://docs.ros.org/en/lunar/api/sensor_msgs/html/msg/Imu.html
-
-// Great example used
-// http://wiki.ros.org/roslibjs/Tutorials/Publishing%20video%20and%20IMU%20data%20with%20roslibjs
-
 /**
  * Object that publishes IMU sensor data to the provided ROS topic.
+ * Uses the following great example:
+ * {@link http://wiki.ros.org/roslibjs/Tutorials/Publishing%20video%20and%20IMU%20data%20with%20roslibjs}
  */
 class IMUPublisher extends IntervalPublisher {
   /**
@@ -21,7 +17,8 @@ class IMUPublisher extends IntervalPublisher {
      * @param {Topic} topic a Topic from RosLibJS
      */
   constructor(topic) {
-    super(topic, 2);
+    // Frequency 5 used by estimation, could be further researched in the future.
+    super(topic, 5);
     this.topic = topic;
 
     // Flags used to detect whether callbacks
@@ -89,7 +86,8 @@ class IMUPublisher extends IntervalPublisher {
   /**
      * Create snapshot creates snapshot of IMU data and publishes this as a
      * ROS message to this.
-     * Resource used: http://wiki.ros.org/roslibjs/Tutorials/Publishing%20video%20and%20IMU%20data%20with%20roslibjs
+     * Resource used:
+     * {@link http://wiki.ros.org/roslibjs/Tutorials/Publishing%20video%20and%20IMU%20data%20with%20roslibjs}
      */
   createSnapshot() {
     // Convert rotation into quaternion.
