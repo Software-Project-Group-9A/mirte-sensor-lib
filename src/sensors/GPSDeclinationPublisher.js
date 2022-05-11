@@ -26,7 +26,7 @@ class GPSDeclinationPublisher extends IntervalPublisher {
   constructor(topic, latitude, longitude) {
     super(topic);
 
-    if (!((typeof latitude == 'number') && (typeof longitude == 'number'))) {
+    if (!((typeof latitude === 'number') && (typeof longitude === 'number'))) {
       throw new TypeError('Coördinates were not of type Number');
     }
 

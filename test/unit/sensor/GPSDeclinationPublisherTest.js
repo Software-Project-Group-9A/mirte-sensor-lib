@@ -60,31 +60,97 @@ describe('Test GPSDeclinationPublisher', function() {
     });
   });
 
-  /** TODO 
   describe('#calcDegreeToPoint(latitude, longitude)', function() {
-    it('...',
+    it('should calculate the degree between point and current location',
         function() {
-          
+          const topic = sinon.spy(new ROSLIB.Topic());
+          const publisher = sinon.spy(new GPSDeclinationPublisher(topic, 1, 1));
+
+          publisher.start();
+
+          assert.equal(publisher.calcDegreeToPoint(1, 1), 0);
         });
   });
 
   describe('#locationHandler(position)', function() {
-    it('...',
+    it('should handle the location',
         function() {
-          
+          const topic = sinon.spy(new ROSLIB.Topic());
+          const publisher = sinon.spy(new GPSDeclinationPublisher(topic, 1, 1));
+
+          publisher.start();
+
+          global.position = {
+            'coords': {
+              'latitude': 52.008254,
+              'longitude': 4.370750,
+            },
+          };
+          publisher.locationHandler(position);
+
+          assert.equal(publisher.calcDegreeToPoint.callCount, 1);
         });
   });
 
   describe('#createSnapshot()', function() {
     it('should create snapshot', function() {
-      
+      const topic = sinon.spy(new ROSLIB.Topic());
+      const publisher = sinon.spy(new GPSDeclinationPublisher(topic, 1, 1));
+
+      global.geoPos = {
+        'coords': {
+          'latitude': -10,
+          'longitude': 1,
+        },
+      };
+
+      const mockGeolocation = {
+        getCurrentPosition: function() {
+          publisher.locationHandler(geoPos);
+        },
+      };
+
+      global.window.navigator.geolocation = mockGeolocation;
+
+      publisher.createSnapshot();
+
+      assert.equal(publisher.calcDegreeToPoint.callCount, 1);
+      assert.equal(publisher.locationHandler.callCount, 1);
+      assert.equal(publisher.createSnapshot.callCount, 1);
+
+      const expectedMessage = new ROSLIB.Message({data: 0});
+      assert.equal(topic.publish.callCount, 1);
+      assert.deepEqual(topic.publish.getCall(0).args[0], expectedMessage);
     });
     it('should not create double snapshot', function() {
-      
-    });
-    it('should not create snapshot when orientation is not read yet', function() {
-      
+      const topic = sinon.spy(new ROSLIB.Topic());
+      const publisher = sinon.spy(new GPSDeclinationPublisher(topic, 1, 1));
+
+      global.geoPos = {
+        'coords': {
+          'latitude': -10,
+          'longitude': 1,
+        },
+      };
+
+      const mockGeolocation = {
+        getCurrentPosition: function() {
+          publisher.locationHandler(geoPos);
+        },
+      };
+
+      global.window.navigator.geolocation = mockGeolocation;
+
+      publisher.createSnapshot();
+      publisher.createSnapshot();
+
+      assert.equal(publisher.calcDegreeToPoint.callCount, 2);
+      assert.equal(publisher.locationHandler.callCount, 2);
+      assert.equal(publisher.createSnapshot.callCount, 2);
+
+      const expectedMessage = new ROSLIB.Message({data: 0});
+      assert.equal(topic.publish.callCount, 1);
+      assert.deepEqual(topic.publish.getCall(0).args[0], expectedMessage);
     });
   });
-  */
 });
