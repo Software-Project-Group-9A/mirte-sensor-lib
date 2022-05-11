@@ -1,0 +1,36 @@
+<html>
+    <head>
+        <script src="https://github.com/RobotWebTools/roslibjs/blob/develop/build/roslib.min.js"></script>
+        <script src="http://static.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
+        <script src="http://static.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
+        <script src="../build/RosSensorLib.min.js"></script>
+        <script>
+            var ros = new ROSLIB.Ros();
+
+            ros.on('connection', function() {document.getElementById("connection_info").innerHTML = "Connected to webserver."});
+
+            ros.on('error', function(error) { document.getElementById("connection_info").innerHTML = "Failed to connect to webserver."; });
+
+            ros.on('close', function() { document.getElementById("connection_info").innerHTML = 'Connection to websocket server closed.'; });
+
+            var topic = new ROSLIB.Topic({
+                ros : ros,
+                name : '/gpsDeclination',
+                messageType: 'std_msgs/Float32'
+            });
+
+            ros.connect('ws://localhost:9090');
+        </script>
+    </head>
+    <body>
+        <h1 id='connection_info'></h1>
+        <h1>Latitude</h1>
+        <input id="latitude" type="number" value="0">
+        <h1>Longitude</h1>
+        <input id="longitude" type="number" value="0">
+        <script>
+            var publisher = new SENSORLIB.GPSDeclinationPublisher(topic, parseInt(document.getElementById("latitude")), parseInt(document.getElementById("longitude")));
+            publisher.start();
+        </script>
+    </body>
+</html>
