@@ -66,8 +66,6 @@ describe('Test GPSDeclinationPublisher', function() {
           const topic = sinon.spy(new ROSLIB.Topic());
           const publisher = sinon.spy(new GPSDeclinationPublisher(topic, 1, 1));
 
-          publisher.start();
-
           assert.equal(publisher.calcDegreeToPoint(1, 1), 0);
         });
   });
@@ -77,8 +75,6 @@ describe('Test GPSDeclinationPublisher', function() {
         function() {
           const topic = sinon.spy(new ROSLIB.Topic());
           const publisher = sinon.spy(new GPSDeclinationPublisher(topic, 1, 1));
-
-          publisher.start();
 
           global.position = {
             'coords': {
