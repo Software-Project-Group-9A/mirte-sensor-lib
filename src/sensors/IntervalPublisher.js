@@ -53,7 +53,7 @@ class IntervalPublisher extends SensorPublisher {
 
   /**
   * Sets the maximum frequency at which new data can be published.
-  * @param {Int32} hz frequency to be used.
+  * @param {Number} hz frequency to be used.
   */
   setPublishFrequency(hz) {
     if (hz <= 0) {
