@@ -10,16 +10,6 @@ const NotSupportedError = require('../error/NotSupportedError');
  */
 class GPSPublisher extends IntervalPublisher {
   /**
-   * Id of geolocation watch callback
-   */
-  #watchId;
-
-  /**
-   * GeolocationPosition storing latest device position
-   */
-  #position;
-
-  /**
    * Creates a new GPSPublisher.
    * @param {ROSLIB.Topic} topic topic to which to publish geolocation data.
    * @param {number} hz frequency at which to publish GPS data, in Hertz.
@@ -29,6 +19,16 @@ class GPSPublisher extends IntervalPublisher {
   constructor(topic, hz) {
     super(topic, hz);
     this.topic.messageType = GPSPublisher.messageType;
+
+    /**
+     * Id of geolocation watch callback
+     */
+    this.watchId = -1;
+
+    /**
+     * GeolocationPosition storing latest device position
+     */
+    this.position = undefined;
 
     // check support for API
     if (!window.navigator.geolocation) {
@@ -49,7 +49,7 @@ class GPSPublisher extends IntervalPublisher {
    * @param {Geolocation.GeolocationPosition} pos latest geolocation position of device
    */
   onSucces(pos) {
-    this.#position = pos;
+    this.position = pos;
   }
 
   /**
@@ -61,7 +61,7 @@ class GPSPublisher extends IntervalPublisher {
     const successCallback = this.onSucces.bind(this);
     const errorCallback = this.onError.bind(this);
 
-    this.#watchId = window.navigator.geolocation.watchPosition(
+    this.watchId = window.navigator.geolocation.watchPosition(
         successCallback,
         errorCallback);
   }
@@ -71,18 +71,13 @@ class GPSPublisher extends IntervalPublisher {
    */
   stop() {
     super.stop();
-    window.navigator.geolocation.clearWatch(this.#watchId);
+    window.navigator.geolocation.clearWatch(this.watchId);
   }
 
   /**
-   * TODO: reach concencus on error handling
-   * we might want user specified callbacks, as errors can occur in callbacks
-   * of the publisher itself, where they cannot be handled by the user.
-   *
-   * It would probably be useful to translate all the API specific errors,
-   * to some standard error type, like NotSupportedError,
-   * PermissionDeniedError, etc
-   * @param {*} error
+   * Callback for watching Geolocation.
+   * Will throw any error provided to it.
+   * @param {Error} error error to throw.
    */
   onError(error) {
     throw error;
@@ -113,12 +108,12 @@ class GPSPublisher extends IntervalPublisher {
    */
   createSnapshot() {
     // position has not yet been set, do not publish
-    if (!this.#position) {
+    if (!this.position) {
       return;
     }
 
     // create and publish message
-    const coordinates = this.#position.coords;
+    const coordinates = this.position.coords;
     const message = this.createNavSatMessage(coordinates);
     this.topic.publish(message);
   }
