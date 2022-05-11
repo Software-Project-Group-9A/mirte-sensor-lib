@@ -1,6 +1,5 @@
 <html>
     <head>
-        <script src="https://github.com/RobotWebTools/roslibjs/blob/develop/build/roslib.min.js"></script>
         <script src="http://static.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
         <script src="http://static.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
         <script src="../build/RosSensorLib.js"></script>
@@ -29,9 +28,10 @@
         <button id="start">Start Publish</button>
         <button id="stop">Stop Publish</button>
         <script>
-            let video = document.querySelector("video");
-            let button = document.getElementById("start");
-            let button2 = document.getElementById("stop");
+            const video = document.querySelector('video');
+            const canvas = document.querySelector('canvas')
+            const button = document.getElementById('start');
+            const button2 = document.getElementById('stop');
             const constraints = {
                 video: true
               };
@@ -48,7 +48,8 @@
             function handleError(error) {
               console.error("Error: ", error);
             }
-            var cameraPublisher = new SENSORLIB.CameraPublisher(imageTopic, document.querySelector("video"), 5);
+
+            let cameraPublisher = new SENSORLIB.CameraPublisher(imageTopic, video, canvas);
             let bool = true;
             button.addEventListener('click', () => {
                 cameraPublisher.start()

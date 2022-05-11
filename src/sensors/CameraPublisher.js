@@ -47,7 +47,7 @@ class CameraPublisher extends IntervalPublisher {
   /**
      * Start the publishing of camera data to ROS.
      *
-     * @throws {ReferenceError} if no available video source.
+     * @throws {Error} if no video source is available.
      */
   start() {
     // If there is no videostream available yet, do not publish data.
