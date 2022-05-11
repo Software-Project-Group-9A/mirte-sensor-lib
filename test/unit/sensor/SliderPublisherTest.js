@@ -172,7 +172,7 @@ describe('SliderPublisher', function() {
       slider.dispatchEvent(new window.Event('input'));
       const publishedMessage = topic.publish.getCall(0).args[0];
 
-      assert.equal(typeof publishedMessage.msg.data, 'number');
+      assert.equal(typeof publishedMessage.data, 'number');
     });
     it('should publish a message with the updated slider value when the slider changes', function() {
       const slider = createSlider();

@@ -19,9 +19,9 @@ require('../../globalSetup.js');
 // const clock;
 // // fake timer
 // if (global.Data.isFake === true) {
-  
+
 // } else {
-//   clock = 
+//   clock =
 // }
 
 
@@ -39,6 +39,21 @@ function createGeolocationSpy() {
   };
 
   return sinon.spy(geolocation);
+}
+
+/**
+ * Utility function for creating fake GeolocationPosition
+ * @param {number} longitude the longitude
+ * @param {number} latitude the latitude
+ * @return {any} fake GeolocationPosition
+ */
+function createGeolocationPosition(longitude, latitude) {
+  return {
+    coords: {
+      longitude: longitude,
+      latitude: latitude,
+    },
+  };
 }
 
 describe('GPSPublisher', function() {
@@ -99,9 +114,42 @@ describe('GPSPublisher', function() {
       assert.equal(geolocation.clearWatch.lastCall.firstArg, 1);
     });
   });
+  describe('#createNavSatMessage(coordinates)', function() {
+    it('should return a ROSLIB.Message', function() {
+      const geolocation = createGeolocationSpy();
+      global.window.navigator.geolocation = geolocation;
+      const publisher = new GPSPublisher(new ROSLIB.Topic, 10);
+
+      const message = publisher.createNavSatMessage(createGeolocationPosition().coords);
+
+      assert(message instanceof ROSLIB.Message);
+    });
+    it('should have the correct types for the lattitude and longitude fields', function() {
+      const geolocation = createGeolocationSpy();
+      global.window.navigator.geolocation = geolocation;
+      const publisher = new GPSPublisher(new ROSLIB.Topic, 10);
+      const location = createGeolocationPosition(4.571, 44.203);
+
+      const message = publisher.createNavSatMessage(location.coords);
+
+      assert.equal(typeof message.longitude, 'number');
+      assert.equal(typeof message.latitude, 'number');
+    });
+    it('should set the lattitude and longitude fields to the correct values', function() {
+      const geolocation = createGeolocationSpy();
+      global.window.navigator.geolocation = geolocation;
+      const publisher = new GPSPublisher(new ROSLIB.Topic, 10);
+      const location = createGeolocationPosition(4.571, 44.203);
+
+      const message = publisher.createNavSatMessage(location.coords);
+
+      assert.equal(message.longitude, location.coords.longitude);
+      assert.equal(message.latitude, location.coords.latitude);
+    });
+  });
+
   describe('#createSnapshot()', function() {
     it('should publish no message if there is not yet any location data', function() {
-      const clock = sinon.useFakeTimers();
       const geolocation = createGeolocationSpy();
       global.window.navigator.geolocation = geolocation;
       const topic = sinon.spy(new ROSLIB.Topic());
@@ -109,11 +157,43 @@ describe('GPSPublisher', function() {
 
       const publisher = new GPSPublisher(topic, frequency);
       publisher.start();
+      publisher.createSnapshot();
 
-      clock.tick(200);
+      assert.equal(topic.publish.callCount, 0);
+    });
+    it('should publish message if there is location data', function() {
+      const geolocation = createGeolocationSpy();
+      const location = createGeolocationPosition(1.034, 4.2391);
+      global.window.navigator.geolocation = geolocation;
+      const topic = sinon.spy(new ROSLIB.Topic());
+      const frequency = 10;
+
+      const publisher = new GPSPublisher(topic, frequency);
+      publisher.start();
+      geolocation.onSuccess(location);
+      publisher.createSnapshot();
 
       assert.equal(topic.publish.callCount, 1);
-      clock.restore();
+    });
+    it('should publish the current location data', function() {
+      const geolocation = createGeolocationSpy();
+      const location1 = createGeolocationPosition(1.034, 4.2391);
+      const location2 = createGeolocationPosition(2.333, 52.99);
+      global.window.navigator.geolocation = geolocation;
+      const topic = sinon.spy(new ROSLIB.Topic());
+      const frequency = 10;
+
+      const publisher = new GPSPublisher(topic, frequency);
+      publisher.start();
+      geolocation.onSuccess(location1);
+      geolocation.onSuccess(location2);
+      publisher.createSnapshot();
+
+      assert.equal(topic.publish.callCount, 1);
+      const message = topic.publish.firstCall.firstArg;
+      assert.equal(message.latitude, location2.coords.latitude);
+      assert.equal(message.longitude, location2.coords.longitude);
+      assert.equal(message.position_covariance_type, 0);
     });
   });
 

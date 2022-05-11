@@ -22,6 +22,6 @@ global.ROSLIB = {
     this.unsubscribe = function(callback) {};
   },
   Message: function(msg) {
-    this.msg = msg;
+    Object.assign(this, msg);
   },
 };
