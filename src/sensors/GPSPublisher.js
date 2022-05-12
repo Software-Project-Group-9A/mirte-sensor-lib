@@ -99,7 +99,7 @@ class GPSPublisher extends IntervalPublisher {
    * @return {ROSLIB.Message} sensor_msgs/NavSatFix message containing longitude
    * and latitude of supplied coordinates.
    */
-  createNavSatMessage(coordinates) {
+  static createNavSatMessage(coordinates) {
     return new ROSLIB.Message({
       latitude: coordinates.latitude,
       longitude: coordinates.longitude,
