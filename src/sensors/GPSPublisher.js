@@ -26,7 +26,8 @@ class GPSPublisher extends IntervalPublisher {
     this.watchId = -1;
 
     /**
-     * GeolocationPosition storing latest device position
+     * GeolocationPosition storing latest device position.
+     * Is set to null when the latest position was already published.
      */
     this.position = undefined;
 
@@ -42,6 +43,18 @@ class GPSPublisher extends IntervalPublisher {
    */
   static get messageType() {
     return 'sensor_msgs/NavSatFix';
+  }
+
+  /**
+   * Returns whether the two given geolocationPositions have the same longitude and latitude
+   * @param {GeolocationPosition} position1 first position
+   * @param {GeolocationPosition} position2 second position
+   * @return {boolean} whether the longitudes and latitudes of the two positions match
+   */
+  static isSamePosition(position1, position2) {
+    const coords1 = position1.coordinates;
+    const coords2 = position2.coordinates;
+    return coords1.latitude = coords2.latitude && coords1.longitude == coords2.longitude;
   }
 
   /**
@@ -112,10 +125,17 @@ class GPSPublisher extends IntervalPublisher {
       return;
     }
 
-    // create and publish message
     const coordinates = this.position.coords;
+
+    // if position did not change, do not publish
+    if (this.lastPublishedPosition && GPSPublisher.isSamePosition(this.position, this.lastPublishedPosition)) {
+      return;
+    }
+
+    // create and publish message
     const message = this.createNavSatMessage(coordinates);
     this.topic.publish(message);
+    this.lastPublishedPosition = this.position;
   }
 }
 

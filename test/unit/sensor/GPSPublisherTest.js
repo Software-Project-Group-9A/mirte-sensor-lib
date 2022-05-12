@@ -16,15 +16,6 @@ global.window = global.window || window;
 
 require('../../globalSetup.js');
 
-// const clock;
-// // fake timer
-// if (global.Data.isFake === true) {
-
-// } else {
-//   clock =
-// }
-
-
 /**
  * Utility function for creating geolocation mock
  * @return {Sinon.spy} geolocation spy
