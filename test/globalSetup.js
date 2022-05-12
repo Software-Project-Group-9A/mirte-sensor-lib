@@ -37,3 +37,15 @@ global.ROSLIB = {
     Object.assign(this, msg);
   },
 };
+
+before(function() {
+  global.clock = sinon.useFakeTimers();
+});
+
+afterEach(function() {
+  global.clock.reset();
+});
+
+after(function() {
+  global.clock.uninstall();
+});
