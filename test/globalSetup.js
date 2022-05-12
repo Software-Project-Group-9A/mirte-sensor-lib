@@ -15,10 +15,6 @@ if (!global.window) {
   global.window = window;
 }
 
-
-// define JSDOM window in global scope
-global.window = global.window || window;
-
 // define dummy ROSLIB in global scope
 global.ROSLIB = {
   Topic: function(options) {
