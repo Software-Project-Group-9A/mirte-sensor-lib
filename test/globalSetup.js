@@ -39,13 +39,16 @@ global.ROSLIB = {
 };
 
 before(function() {
+  // before each test file, create a new fake timer
   global.clock = sinon.useFakeTimers();
 });
 
 afterEach(function() {
+  // after each test, reset the clock and remove all attached callbacks
   global.clock.reset();
 });
 
 after(function() {
+  // after all tests, uninstall the fake clock
   global.clock.uninstall();
 });

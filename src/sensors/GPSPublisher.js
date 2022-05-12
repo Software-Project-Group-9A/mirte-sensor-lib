@@ -52,9 +52,11 @@ class GPSPublisher extends IntervalPublisher {
    * @return {boolean} whether the longitudes and latitudes of the two positions match
    */
   static isSamePosition(position1, position2) {
-    const coords1 = position1.coordinates;
-    const coords2 = position2.coordinates;
-    return coords1.latitude = coords2.latitude && coords1.longitude == coords2.longitude;
+    const coords1 = position1.coords;
+    const coords2 = position2.coords;
+
+    return coords1.latitude === coords2.latitude &&
+           coords1.longitude === coords2.longitude;
   }
 
   /**
@@ -125,14 +127,13 @@ class GPSPublisher extends IntervalPublisher {
       return;
     }
 
-    const coordinates = this.position.coords;
-
-    // if position did not change, do not publish
+    // if position did not change since last publishing, do not publish
     if (this.lastPublishedPosition && GPSPublisher.isSamePosition(this.position, this.lastPublishedPosition)) {
       return;
     }
 
     // create and publish message
+    const coordinates = this.position.coords;
     const message = this.createNavSatMessage(coordinates);
     this.topic.publish(message);
     this.lastPublishedPosition = this.position;

@@ -128,6 +128,27 @@ describe('GPSPublisher', function() {
     });
   });
 
+  describe('#isSamePosition(position1, position2)', function() {
+    it('should return false for positions with a different latitude', function() {
+      const position1 = createGeolocationPosition(1.034, 4.2391);
+      const position2 = createGeolocationPosition(33.35, 4.2391);
+
+      assert(!GPSPublisher.isSamePosition(position1, position2));
+    });
+    it('should return false for positions with a different longitude', function() {
+      const position1 = createGeolocationPosition(1.034, 4.2391);
+      const position2 = createGeolocationPosition(1.034, 55.1002);
+
+      assert(!GPSPublisher.isSamePosition(position1, position2));
+    });
+    it('should return true for positions with the same latitude and longitude', function() {
+      const position1 = createGeolocationPosition(1.034, 4.2391);
+      const position2 = createGeolocationPosition(1.034, 4.2391);
+
+      assert(GPSPublisher.isSamePosition(position1, position2));
+    });
+  });
+
   describe('#createSnapshot()', function() {
     it('should publish no message if there is not yet any location data', function() {
       const geolocation = createGeolocationSpy();
@@ -154,6 +175,26 @@ describe('GPSPublisher', function() {
       publisher.createSnapshot();
 
       assert.equal(topic.publish.callCount, 1);
+    });
+    it('should not publish a message if the location remains unchanged', function() {
+      const geolocation = createGeolocationSpy();
+      const location1 = createGeolocationPosition(1.034, 4.2391);
+      const location2 = createGeolocationPosition(1.034, 4.2391);
+      global.window.navigator.geolocation = geolocation;
+      const topic = sinon.spy(new ROSLIB.Topic());
+      const frequency = 10;
+
+      const publisher = new GPSPublisher(topic, frequency);
+      publisher.start();
+      geolocation.onSuccess(location1);
+      clock.tick(101);
+      geolocation.onSuccess(location2);
+      clock.tick(101);
+
+      assert.equal(topic.publish.callCount, 1);
+      const message = topic.publish.firstCall.firstArg;
+      assert.equal(message.latitude, location1.coords.latitude);
+      assert.equal(message.longitude, location1.coords.longitude);
     });
     it('should publish the current location data', function() {
       const geolocation = createGeolocationSpy();
