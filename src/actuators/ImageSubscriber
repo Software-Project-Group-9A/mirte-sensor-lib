@@ -1,0 +1,66 @@
+const Subscriber = require('./Subscriber');
+
+/**
+ *
+ */
+class ImageSubscriber extends Subscriber {
+  /**
+    * Creates a new ImageSubscriber, that will display the images published to the provided topic.
+    * Both compressed (sensor_msgs/CompressedImage) and non-compressed images (sensor_msgs/Image)
+    * to the provided topic on the provided canvas.
+    * @param {ROSLIB.Topic} topic topic from which to subscribe to
+    * @param {HTMLCanvasElement} canvas canvas to draw published images on
+    * @param {boolean} compressed  whether compressed images are published to the topic. True by defeault.
+    */
+  constructor(topic, canvas, compressed = true) {
+    super(topic);
+
+    if (!(canvas instanceof HTMLCanvasElement)) {
+      throw new TypeError('canvas argument must be of type HTMLCanvasElement');
+    }
+
+    this.canvas = canvas;
+    this.compressed = compressed;
+
+    this.topic.messageType = this.getMessageType();
+  }
+
+  /**
+   * Returns the messageType this subscriber expects to receieve.
+   * @return {string} ROS messageType this subscriber expects to recieve
+   */
+  getMessageType() {
+    return this.compressed ? 'sensor_msgs/CompressedImage' : 'sensor_msgs/Image';
+  }
+
+  /**
+   * Creates a data URL encoding an image in the given format with the given image data.
+   * @param {String} format format of the image (e.g. png, jpeg, etc)
+   * @param {String} data data of the image, in base64 format
+   * @return {String} data URL conaining image data
+   */
+  createImageDataUrl(format, data) {
+    return 'data/image/' + format + ';base64,' + data;
+  }
+
+  /**
+   * Callback for handling incomming published message.
+   * @param {ROSLIB.Message} msg message of type sensor_msgs/Image or sensor_msgs/CompressedImage,
+   * depending on whether this subscribed is using compressed images.
+   */
+  onMessage(msg) {
+    const data = msg.data;
+    let format;
+
+    if (compressed) {
+      format = msg.format;
+    } else {
+      format = 'image/x-dcraw';
+    }
+
+    const imageDataUrl = this.createImageDataUrl(format, data);
+    this.canvas.src = imageDataUrl;
+  }
+}
+
+module.exports = ImageSubscriber;
