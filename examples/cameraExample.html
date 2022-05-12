@@ -1,0 +1,62 @@
+<html>
+    <head>
+        <script src="http://static.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
+        <script src="http://static.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
+        <script src="../build/RosSensorLib.js"></script>
+        <script>
+            var ros = new ROSLIB.Ros();
+
+            ros.on('connection', function() {document.getElementById("connection_info").innerHTML = "Connected to webserver."});
+
+            ros.on('error', function(error) { document.getElementById("connection_info").innerHTML = "Failed to connect to webserver."; });
+
+            ros.on('close', function() { document.getElementById("connection_info").innerHTML = 'Connection to websocket server closed.'; });
+
+            var imageTopic = new ROSLIB.Topic({
+                ros : ros,
+                name : '/camera',
+                messageType: 'sensor_msgs/CompressedImage'
+            });
+
+            ros.connect('ws://localhost:9090');
+        </script>
+    </head>
+    <body>
+        <h1 id='connection_info'></h1>
+        <video crossorigin="anonymous" autoplay></video>
+        <canvas width="640" height="480"></canvas>
+        <button id="start">Start Publish</button>
+        <button id="stop">Stop Publish</button>
+        <script>
+            const video = document.querySelector('video');
+            const canvas = document.querySelector('canvas')
+            const button = document.getElementById('start');
+            const button2 = document.getElementById('stop');
+            const constraints = {
+                video: true
+              };
+
+              navigator.mediaDevices
+                .getUserMedia(constraints)
+                .then(gotStream)
+                .catch(handleError);
+            
+            function gotStream(stream) {
+              window.stream = stream; // make stream available to console
+              video.srcObject = stream;
+            }
+            function handleError(error) {
+              console.error("Error: ", error);
+            }
+
+            let cameraPublisher = new SENSORLIB.CameraPublisher(imageTopic, video, canvas);
+            let bool = true;
+            button.addEventListener('click', () => {
+                cameraPublisher.start()
+             })
+            button2.addEventListener('click', () => {
+                cameraPublisher.stop()
+            })
+        </script>
+    </body>
+</html>

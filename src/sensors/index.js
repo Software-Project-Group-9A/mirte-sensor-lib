@@ -7,6 +7,7 @@ module.exports = {
   ButtonPublisher: require('./ButtonPublisher'),
   IMUPublisher: require('./IMUPublisher'),
   SliderPublisher: require('./SliderPublisher'),
+  CameraPublisher: require('./CameraPublisher'),
   TextPublisher: require('./TextPublisher'),
   MagneticDeclinationPublisher: require('./MagneticDeclinationPublisher'),
 };
