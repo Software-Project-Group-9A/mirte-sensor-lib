@@ -30,9 +30,9 @@ class IMUPublisher extends IntervalPublisher {
     this.motionReady = false;
 
     // Default values
-    this.alpha = 0;
-    this.beta = 0;
-    this.gamma = 0;
+    this.alpha = 0; // [0, 360)
+    this.beta = 0; // [-180, 180)
+    this.gamma = 0; // [-90, 90)
 
     this.valpha = 0;
     this.vbeta = 0;
@@ -58,9 +58,9 @@ class IMUPublisher extends IntervalPublisher {
      * @param {*} event object containing sensor data.
      */
   onReadOrientation(event) {
-    this.alpha = event.alpha;
-    this.beta = event.beta;
-    this.gamma = event.gamma;
+    this.alpha = parseFloat(event.alpha);
+    this.beta = parseFloat(event.beta);
+    this.gamma = parseFloat(event.gamma);
     this.orientationReady = true;
   }
 
@@ -101,6 +101,8 @@ class IMUPublisher extends IntervalPublisher {
     // Create Quaternion based on device orientation
     const q = new THREE.Quaternion();
     q.setFromEuler(eurlerpose);
+
+    console.log(this.alpha + ' ' + this.beta + ' ' + this.gamma);
 
     // Create imuMessage in ROS's IMU-message format.
     // For definition of message type see following source:
