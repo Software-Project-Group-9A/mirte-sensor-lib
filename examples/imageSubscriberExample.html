@@ -1,0 +1,35 @@
+<html>
+    <head>
+        <script src="https://github.com/RobotWebTools/roslibjs/blob/develop/build/roslib.min.js"></script>
+        <script src="http://static.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
+        <script src="http://static.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
+        <script src="../build/RosSensorLib.min.js"></script>
+        <script>
+            var ros = new ROSLIB.Ros();
+
+            ros.on('connection', function() {document.getElementById("connection_info").innerHTML = "Connected to webserver."});
+
+            ros.on('error', function(error) { document.getElementById("connection_info").innerHTML = "Failed to connect to webserver."; });
+
+            ros.on('close', function() { document.getElementById("connection_info").innerHTML = 'Connection to websocket server closed.'; });
+
+            var imageTopic = new ROSLIB.Topic({
+                ros : ros,
+                name : '/image',
+                messageType: 'std_msgs/CompressedImage'
+            });
+
+            ros.connect('ws://localhost:9090');
+        </script>
+    </head>
+    <body>
+        <h1>Connection Info: </h1>
+        <h2 id='connection_info'></h2>
+        <canvas id='outputCanvas' width="500", height="500">
+        <script>
+            var subscriber = new SENSORLIB.ImageSubscriber(imageTopic, document.getElementById("outputCanvas"), true);
+        </script>
+        <button onclick="subscriber.start()">subscribe</button>
+        <button onclick="subscriber.stop()">unsubscribe</button>
+    </body>
+</html>

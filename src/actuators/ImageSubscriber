@@ -52,14 +52,20 @@ class ImageSubscriber extends Subscriber {
     const data = msg.data;
     let format;
 
-    if (compressed) {
+    if (this.compressed) {
       format = msg.format;
     } else {
       format = 'image/x-dcraw';
     }
 
+    // create image
     const imageDataUrl = this.createImageDataUrl(format, data);
-    this.canvas.src = imageDataUrl;
+    const image = new Image();
+    image.src = imageDataUrl;
+
+    // draw image to canvas
+    const ctx = this.canvas.getContext('2d');
+    ctx.drawImage(image, 0, 0, this.canvas.width, this.canvas.height);
   }
 }
 
