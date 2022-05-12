@@ -1,12 +1,24 @@
-/* JSDOM for simulating browser environment
-const {JSDOM} = require('jsdom');
-const {window} = new JSDOM(``, {});
+/**
+ * global setup for all tests.
+ * Should be included in every test file.
+ */
 
-// define JSDOM window in global scope, if not already defined
-global.window = window;
-global.document = global.window || window;
+// assert library
+global.assert = global.assert || require('assert');
+// sinon
+global.sinon = global.sinon || require('sinon');
+// JSDOM for simulating browser environment
+if (!global.window) {
+  const {JSDOM} = require('jsdom');
+  const {window} = new JSDOM(``, {});
 
-*/
+  global.window = window;
+}
+
+
+// define JSDOM window in global scope
+global.window = global.window || window;
+
 // define dummy ROSLIB in global scope
 global.ROSLIB = {
   Topic: function(options) {

@@ -1,20 +1,9 @@
-const assert = require('assert');
-// Sinon library for mocking
-const sinon = require('sinon');
-
-// JSDOM for simulating browser environment
-const {JSDOM} = require('jsdom');
-const {window} = new JSDOM(``, {});
+require('../../globalSetup.js');
 
 // Module to test
 const GPSPublisher = require('../../../src/sensors/GPSPublisher.js');
 const NotSupportedError = require('../../../src/error/NotSupportedError.js');
 const {afterEach} = require('mocha');
-
-// define JSDOM window in global scope, if not already defined
-global.window = global.window || window;
-
-require('../../globalSetup.js');
 
 /**
  * Utility function for creating geolocation mock

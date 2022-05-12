@@ -1,18 +1,6 @@
-const assert = require('assert');
-const sinon = require('sinon');
-
-// JSDOM for simulating browser environment
-const {JSDOM} = require('jsdom');
-const {window} = new JSDOM(``, {});
+require('../../globalSetup.js');
 
 const IntervalPublisher = require('../../../src/sensors/IntervalPublisher.js');
-
-
-// define JSDOM window in global scope
-global.window = global.window || window;
-// const {document} = global.window;
-
-require('../../globalSetup.js');
 
 /**
  * Helper method to create a new Interval Publisher implementation.
