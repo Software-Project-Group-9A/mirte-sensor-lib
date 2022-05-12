@@ -124,7 +124,7 @@ class GPSPublisher extends IntervalPublisher {
 
     // create and publish message
     const coordinates = this.position.coords;
-    const message = this.createNavSatMessage(coordinates);
+    const message = GPSPublisher.createNavSatMessage(coordinates);
     this.topic.publish(message);
     this.lastPublishedPosition = this.position;
   }

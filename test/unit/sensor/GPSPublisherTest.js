@@ -96,32 +96,21 @@ describe('GPSPublisher', function() {
   });
   describe('#createNavSatMessage(coordinates)', function() {
     it('should return a ROSLIB.Message', function() {
-      const geolocation = createGeolocationSpy();
-      global.window.navigator.geolocation = geolocation;
-      const publisher = new GPSPublisher(new ROSLIB.Topic, 10);
-
-      const message = publisher.createNavSatMessage(createGeolocationPosition().coords);
+      const message = GPSPublisher.createNavSatMessage(createGeolocationPosition().coords);
 
       assert(message instanceof ROSLIB.Message);
     });
     it('should have the correct types for the lattitude and longitude fields', function() {
-      const geolocation = createGeolocationSpy();
-      global.window.navigator.geolocation = geolocation;
-      const publisher = new GPSPublisher(new ROSLIB.Topic, 10);
       const location = createGeolocationPosition(4.571, 44.203);
-
-      const message = publisher.createNavSatMessage(location.coords);
+      const message = GPSPublisher.createNavSatMessage(location.coords);
 
       assert.equal(typeof message.longitude, 'number');
       assert.equal(typeof message.latitude, 'number');
     });
     it('should set the lattitude and longitude fields to the correct values', function() {
-      const geolocation = createGeolocationSpy();
-      global.window.navigator.geolocation = geolocation;
-      const publisher = new GPSPublisher(new ROSLIB.Topic, 10);
       const location = createGeolocationPosition(4.571, 44.203);
 
-      const message = publisher.createNavSatMessage(location.coords);
+      const message = GPSPublisher.createNavSatMessage(location.coords);
 
       assert.equal(message.longitude, location.coords.longitude);
       assert.equal(message.latitude, location.coords.latitude);
