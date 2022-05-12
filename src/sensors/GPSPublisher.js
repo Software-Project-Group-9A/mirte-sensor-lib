@@ -60,21 +60,20 @@ class GPSPublisher extends IntervalPublisher {
   }
 
   /**
-   * Callback for reading position data
-   * @param {Geolocation.GeolocationPosition} pos latest geolocation position of device
-   */
-  onSucces(pos) {
-    this.position = pos;
-  }
-
-  /**
    * Start the publishing of data to ROS with frequency of <freq> Hz.
    */
   start() {
     super.start();
 
-    const successCallback = this.onSucces.bind(this);
-    const errorCallback = this.onError.bind(this);
+    // Callback for reading position data
+    const successCallback = function(pos) {
+      this.position = pos;
+    }.bind(this);
+
+    // Callback for handling errors. Will throw any error provided to it.
+    const errorCallback = function(error) {
+      throw error;
+    };
 
     this.watchId = window.navigator.geolocation.watchPosition(
         successCallback,
@@ -82,20 +81,11 @@ class GPSPublisher extends IntervalPublisher {
   }
 
   /**
-   *
+   * Stops the publishing of data to ROS.
    */
   stop() {
     super.stop();
     window.navigator.geolocation.clearWatch(this.watchId);
-  }
-
-  /**
-   * Callback for watching Geolocation.
-   * Will throw any error provided to it.
-   * @param {Error} error error to throw.
-   */
-  onError(error) {
-    throw error;
   }
 
   /**
