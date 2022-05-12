@@ -12,9 +12,13 @@
 
             ros.on('close', function() { document.getElementById("connection_info").innerHTML = 'Connection to websocket server closed.'; });
 
+            // Note: This topic should publish to '/{name}/compressed', since the message contains compressed data
+            // To view on rviz, run the following command:
+            // rosrun image_transport republish compressed in:=/camera raw out:=/camera/raw
+            // then data can be read through /camera/raw
             var imageTopic = new ROSLIB.Topic({
                 ros : ros,
-                name : '/camera',
+                name : '/camera/compressed',
                 messageType: 'sensor_msgs/CompressedImage'
             });
 
