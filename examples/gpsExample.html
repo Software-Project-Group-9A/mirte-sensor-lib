@@ -15,7 +15,6 @@
             var topic = new ROSLIB.Topic({
                 ros : ros,
                 name : '/gps',
-                messageType: 'sensor_msgs/NavSatFix'
             });
 
             ros.connect('ws://localhost:9090');
