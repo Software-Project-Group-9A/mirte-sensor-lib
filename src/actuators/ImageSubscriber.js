@@ -40,7 +40,7 @@ class ImageSubscriber extends Subscriber {
    * @return {String} data URL conaining image data
    */
   createImageDataUrl(format, data) {
-    return 'data/image/' + format + ';base64,' + data;
+    return 'data:image/' + format + ';base64,' + data;
   }
 
   /**
@@ -64,8 +64,11 @@ class ImageSubscriber extends Subscriber {
     image.src = imageDataUrl;
 
     // draw image to canvas
-    const ctx = this.canvas.getContext('2d');
-    ctx.drawImage(image, 0, 0, this.canvas.width, this.canvas.height);
+    const canvas = this.canvas;
+    const ctx = canvas.getContext('2d');
+    image.onload = function() {
+      ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+    };
   }
 }
 
