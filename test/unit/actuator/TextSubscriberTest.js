@@ -1,19 +1,9 @@
-const assert = require('assert');
-// Sinon library for mocking
-// const sinon = require('sinon');
-
-// JSDOM for simulating browser environment
-const {JSDOM} = require('jsdom');
-const {window} = new JSDOM(``, {});
+require('../../globalSetup.js');
 
 // Module to test
 const TextSubscriber = require('../../../src/actuators/TextSubscriber.js');
 
-// define JSDOM window in global scope, if not already defined
-global.window = global.window || window;
 const {document} = global.window;
-
-require('../../globalSetup.js');
 
 describe('Test TextSubscriber', function() {
   describe('#constructor(topic, HTMLElement)', function() {

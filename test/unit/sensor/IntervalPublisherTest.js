@@ -1,18 +1,6 @@
-const assert = require('assert');
-const sinon = require('sinon');
-
-// JSDOM for simulating browser environment
-const {JSDOM} = require('jsdom');
-const {window} = new JSDOM(``, {});
+require('../../globalSetup.js');
 
 const IntervalPublisher = require('../../../src/sensors/IntervalPublisher.js');
-
-
-// define JSDOM window in global scope
-global.window = global.window || window;
-// const {document} = global.window;
-
-require('../../globalSetup.js');
 
 /**
  * Helper method to create a new Interval Publisher implementation.
@@ -97,7 +85,6 @@ describe('Test IntervalPublisher', function() {
 
     it('Frequency of 1 Hz works correctly', function() {
       // Arrange
-      const clock = sinon.useFakeTimers();
       // Setup IMU object
       const IVPublisher = createIntervalPublisher();
       IVPublisher.start();
@@ -117,14 +104,11 @@ describe('Test IntervalPublisher', function() {
       clock.tick(10 * 1000); // Wait for 10 seconds.
       // After exactly 11.0 seconds 11 snapshots should be created.
       assert.equal(IVPublisher.createSnapshot.callCount, 11);
-
-      clock.restore();
     });
 
 
     it('Should be able to change frequency during publishing', function() {
       // Arrange
-      const clock = sinon.useFakeTimers();
       const IVPublisher = createIntervalPublisher();
       IVPublisher.start();
       IVPublisher.createSnapshot = sinon.spy();
@@ -141,7 +125,6 @@ describe('Test IntervalPublisher', function() {
 
       // Should call createSnapshot another 100 times.
       assert.equal(IVPublisher.createSnapshot.callCount, 110);
-      clock.restore();
     });
 
     it('Should have the publisher restart at change of frequency', function() {
