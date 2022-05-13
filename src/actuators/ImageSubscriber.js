@@ -15,7 +15,7 @@ class ImageSubscriber extends Subscriber {
   constructor(topic, canvas, compressed = true) {
     super(topic);
 
-    if (!(canvas instanceof HTMLCanvasElement)) {
+    if (!(canvas instanceof window.HTMLCanvasElement)) {
       throw new TypeError('canvas argument must be of type HTMLCanvasElement');
     }
 
@@ -39,7 +39,7 @@ class ImageSubscriber extends Subscriber {
    * @param {String} data data of the image, in base64 format
    * @return {String} data URL conaining image data
    */
-  createImageDataUrl(format, data) {
+  static createImageDataUrl(format, data) {
     return 'data:image/' + format + ';base64,' + data;
   }
 
@@ -59,8 +59,8 @@ class ImageSubscriber extends Subscriber {
     }
 
     // create image
-    const imageDataUrl = this.createImageDataUrl(format, data);
-    const image = new Image();
+    const imageDataUrl = ImageSubscriber.createImageDataUrl(format, data);
+    const image = new window.Image();
     image.src = imageDataUrl;
 
     // draw image to canvas
