@@ -19,32 +19,24 @@ require('../../globalSetup.js');
 
 describe('Test GPSDeclinationPublisher', function() {
   describe('#constructor(topic, latitude, longitude)', function() {
-    /**
-     * helper functions for checking whether correct error is raised
-     * @param {*} error
-     * @return {bool}
-     */
-    function expectInvalidData(error) {
-      assert(error instanceof TypeError);
-      assert.equal(error.message,
-          'Coördinates were not of type Number');
-      return true;
-    }
-
-    it('should reject an undefined latitude', function() {
-      assert.throws(
+    it('should accept an undefined latitude', function() {
+      assert.doesNotThrow(
           () => {
             new GPSDeclinationPublisher(new ROSLIB.Topic(), undefined, 1);
           },
-          expectInvalidData,
+          (error) => {
+            return false;
+          },
       );
     });
-    it('should reject an undefined longitude', function() {
-      assert.throws(
+    it('should accept an undefined longitude', function() {
+      assert.doesNotThrow(
           () => {
             new GPSDeclinationPublisher(new ROSLIB.Topic(), 1, undefined);
           },
-          expectInvalidData,
+          (error) => {
+            return false;
+          },
       );
     });
 
