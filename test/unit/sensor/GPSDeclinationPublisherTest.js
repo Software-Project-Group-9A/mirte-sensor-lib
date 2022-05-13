@@ -92,6 +92,12 @@ describe('Test GPSDeclinationPublisher', function() {
         },
       };
 
+      global.eventParam = {
+        'alpha': 0,
+        'beta': 1,
+        'gamma': 1,
+      };
+
       const mockGeolocation = {
         getCurrentPosition: function() {
           publisher.locationHandler(geoPos);
@@ -100,13 +106,14 @@ describe('Test GPSDeclinationPublisher', function() {
 
       global.window.navigator.geolocation = mockGeolocation;
 
+      publisher.onReadOrientation(eventParam);
       publisher.createSnapshot();
 
       assert.equal(publisher.calcDegreeToPoint.callCount, 1);
       assert.equal(publisher.locationHandler.callCount, 1);
       assert.equal(publisher.createSnapshot.callCount, 1);
 
-      const expectedMessage = new ROSLIB.Message({data: 0});
+      const expectedMessage = new ROSLIB.Message({data: 180});
       assert.equal(topic.publish.callCount, 1);
       assert.deepEqual(topic.publish.getCall(0).args[0], expectedMessage);
     });
@@ -121,6 +128,12 @@ describe('Test GPSDeclinationPublisher', function() {
         },
       };
 
+      global.eventParam = {
+        'alpha': 0,
+        'beta': 1,
+        'gamma': 1,
+      };
+
       const mockGeolocation = {
         getCurrentPosition: function() {
           publisher.locationHandler(geoPos);
@@ -129,6 +142,7 @@ describe('Test GPSDeclinationPublisher', function() {
 
       global.window.navigator.geolocation = mockGeolocation;
 
+      publisher.onReadOrientation(eventParam);
       publisher.createSnapshot();
       publisher.createSnapshot();
 
@@ -136,7 +150,7 @@ describe('Test GPSDeclinationPublisher', function() {
       assert.equal(publisher.locationHandler.callCount, 2);
       assert.equal(publisher.createSnapshot.callCount, 2);
 
-      const expectedMessage = new ROSLIB.Message({data: 0});
+      const expectedMessage = new ROSLIB.Message({data: 180});
       assert.equal(topic.publish.callCount, 1);
       assert.deepEqual(topic.publish.getCall(0).args[0], expectedMessage);
     });

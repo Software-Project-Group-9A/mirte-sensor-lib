@@ -78,7 +78,7 @@ describe('Test MagneticDeclinationPublisher', function() {
 
           publisher.onReadOrientation(eventParam);
 
-          assert.equal(publisher.alpha, 1);
+          assert.equal(publisher.alpha, 359);
           assert(publisher.onReadOrientation);
         });
   });

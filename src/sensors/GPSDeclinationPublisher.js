@@ -41,6 +41,7 @@ class GPSDeclinationPublisher extends IntervalPublisher {
 
     // First need to detect first device orientation.
     this.orientationReady = false;
+    this.gpsReady = false;
 
     // Prevents double message publishing
     this.oldCompass = null;
@@ -62,6 +63,9 @@ class GPSDeclinationPublisher extends IntervalPublisher {
    * @return {Number} angle between current position and the North
    */
   calcDegreeToPoint(latitude, longitude) {
+    if (latitude === this.lat && longitude === this.lng) {
+      return 0;
+    }
     const phiK = (this.lat * Math.PI) / 180.0;
     const lambdaK = (this.lng * Math.PI) / 180.0;
     const phi = (latitude * Math.PI) / 180.0;
@@ -72,13 +76,18 @@ class GPSDeclinationPublisher extends IntervalPublisher {
           Math.sin(lambdaK - lambda),
           Math.cos(phi) * Math.tan(phiK) -
           Math.sin(phi) * Math.cos(lambdaK - lambda));
-    return Math.round(psi);
+    let degree = Math.round(psi);
+    degree = degree + 180;
+    if (degree === 360) {
+      degree = 0;
+    }
+    return degree;
   }
 
   /**
    * Gets the location and puts in variables
    *
-   * Then calculates the degeree and makes sure
+   * Then calculates the deeree and makes sure
    * it is between 0 and 360
    * @param {Geolocation} position
    */
@@ -86,11 +95,32 @@ class GPSDeclinationPublisher extends IntervalPublisher {
     const {latitude, longitude} = position.coords;
     this.compass = this.calcDegreeToPoint(latitude, longitude);
 
-    if (this.compass < 0) {
-      this.compass = this.compass + 360;
-    }
+    this.gpsReady = true;
+  }
 
+  /**
+     * Callback for reading orientation data.
+     * context of object that called callback.
+     *
+     * @param {DeviceOrientationEvent} event object containing sensor data.
+     */
+  onReadOrientation(event) {
+    this.alpha = Math.abs(event.alpha - 360);
     this.orientationReady = true;
+  }
+
+  /**
+   * difference between current rotation and aiming for
+   * @return {Number} difference
+   */
+  accountForRotation() {
+    let diff = this.alpha - this.compass;
+    if (diff > 180) {
+      diff = diff - 180;
+    } else if (diff < 0) {
+      diff = Math.abs(diff);
+    }
+    return diff;
   }
 
   /**
@@ -99,9 +129,12 @@ class GPSDeclinationPublisher extends IntervalPublisher {
    */
   createSnapshot() {
     window.navigator.geolocation.getCurrentPosition(this.locationHandler);
-    if (!this.orientationReady) {
+    if (!(this.orientationReady && this.gpsReady)) {
       throw Error('Orientation is not read yet!');
     }
+
+    this.compass = this.accountForRotation();
+
     // Check if compass changed
     if (this.compass === this.oldCompass) {
       return;
