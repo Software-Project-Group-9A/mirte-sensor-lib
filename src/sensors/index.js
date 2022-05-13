@@ -10,4 +10,5 @@ module.exports = {
   TextPublisher: require('./TextPublisher'),
   GPSPublisher: require('./GPSPublisher'),
   MagneticDeclinationPublisher: require('./MagneticDeclinationPublisher'),
+  GPSDeclinationPublisher: require('./GPSDeclinationPublisher'),
 };
