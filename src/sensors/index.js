@@ -8,5 +8,6 @@ module.exports = {
   ButtonPublisher: require('./ButtonPublisher'),
   CameraPublisher: require('./CameraPublisher'),
   TextPublisher: require('./TextPublisher'),
+  GPSPublisher: require('./GPSPublisher'),
   MagneticDeclinationPublisher: require('./MagneticDeclinationPublisher'),
 };
