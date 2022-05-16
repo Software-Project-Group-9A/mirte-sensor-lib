@@ -55,31 +55,53 @@ describe('ImageSubscriber', function() {
     });
   });
   describe('#onMessage(msg)', function() {
-    it('should be able to draw a compressed image', function() {
-      const message = {
-        format: RED_SQUARE_FORMAT,
-        data: RED_SQUARE_DATA,
-      };
-      const canvas = document.createElement('canvas');
-      canvas.width = 5;
-      canvas.heigh = 5;
-      canvas._canvas = createCanvas(5, 5);
+    it('calls drawImage with correct URL for compressed image', function() {
+      const canvas = document.createElement('canvas', {width: 5, height: 5});
+      const subscriber = new ImageSubscriber(new ROSLIB.Topic(), canvas, true);
+
+      subscriber.drawImage = sinon.spy(function(src) {
+        const canvas = this.canvas;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = 'rgba(255, 0, 0, 255)';
+        ctx.fillRect(0, 0, 5, 5);
+      });
+
+      subscriber.onMessage({format: RED_SQUARE_FORMAT, data: RED_SQUARE_DATA});
+
+      const expectedURL = `data:image/${RED_SQUARE_FORMAT};base64,${RED_SQUARE_DATA}`;
+      assert.equal(subscriber.drawImage.callCount, 1);
+      assert.equal(subscriber.drawImage.firstCall.firstArg, expectedURL);
+    });
+    it('calls drawImage with correct URL for uncompressed image', function() {
+      const canvas = document.createElement('canvas', {width: 5, height: 5});
       const subscriber = new ImageSubscriber(new ROSLIB.Topic(), canvas, false);
 
-      subscriber.onMessage(message);
+      subscriber.drawImage = sinon.spy(function(src) {
+        const canvas = this.canvas;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = 'rgba(255, 0, 0, 255)';
+        ctx.fillRect(0, 0, 5, 5);
+      });
 
-      const ctx = canvas.getContext('2d');
-      //
+      subscriber.onMessage({data: RED_SQUARE_DATA});
 
-      const imageData = ctx.createImageData(canvas.width, canvas.height);
+      const expectedURL = `data:image/x-dcraw;base64,${RED_SQUARE_DATA}`;
+      assert.equal(subscriber.drawImage.callCount, 1);
+      assert.equal(subscriber.drawImage.firstCall.firstArg, expectedURL);
+    });
+  });
+  describe('#drawImage(src)', function() {
+    it('should be able to draw a png image', function() {
+      const canvas = document.createElement('canvas', {width: 5, height: 5});
+      const subscriber = new ImageSubscriber(new ROSLIB.Topic(), canvas, true);
+      const dataURL = ImageSubscriber.createImageDataUrl(RED_SQUARE_FORMAT, RED_SQUARE_DATA);
 
-      //for (let pixel = 0; pixel < canvas.width * canvas.height; ) {
-      const pixel = 0;  
-      assert.equal(imageData.data[pixel * 4 + 0], 255);
-        assert.equal(imageData.data[pixel * 4 + 1], 0);
-        assert.equal(imageData.data[pixel * 4 + 2], 0);
-        assert.equal(imageData.data[pixel * 4 + 3], 0);
-      //}
+      subscriber.drawImage(dataURL);
+
+      const ctx = subscriber.canvas.getContext('2d');
+      const imageData = ctx.getImageData(0, 0, 5, 5);
+
+      assert.equal(imageData.data, 0);
     });
   });
 });

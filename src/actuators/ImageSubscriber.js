@@ -44,6 +44,28 @@ class ImageSubscriber extends Subscriber {
   }
 
   /**
+   *
+   * @param {*} src
+   * @param {*} ctx
+   */
+  drawImage(src) {
+    // draw image to canvas
+    const canvas = this.canvas;
+    const ctx = canvas.getContext('2d');
+    const image = new window.Image();
+
+    image.onload = function() {
+      ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+    };
+
+    image.onerror = function() {
+      throw Error('could not draw image');
+    };
+
+    image.src = src;
+  }
+
+  /**
    * Callback for handling incomming published message.
    * @param {ROSLIB.Message} msg message of type sensor_msgs/Image or sensor_msgs/CompressedImage,
    * depending on whether this subscribed is using compressed images.
@@ -55,20 +77,12 @@ class ImageSubscriber extends Subscriber {
     if (this.compressed) {
       format = msg.format;
     } else {
-      format = 'image/x-dcraw';
+      format = 'x-dcraw';
     }
 
-    // create image
+    // draw image contained in dataURL to canvas
     const imageDataUrl = ImageSubscriber.createImageDataUrl(format, data);
-    const image = new window.Image();
-    image.src = imageDataUrl;
-
-    // draw image to canvas
-    const canvas = this.canvas;
-    const ctx = canvas.getContext('2d');
-    image.onload = function() {
-      ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
-    };
+    this.drawImage(imageDataUrl);
   }
 }
 
