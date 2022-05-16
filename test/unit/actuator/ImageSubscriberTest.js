@@ -1,8 +1,10 @@
 require('../../globalSetup.js');
 
 const ImageSubscriber = require('../../../src/actuators/ImageSubscriber');
+const NotSupportedError = require('../../../src/error/NotSupportedError');
 
 const {document} = global.window;
+global.document = document;
 const {createCanvas} = require('canvas');
 
 /**
@@ -72,36 +74,97 @@ describe('ImageSubscriber', function() {
       assert.equal(subscriber.drawImage.callCount, 1);
       assert.equal(subscriber.drawImage.firstCall.firstArg, expectedURL);
     });
-    it('calls drawImage with correct URL for uncompressed image', function() {
-      const canvas = document.createElement('canvas', {width: 5, height: 5});
-      const subscriber = new ImageSubscriber(new ROSLIB.Topic(), canvas, false);
-
-      subscriber.drawImage = sinon.spy(function(src) {
-        const canvas = this.canvas;
-        const ctx = canvas.getContext('2d');
-        ctx.fillStyle = 'rgba(255, 0, 0, 255)';
-        ctx.fillRect(0, 0, 5, 5);
-      });
-
-      subscriber.onMessage({data: RED_SQUARE_DATA});
-
-      const expectedURL = `data:image/x-dcraw;base64,${RED_SQUARE_DATA}`;
-      assert.equal(subscriber.drawImage.callCount, 1);
-      assert.equal(subscriber.drawImage.firstCall.firstArg, expectedURL);
-    });
   });
-  describe('#drawImage(src)', function() {
-    it('should be able to draw a png image', function() {
-      const canvas = document.createElement('canvas', {width: 5, height: 5});
-      const subscriber = new ImageSubscriber(new ROSLIB.Topic(), canvas, true);
-      const dataURL = ImageSubscriber.createImageDataUrl(RED_SQUARE_FORMAT, RED_SQUARE_DATA);
+  describe('#convertImageData(pixelData, encoding, pixels)', function() {
+    it('throw an error for unsupported encodings', function() {
+      const pixelData = 'FFFFFFFFFFFFFFFF';
+      const format = 'grb8';
+      const pixels = 4;
 
-      subscriber.drawImage(dataURL);
+      assert.throws(() => {
+        ImageSubscriber.convertImageData(pixelData, format, pixels);
+      },
+      NotSupportedError);
+    });
+    it('should correctly convert single rgb8 encoded pixel', function() {
+      // rgb(255, 0, 0)
+      const pixelData = '/wAA';
+      const format = 'rgb8';
+      const pixels = 1;
 
-      const ctx = subscriber.canvas.getContext('2d');
-      const imageData = ctx.getImageData(0, 0, 5, 5);
+      const imageData = ImageSubscriber.convertImageData(pixelData, format, pixels);
 
-      assert.equal(imageData.data, 0);
+      assert.equal(imageData.length, 4);
+      assert.equal(imageData[0], 255);
+      assert.equal(imageData[1], 0);
+      assert.equal(imageData[2], 0);
+      assert.equal(imageData[3], 255);
+    });
+    it('should correctly convert single rgba8 encoded pixel', function() {
+      // rgba(255, 0, 0, 5)
+      const pixelData = '/wAABQ==';
+      const format = 'rgba8';
+      const pixels = 1;
+
+      const imageData = ImageSubscriber.convertImageData(pixelData, format, pixels);
+
+      assert.equal(imageData.length, 4);
+      assert.equal(imageData[0], 255);
+      assert.equal(imageData[1], 0);
+      assert.equal(imageData[2], 0);
+      assert.equal(imageData[3], 5);
+    });
+    it('should correctly convert multiple rgb8 encoded pixels', function() {
+      // red, green, blue and white pixel
+      const pixelData = '/wAAAP8AAAD/AAAA';
+      const format = 'rgb8';
+      const pixels = 4;
+
+      const imageData = ImageSubscriber.convertImageData(pixelData, format, pixels);
+
+      assert.equal(imageData.length, 16);
+      assert.equal(imageData[0], 255);
+      assert.equal(imageData[1], 0);
+      assert.equal(imageData[2], 0);
+      assert.equal(imageData[3], 255);
+      assert.equal(imageData[4], 0);
+      assert.equal(imageData[5], 255);
+      assert.equal(imageData[6], 0);
+      assert.equal(imageData[7], 255);
+      assert.equal(imageData[8], 0);
+      assert.equal(imageData[9], 0);
+      assert.equal(imageData[10], 255);
+      assert.equal(imageData[11], 255);
+      assert.equal(imageData[12], 0);
+      assert.equal(imageData[13], 0);
+      assert.equal(imageData[14], 0);
+      assert.equal(imageData[15], 255);
+    });
+    it('should correctly convert multiple rgba8 encoded pixels', function() {
+      // red, green, blue and white pixel, with alpha of 255
+      const pixelData = '/wAA/wD/AP8AAP//AAAA/w==';
+      const format = 'rgba8';
+      const pixels = 4;
+
+      const imageData = ImageSubscriber.convertImageData(pixelData, format, pixels);
+
+      assert.equal(imageData.length, 16);
+      assert.equal(imageData[0], 255);
+      assert.equal(imageData[1], 0);
+      assert.equal(imageData[2], 0);
+      assert.equal(imageData[3], 255);
+      assert.equal(imageData[4], 0);
+      assert.equal(imageData[5], 255);
+      assert.equal(imageData[6], 0);
+      assert.equal(imageData[7], 255);
+      assert.equal(imageData[8], 0);
+      assert.equal(imageData[9], 0);
+      assert.equal(imageData[10], 255);
+      assert.equal(imageData[11], 255);
+      assert.equal(imageData[12], 0);
+      assert.equal(imageData[13], 0);
+      assert.equal(imageData[14], 0);
+      assert.equal(imageData[15], 255);
     });
   });
 });

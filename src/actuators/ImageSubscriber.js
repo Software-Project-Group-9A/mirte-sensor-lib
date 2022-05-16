@@ -1,4 +1,5 @@
 const Subscriber = require('./Subscriber');
+const NotSupportedError = require('../error/NotSupportedError');
 
 /**
  *
@@ -66,16 +67,47 @@ class ImageSubscriber extends Subscriber {
   }
 
   /**
+   * Converts pixel data encoded as a base64 to a byte array containing
+   * the color channel values of each pixel.
+   * Currently only supports rgb8 and rgba8 formats
+   * @param {string} pixelData pixel data encoded as base64 string
+   * @param {string} format format of pixel data. Any format besides rgb8 and rgba8 is not supported.
+   * @param {number} pixels number of pixels described in pixelData
+   * @return {Uint8ClampedArray} array containing pixel data in rgba format
+   */
+  static convertImageData(pixelData, format, pixels) {
+    if (format !== 'rgb8' && format !== 'rgba8') {
+      throw new NotSupportedError('Subscriber only supports uncompressed images in rgb8 or rgba8 format');
+    }
+    const hasAlphaChannel = (format === 'rgba8');
+    const binaryString = window.atob(pixelData);
+
+    const imageData = new Uint8ClampedArray(pixels * 4);
+
+    let charIndex = 0;
+    for (let i = 0; i < imageData.length; i++) {
+      if (!hasAlphaChannel && i % 4 == 3) {
+        imageData[i] = 255;
+        continue;
+      }
+
+      imageData[i] = binaryString.charCodeAt(charIndex);
+      charIndex++;
+    }
+
+    return imageData;
+  }
+
+  /**
    * Callback for handling incomming published message.
    * @param {ROSLIB.Message} msg message of type sensor_msgs/Image or sensor_msgs/CompressedImage,
    * depending on whether this subscribed is using compressed images.
    */
   onMessage(msg) {
-    const data = msg.data;
     let imageDataUrl;
 
     if (this.compressed) {
-      imageDataUrl = ImageSubscriber.createImageDataUrl(msg.format, data);
+      imageDataUrl = ImageSubscriber.createImageDataUrl(msg.format, msg.data);
     } else {
       // setup canvas
       const imageCanvas = document.createElement('canvas');
@@ -84,9 +116,9 @@ class ImageSubscriber extends Subscriber {
       const ctx = imageCanvas.getContext('2d');
 
       // create RGBA image data from raw pixel data in msg
-      const imageData = ctx.createImageData(msg.width, msg.height);
-      imageData.data = convertImageData(msg.data, msg.encoding);
-      image.canvas.putImageData(imageData);
+      const convertedData = this.convertImageData(msg.data, msg.encoding);
+      const imageData = new window.ImageData(convertedData, msg.width, msg.height);
+      ctx.putImageData(imageData, 0, 0);
 
       // create new dataURL from canvas contents
       imageDataUrl = imageCanvas.toDataURL();

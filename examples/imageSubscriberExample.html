@@ -29,7 +29,14 @@
         <script>
             // data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAAXNSR0IArs4c6QAAABNJREFUGFdj/M/A8J8BDTDSQBAAXGUJ/ETDsUAAAAAASUVORK5CYII=
 
-            var subscriber = new SENSORLIB.ImageSubscriber(imageTopic, document.getElementById("outputCanvas"), true);
+            var subscriber = new SENSORLIB.ImageSubscriber(imageTopic, document.getElementById("outputCanvas"), false);
+            
+            subscriber.onMessage({
+                data: "data",
+                width: 1,
+                height: 1,
+            });
+            
             // subscriber.onMessage({format: 'png', data: 'iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAAXNSR0IArs4c6QAAABNJREFUGFdj/M/A8J8BDTDSQBAAXGUJ/ETDsUAAAAAASUVORK5CYII='});
             // subscriber.createImageDataUrl('png', 'iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAAXNSR0IArs4c6QAAABNJREFUGFdj/M/A8J8BDTDSQBAAXGUJ/ETDsUAAAAAASUVORK5CYII=');
         </script>
