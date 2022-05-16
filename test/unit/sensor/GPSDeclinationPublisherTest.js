@@ -26,7 +26,7 @@ describe('Test GPSDeclinationPublisher', function() {
           },
           (error) => {
             return false;
-          },
+          }
       );
     });
     it('should accept an undefined longitude', function() {
@@ -36,7 +36,7 @@ describe('Test GPSDeclinationPublisher', function() {
           },
           (error) => {
             return false;
-          },
+          }
       );
     });
 
@@ -47,7 +47,7 @@ describe('Test GPSDeclinationPublisher', function() {
           },
           (error) => {
             return false;
-          },
+          }
       );
     });
   });
@@ -92,6 +92,12 @@ describe('Test GPSDeclinationPublisher', function() {
         },
       };
 
+      global.eventParam = {
+        'alpha': 0,
+        'beta': 1,
+        'gamma': 1,
+      };
+
       const mockGeolocation = {
         getCurrentPosition: function() {
           publisher.locationHandler(geoPos);
@@ -100,13 +106,14 @@ describe('Test GPSDeclinationPublisher', function() {
 
       global.window.navigator.geolocation = mockGeolocation;
 
+      publisher.onReadOrientation(eventParam);
       publisher.createSnapshot();
 
       assert.equal(publisher.calcDegreeToPoint.callCount, 1);
       assert.equal(publisher.locationHandler.callCount, 1);
       assert.equal(publisher.createSnapshot.callCount, 1);
 
-      const expectedMessage = new ROSLIB.Message({data: 0});
+      const expectedMessage = new ROSLIB.Message({data: 180});
       assert.equal(topic.publish.callCount, 1);
       assert.deepEqual(topic.publish.getCall(0).args[0], expectedMessage);
     });
@@ -121,6 +128,12 @@ describe('Test GPSDeclinationPublisher', function() {
         },
       };
 
+      global.eventParam = {
+        'alpha': 0,
+        'beta': 1,
+        'gamma': 1,
+      };
+
       const mockGeolocation = {
         getCurrentPosition: function() {
           publisher.locationHandler(geoPos);
@@ -129,6 +142,7 @@ describe('Test GPSDeclinationPublisher', function() {
 
       global.window.navigator.geolocation = mockGeolocation;
 
+      publisher.onReadOrientation(eventParam);
       publisher.createSnapshot();
       publisher.createSnapshot();
 
@@ -136,9 +150,87 @@ describe('Test GPSDeclinationPublisher', function() {
       assert.equal(publisher.locationHandler.callCount, 2);
       assert.equal(publisher.createSnapshot.callCount, 2);
 
-      const expectedMessage = new ROSLIB.Message({data: 0});
+      const expectedMessage = new ROSLIB.Message({data: 180});
       assert.equal(topic.publish.callCount, 1);
       assert.deepEqual(topic.publish.getCall(0).args[0], expectedMessage);
+    });
+  });
+
+
+  describe('#accountForRotation()', function() {
+    it('Difference is 0 when same orientation', function() {
+      const topic = sinon.spy(new ROSLIB.Topic());
+      const publisher = sinon.spy(new GPSDeclinationPublisher(topic, 1, 1));
+
+      publisher.alpha = 0;
+      publisher.compass = 0;
+
+      assert.equal(publisher.accountForRotation(), 0);
+
+      publisher.alpha = 100;
+      publisher.compass = 100;
+
+      assert.equal(publisher.accountForRotation(), 0);
+
+      publisher.alpha = 200;
+      publisher.compass = 200;
+
+      assert.equal(publisher.accountForRotation(), 0);
+    });
+
+    it('Small difference', function() {
+      const topic = sinon.spy(new ROSLIB.Topic());
+      const publisher = sinon.spy(new GPSDeclinationPublisher(topic, 1, 1));
+
+      publisher.alpha = 359;
+      publisher.compass = 0;
+
+      assert.equal(publisher.accountForRotation(), 1);
+
+      publisher.alpha = 99;
+      publisher.compass = 100;
+
+      assert.equal(publisher.accountForRotation(), 1);
+
+      publisher.alpha = 279;
+      publisher.compass = 280;
+
+      assert.equal(publisher.accountForRotation(), 1);
+    });
+
+    it('180 difference', function() {
+      const topic = sinon.spy(new ROSLIB.Topic());
+      const publisher = sinon.spy(new GPSDeclinationPublisher(topic, 1, 1));
+
+      publisher.alpha = 280;
+      publisher.compass = 100;
+
+      assert.equal(publisher.accountForRotation(), 180);
+
+      publisher.alpha = 100;
+      publisher.compass = 280;
+
+      assert.equal(publisher.accountForRotation(), 180);
+    });
+
+    it('big difference', function() {
+      const topic = sinon.spy(new ROSLIB.Topic());
+      const publisher = sinon.spy(new GPSDeclinationPublisher(topic, 1, 1));
+
+      publisher.alpha = 5;
+      publisher.compass = 355;
+
+      assert.equal(publisher.accountForRotation(), 350);
+
+      publisher.alpha = 100;
+      publisher.compass = 90;
+
+      assert.equal(publisher.accountForRotation(), 350);
+
+      publisher.alpha = 280;
+      publisher.compass = 270;
+
+      assert.equal(publisher.accountForRotation(), 350);
     });
   });
 });
