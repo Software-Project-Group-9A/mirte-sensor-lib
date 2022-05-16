@@ -92,7 +92,7 @@ class GPSDeclinationPublisher extends IntervalPublisher {
   /**
    * Gets the location and puts in variables
    *
-   * Then calculates the deeree and makes sure
+   * Then calculates the degree and makes sure
    * it is between 0 and 360
    * @param {Geolocation} position
    */
@@ -119,7 +119,11 @@ class GPSDeclinationPublisher extends IntervalPublisher {
    * @return {Number} difference
    */
   accountForRotation() {
+    // Does point to - current looking at
     let diff = this.compass - this.alpha;
+    // If it is smaller then 0 it means alpha is bigger
+    // We could turn left that amount of degrees but taking compass [0, 360[ we account for that
+    // So ex. -10 (10 degrees left) becomes 350 (350 degrees right)
     if (diff < 0) {
       diff = 360 + diff;
     }
