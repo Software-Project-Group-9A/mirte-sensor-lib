@@ -34,7 +34,7 @@ class MagneticDeclinationPublisher extends IntervalPublisher {
     // No support for IOS yet
     window.addEventListener('deviceorientation', (event) => {
       this.onReadOrientation(event);
-    });
+    }, true);
   }
 
   /**

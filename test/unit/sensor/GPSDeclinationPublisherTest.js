@@ -155,4 +155,82 @@ describe('Test GPSDeclinationPublisher', function() {
       assert.deepEqual(topic.publish.getCall(0).args[0], expectedMessage);
     });
   });
+
+
+  describe('#accountForRotation()', function() {
+    it('Difference is 0 when same orientation', function() {
+      const topic = sinon.spy(new ROSLIB.Topic());
+      const publisher = sinon.spy(new GPSDeclinationPublisher(topic, 1, 1));
+
+      publisher.alpha = 0;
+      publisher.compass = 0;
+
+      assert.equal(publisher.accountForRotation(), 0);
+
+      publisher.alpha = 100;
+      publisher.compass = 100;
+
+      assert.equal(publisher.accountForRotation(), 0);
+
+      publisher.alpha = 200;
+      publisher.compass = 200;
+
+      assert.equal(publisher.accountForRotation(), 0);
+    });
+
+    it('Small difference', function() {
+      const topic = sinon.spy(new ROSLIB.Topic());
+      const publisher = sinon.spy(new GPSDeclinationPublisher(topic, 1, 1));
+
+      publisher.alpha = 359;
+      publisher.compass = 0;
+
+      assert.equal(publisher.accountForRotation(), 1);
+
+      publisher.alpha = 99;
+      publisher.compass = 100;
+
+      assert.equal(publisher.accountForRotation(), 1);
+
+      publisher.alpha = 279;
+      publisher.compass = 280;
+
+      assert.equal(publisher.accountForRotation(), 1);
+    });
+
+    it('180 difference', function() {
+      const topic = sinon.spy(new ROSLIB.Topic());
+      const publisher = sinon.spy(new GPSDeclinationPublisher(topic, 1, 1));
+
+      publisher.alpha = 280;
+      publisher.compass = 100;
+
+      assert.equal(publisher.accountForRotation(), 180);
+
+      publisher.alpha = 100;
+      publisher.compass = 280;
+
+      assert.equal(publisher.accountForRotation(), 180);
+    });
+
+    it('big difference', function() {
+      const topic = sinon.spy(new ROSLIB.Topic());
+      const publisher = sinon.spy(new GPSDeclinationPublisher(topic, 1, 1));
+
+      publisher.alpha = 5;
+      publisher.compass = 355;
+
+      assert.equal(publisher.accountForRotation(), 350);
+
+      publisher.alpha = 100;
+      publisher.compass = 90;
+
+      assert.equal(publisher.accountForRotation(), 350);
+
+      publisher.alpha = 280;
+      publisher.compass = 270;
+
+      assert.equal(publisher.accountForRotation(), 350);
+    });
+  });
 });

@@ -45,6 +45,11 @@ class GPSDeclinationPublisher extends IntervalPublisher {
 
     // Prevents double message publishing
     this.oldCompass = null;
+
+    // No support for IOS yet
+    window.addEventListener('deviceorientation', (event) => {
+      this.onReadOrientation(event);
+    }, true);
   }
 
   /**
@@ -114,11 +119,9 @@ class GPSDeclinationPublisher extends IntervalPublisher {
    * @return {Number} difference
    */
   accountForRotation() {
-    let diff = this.alpha - this.compass;
-    if (diff > 180) {
-      diff = diff - 180;
-    } else if (diff < 0) {
-      diff = Math.abs(diff);
+    let diff = this.compass - this.alpha;
+    if (diff < 0) {
+      diff = 360 + diff;
     }
     return diff;
   }
