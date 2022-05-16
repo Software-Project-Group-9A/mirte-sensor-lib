@@ -16,6 +16,11 @@ class SensorPublisher {
      * topic to which to publish button data
      */
     this.topic = topic;
+
+    /**
+     * start/stop status of sensor
+     */
+    this.started = false;
   }
 
   /**
@@ -39,14 +44,20 @@ class SensorPublisher {
    * Start the publishing of data to ROS.
    */
   start() {
-    throw Error('start method not defined!');
+    if (this.started) {
+      throw new Error('Publisher already started');
+    }
+    this.started = true;
   }
 
   /**
    * Stops the publishing of data to ROS.
    */
   stop() {
-    throw Error('stop method not defined!');
+    if (!this.started) {
+      throw new Error('Publisher did not start yet');
+    }
+    this.started = false;
   }
 
   /**

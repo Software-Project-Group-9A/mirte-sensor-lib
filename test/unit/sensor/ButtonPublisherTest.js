@@ -1,27 +1,9 @@
-const assert = require('assert');
-// Sinon library for mocking
-const sinon = require('sinon');
-
-// JSDOM for simulating browser environment
-const {JSDOM} = require('jsdom');
-const {window} = new JSDOM(``, {});
+require('../../globalSetup.js');
 
 // Module to test
 const ButtonPublisher = require('../../../src/sensors/ButtonPublisher.js');
 
-// define JSDOM window in global scope, if not already defined
-global.window = global.window || window;
 const {document} = global.window;
-
-// define dummy ROSLIB in global scope
-global.ROSLIB = {
-  Topic: function() {
-    this.publish = function(msg) {};
-  },
-  Message: function(msg) {
-    this.msg = msg;
-  },
-};
 
 describe('Test ButtonPublisher', function() {
   describe('#constructor(topic, button)', function() {
@@ -57,11 +39,6 @@ describe('Test ButtonPublisher', function() {
       assert.throws(() => {
         new ButtonPublisher(new ROSLIB.Topic(), undefined);
       }, expectInvalidButton);
-    });
-    it('please', function() {
-      assert(
-          document.createElement('button') instanceof window.HTMLButtonElement,
-      );
     });
     it('should reject any button argument that is not an HTML Button', function() {
       assert.throws(() => {
@@ -115,17 +92,18 @@ describe('Test ButtonPublisher', function() {
           button.addEventListener.calledWith('mousedown', publisher.onMouseDown),
       );
     });
-    it('should result in onMouseDown being called at mousedown event', function() {
+    it('should result in onMouseDown being called at mousedown event 1', function() {
       const button = document.createElement('button');
       const topic = new ROSLIB.Topic();
       const publisher = sinon.spy(new ButtonPublisher(topic, button));
 
       publisher.start();
+
       button.dispatchEvent(new window.Event('mousedown'));
 
       assert.equal(publisher.onMouseDown.callCount, 1);
     });
-    it('should result in onMouseDown being called at mousedown event', function() {
+    it('should result in onMouseDown being called at mousedown event 2', function() {
       const button = document.createElement('button');
       const topic = new ROSLIB.Topic();
       const publisher = sinon.spy(new ButtonPublisher(topic, button));

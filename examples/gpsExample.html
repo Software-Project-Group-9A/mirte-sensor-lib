@@ -3,12 +3,7 @@
         <script src="http://static.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
         <script src="http://static.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
         <script src="../build/RosSensorLib.js"></script>
-    </head>
-    <body>
-        <h1 id='connection_info'></h1>
-        <input id="slider" type="range" min=0 max=200 value=50>
         <script>
-            /* Connect to ROS*/
             var ros = new ROSLIB.Ros();
 
             ros.on('connection', function() {document.getElementById("connection_info").innerHTML = "Connected to webserver."});
@@ -17,18 +12,26 @@
 
             ros.on('close', function() { document.getElementById("connection_info").innerHTML = 'Connection to websocket server closed.'; });
 
-            /* Set up a topic, any slider data will be published to /slider */
             var topic = new ROSLIB.Topic({
                 ros : ros,
-                name : '/slider',
-                messageType: 'std_msgs/Int32'
+                name : '/gps',
             });
 
             ros.connect('ws://localhost:9090');
-
-            /* Set up and start the publisher */
-            var publisher = new SENSORLIB.SliderPublisher(topic, document.getElementById("slider"));
+        </script>
+    </head>
+    <body>
+        <h1 id='connection_info'></h1>
+        <h2>Now publisher location!</h2>
+            <p id='location'></p>
+        <script>
+            var publisher = new SENSORLIB.GPSPublisher(topic, 1);
             publisher.start();
+
+            navigator.geolocation.watchPosition((location) => {
+                const textArea = document.getElementById('location');
+                textArea.textContent = "Latitude: " + location.coords.latitude + "\n, Longitude: " + location.coords.longitude;
+            });
         </script>
     </body>
 </html>
