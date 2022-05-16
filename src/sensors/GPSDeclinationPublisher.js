@@ -71,6 +71,9 @@ class GPSDeclinationPublisher extends IntervalPublisher {
     if (latitude === this.lat && longitude === this.lng) {
       return 0;
     }
+    // Copied code to calculate the degree
+    // But works in a weird way
+    // North = 180, East = -90, South = 0, West = 90
     const phiK = (this.lat * Math.PI) / 180.0;
     const lambdaK = (this.lng * Math.PI) / 180.0;
     const phi = (latitude * Math.PI) / 180.0;
@@ -81,8 +84,12 @@ class GPSDeclinationPublisher extends IntervalPublisher {
           Math.sin(lambdaK - lambda),
           Math.cos(phi) * Math.tan(phiK) -
           Math.sin(phi) * Math.cos(lambdaK - lambda));
+    // Round to shift out small changes
     let degree = Math.round(psi);
+    // By this it becomes
+    // North = 360, East = 90, South = 180, West = 270
     degree = degree + 180;
+    // Since we work in range [0, 360[
     if (degree === 360) {
       degree = 0;
     }
