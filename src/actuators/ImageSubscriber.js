@@ -72,16 +72,27 @@ class ImageSubscriber extends Subscriber {
    */
   onMessage(msg) {
     const data = msg.data;
-    let format;
+    let imageDataUrl;
 
     if (this.compressed) {
-      format = msg.format;
+      imageDataUrl = ImageSubscriber.createImageDataUrl(msg.format, data);
     } else {
-      format = 'x-dcraw';
+      // setup canvas
+      const imageCanvas = document.createElement('canvas');
+      imageCanvas.width = msg.width;
+      imageCanvas.height = msg.height;
+      const ctx = imageCanvas.getContext('2d');
+
+      // create RGBA image data from raw pixel data in msg
+      const imageData = ctx.createImageData(msg.width, msg.height);
+      imageData.data = convertImageData(msg.data, msg.encoding);
+      image.canvas.putImageData(imageData);
+
+      // create new dataURL from canvas contents
+      imageDataUrl = imageCanvas.toDataURL();
     }
 
     // draw image contained in dataURL to canvas
-    const imageDataUrl = ImageSubscriber.createImageDataUrl(format, data);
     this.drawImage(imageDataUrl);
   }
 }
