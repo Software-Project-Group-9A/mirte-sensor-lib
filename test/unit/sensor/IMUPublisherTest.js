@@ -112,6 +112,7 @@ describe('Test IMU Publisher', function() {
       const imu = new IMUPublisher(topic);
       imu.orientationReady = true;
       imu.motionReady = true;
+
       imu.alpha = 0.0;
       imu.beta = 0.0;
       imu.gamma = 0.0;
@@ -121,7 +122,7 @@ describe('Test IMU Publisher', function() {
       const msg = topicSpy.publish.args[0];
 
       // Assert
-      const msgQuat= msg[0].msg.orientation;
+      const msgQuat= msg[0].orientation;
       assert.deepEqual(msgQuat, {x: 0, y: 0, z: 0, w: 1});
     });
 
@@ -143,7 +144,7 @@ describe('Test IMU Publisher', function() {
       const msg = topicSpy.publish.args[0];
 
       // Assert
-      const msgCords = msg[0].msg.orientation;
+      const msgCords = msg[0].orientation;
       const msgQuat = new THREE.Quaternion(msgCords.x, msgCords.y, msgCords.z, msgCords.w);
       const q = new THREE.Euler().setFromQuaternion(msgQuat);
       // Check if angles are valid
@@ -152,9 +153,9 @@ describe('Test IMU Publisher', function() {
       closeTo(q.y * rad, 75.0, 0.05); // y axis should be gamma
       closeTo(q.z * rad, 90.0, 0.05); // z axis should be alpha
       // Check if ROS-messages recognises data as defined.
-      assert.equal(msg[0].msg.orientation_covariance[0], 0);
-      assert.equal(msg[0].msg.angular_velocity_covariance[0], 0);
-      assert.equal(msg[0].msg.linear_acceleration_covariance[0], 0);
+      assert.equal(msg[0].orientation_covariance[0], 0);
+      assert.equal(msg[0].angular_velocity_covariance[0], 0);
+      assert.equal(msg[0].linear_acceleration_covariance[0], 0);
     });
 
     it('has -1 hardcoded in the covar-matrix when phone orientattion has not occured', function() {
@@ -170,9 +171,9 @@ describe('Test IMU Publisher', function() {
       const msg = topicSpy.publish.args[0];
 
       // Assert
-      assert.equal(msg[0].msg.orientation_covariance[0], -1);
-      assert.equal(msg[0].msg.angular_velocity_covariance[0], 0);
-      assert.equal(msg[0].msg.linear_acceleration_covariance[0], 0);
+      assert.equal(msg[0].orientation_covariance[0], -1);
+      assert.equal(msg[0].angular_velocity_covariance[0], 0);
+      assert.equal(msg[0].linear_acceleration_covariance[0], 0);
     });
 
     it('has -1 hardcoded in the covar-matrix when motion event has not yet occured', function() {
@@ -188,9 +189,9 @@ describe('Test IMU Publisher', function() {
       const msg = topicSpy.publish.args[0];
 
       // Assert
-      assert.equal(msg[0].msg.orientation_covariance[0], 0);
-      assert.equal(msg[0].msg.angular_velocity_covariance[0], -1);
-      assert.equal(msg[0].msg.linear_acceleration_covariance[0], -1);
+      assert.equal(msg[0].orientation_covariance[0], 0);
+      assert.equal(msg[0].angular_velocity_covariance[0], -1);
+      assert.equal(msg[0].linear_acceleration_covariance[0], -1);
     });
 
     it('has -1 hardcoded in the covar-matrix when neither events have occured', function() {
@@ -206,9 +207,9 @@ describe('Test IMU Publisher', function() {
       const msg = topicSpy.publish.args[0];
 
       // Assert
-      assert.equal(msg[0].msg.orientation_covariance[0], -1);
-      assert.equal(msg[0].msg.angular_velocity_covariance[0], -1);
-      assert.equal(msg[0].msg.linear_acceleration_covariance[0], -1);
+      assert.equal(msg[0].orientation_covariance[0], -1);
+      assert.equal(msg[0].angular_velocity_covariance[0], -1);
+      assert.equal(msg[0].linear_acceleration_covariance[0], -1);
     });
   });
 });
