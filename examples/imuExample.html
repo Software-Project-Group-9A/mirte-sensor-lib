@@ -12,7 +12,7 @@
 
     ros.on('close', function() { document.getElementById("connection_info").innerHTML = 'Connection to websocket server closed.'; });
 
-    /* Set up a topic, any slider data will be published to /slider */
+    /* Set up a topic, any IMU data will be published to /gyro*/
     var topic = new ROSLIB.Topic({
         ros : ros,
         name : '/gyro',

@@ -102,8 +102,6 @@ class IMUPublisher extends IntervalPublisher {
     const q = new THREE.Quaternion();
     q.setFromEuler(eurlerpose);
 
-    console.log(this.alpha + ' ' + this.beta + ' ' + this.gamma);
-
     // Create imuMessage in ROS's IMU-message format.
     // For definition of message type see following source:
     // http://docs.ros.org/en/lunar/api/sensor_msgs/html/msg/Imu.html
