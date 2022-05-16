@@ -16,7 +16,7 @@ describe('Test TextSubscriber', function() {
     function expectInvalidHTMLElement(error) {
       assert(error instanceof TypeError);
       assert(
-          error.message === 'HTMLElement argument was not of type HTMLElement',
+          error.message === 'HTMLElement argument was not of type HTMLElement'
       );
 
       return true;
@@ -44,7 +44,7 @@ describe('Test TextSubscriber', function() {
           },
           (error) => {
             return false;
-          },
+          }
       );
 
       assert.equal(subscriber.HTMLElement, div);
