@@ -5,6 +5,7 @@
 */
 
 // Dependencies
+const PermissionDeniedError = require('../error/PermissionDeniedError.js');
 const IntervalPublisher = require('./IntervalPublisher.js');
 
 /**
@@ -32,11 +33,23 @@ class MagneticDeclinationPublisher extends IntervalPublisher {
     this.oldCompass = null;
 
     // No support for IOS yet
-    window.addEventListener('deviceorientation', (event) => {
-      this.onReadOrientation(event);
-    });
+    // Checks if the device runs on iOS device
+    if (/iPad|iPhone|iPod/.test(navigator.userAgent && !this.requestPermission())) {
+      throw new PermissionDeniedError('Permission to use Device Orientation denied');
+    } else {
+      window.addEventListener('deviceorientation', (event) => {
+        this.onReadOrientation(event);
+      });
+    }
   }
 
+  /**
+   * Adds a button to the document to ask for permission to use IMU sensor on iOS.
+   * @return {Boolean} true if permission is granted, else false.
+   */
+  static requestPermission() {
+    return true;
+  }
   /**
    * Callback for when error occurs while reading sensor data.
    * @param {Error} event containing error info.
