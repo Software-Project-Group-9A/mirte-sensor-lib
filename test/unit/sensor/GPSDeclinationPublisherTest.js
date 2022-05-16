@@ -26,7 +26,7 @@ describe('Test GPSDeclinationPublisher', function() {
           },
           (error) => {
             return false;
-          },
+          }
       );
     });
     it('should accept an undefined longitude', function() {
@@ -36,7 +36,7 @@ describe('Test GPSDeclinationPublisher', function() {
           },
           (error) => {
             return false;
-          },
+          }
       );
     });
 
@@ -47,7 +47,7 @@ describe('Test GPSDeclinationPublisher', function() {
           },
           (error) => {
             return false;
-          },
+          }
       );
     });
   });
