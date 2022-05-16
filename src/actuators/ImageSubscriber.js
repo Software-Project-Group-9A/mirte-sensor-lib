@@ -86,7 +86,7 @@ class ImageSubscriber extends Subscriber {
 
     let charIndex = 0;
     for (let i = 0; i < imageData.length; i++) {
-      if (!hasAlphaChannel && i % 4 == 3) {
+      if (!hasAlphaChannel && i % 4 === 3) {
         imageData[i] = 255;
         continue;
       }
@@ -116,7 +116,7 @@ class ImageSubscriber extends Subscriber {
       const ctx = imageCanvas.getContext('2d');
 
       // create RGBA image data from raw pixel data in msg
-      const convertedData = this.convertImageData(msg.data, msg.encoding);
+      const convertedData = ImageSubscriber.convertImageData(msg.data, msg.encoding, msg.width * msg.height);
       const imageData = new window.ImageData(convertedData, msg.width, msg.height);
       ctx.putImageData(imageData, 0, 0);
 

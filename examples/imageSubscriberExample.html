@@ -3,7 +3,7 @@
         <script src="https://github.com/RobotWebTools/roslibjs/blob/develop/build/roslib.min.js"></script>
         <script src="http://static.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
         <script src="http://static.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
-        <script src="../build/RosSensorLib.min.js"></script>
+        <script src="../build/RosSensorLib.js"></script>
         <script>
             var ros = new ROSLIB.Ros();
 
@@ -32,9 +32,10 @@
             var subscriber = new SENSORLIB.ImageSubscriber(imageTopic, document.getElementById("outputCanvas"), false);
             
             subscriber.onMessage({
-                data: "data",
-                width: 1,
-                height: 1,
+                data: '/wAA/wAA/wAA/wAA/wAA/wAA/wAA/wAA/wAA/wAA/wAA/wAA/wAA/wAA/wAA/wAA/wAA/wAA/wAA/wAA/wAA/wAA/wAA/wAA/wAA',
+                encoding: 'rgb8',
+                width: 5,
+                height: 5,
             });
             
             // subscriber.onMessage({format: 'png', data: 'iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAAXNSR0IArs4c6QAAABNJREFUGFdj/M/A8J8BDTDSQBAAXGUJ/ETDsUAAAAAASUVORK5CYII='});

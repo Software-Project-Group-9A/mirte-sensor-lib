@@ -5,7 +5,8 @@ const NotSupportedError = require('../../../src/error/NotSupportedError');
 
 const {document} = global.window;
 global.document = document;
-const {createCanvas} = require('canvas');
+const {ImageData} = require('canvas');
+global.window.ImageData = ImageData;
 
 /**
  * Image data and format of 5 by 5 png, with all of it's pixels red
@@ -13,6 +14,14 @@ const {createCanvas} = require('canvas');
 const RED_SQUARE_FORMAT = 'png';
 const RED_SQUARE_DATA = 'iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAAXNSR0IArs4c' +
     '6QAAABNJREFUGFdj/M/A8J8BDTDSQBAAXGUJ/ETDsUAAAAAASUVORK5CYII=';
+/**
+ * Pixel data of red square in rgb8 format, with correspong png encoding data
+ */
+const RED_SQUARE_RGB = '/wAA/wAA/wAA/wAA/wAA/wAA/wAA/wAA/wAA/wAA/wAA' +
+              '/wAA/wAA/wAA/wAA/wAA/wAA/wAA/wAA/wAA/wAA/wAA/wAA/wAA/wAA';
+const RED_SQUARE_RGB_DATA = 'iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAAC' +
+              'NbyblAAAABmJLR0QA/wD/AP+gvaeTAAAAFUlEQVQImWP8z8DwnwEN' +
+              'MKELUEEQAM6pAggfw96NAAAAAElFTkSuQmCC';
 
 describe('ImageSubscriber', function() {
   describe('#constructor(topic, canvas)', function() {
@@ -71,6 +80,23 @@ describe('ImageSubscriber', function() {
       subscriber.onMessage({format: RED_SQUARE_FORMAT, data: RED_SQUARE_DATA});
 
       const expectedURL = `data:image/${RED_SQUARE_FORMAT};base64,${RED_SQUARE_DATA}`;
+      assert.equal(subscriber.drawImage.callCount, 1);
+      assert.equal(subscriber.drawImage.firstCall.firstArg, expectedURL);
+    });
+    it('calls drawImage with correct URL for uncompressed image in rgb8 encoding', function() {
+      const canvas = document.createElement('canvas', {width: 2, height: 2});
+      const subscriber = new ImageSubscriber(new ROSLIB.Topic(), canvas, false);
+
+      subscriber.drawImage = sinon.spy(function(src) {
+        const canvas = this.canvas;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = 'rgba(255, 0, 0, 255)';
+        ctx.fillRect(0, 0, 5, 5);
+      });
+
+      subscriber.onMessage({encoding: 'rgb8', data: RED_SQUARE_RGB, width: 5, height: 5});
+
+      const expectedURL = `data:image/${RED_SQUARE_FORMAT};base64,${RED_SQUARE_RGB_DATA}`;
       assert.equal(subscriber.drawImage.callCount, 1);
       assert.equal(subscriber.drawImage.firstCall.firstArg, expectedURL);
     });
