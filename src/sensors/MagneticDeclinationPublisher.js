@@ -32,7 +32,7 @@ class MagneticDeclinationPublisher extends IntervalPublisher {
     this.oldCompass = null;
 
     // No support for IOS yet
-    window.addEventListener('deviceorientation', (event) => {
+    window.addEventListener('deviceorientationabsolute', (event) => {
       this.onReadOrientation(event);
     }, true);
   }
@@ -53,7 +53,7 @@ class MagneticDeclinationPublisher extends IntervalPublisher {
      * @param {DeviceOrientationEvent} event object containing sensor data.
      */
   onReadOrientation(event) {
-    this.alpha = Math.abs(event.alpha - 360);
+    this.alpha = Math.round(Math.abs(event.alpha - 360));
     this.orientationReady = true;
   }
 
