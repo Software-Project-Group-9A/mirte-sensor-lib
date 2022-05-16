@@ -47,7 +47,7 @@ describe('Test CamerPublisher', function() {
       assert.throws( () => {
         new CameraPublisher(new ROSLIB.Topic(), undefined, canvas);
       },
-      expectInvalidCamera,
+      expectInvalidCamera
       );
     });
     /* test for correct camera verification */
@@ -55,7 +55,7 @@ describe('Test CamerPublisher', function() {
       assert.throws( () => {
         new CameraPublisher(new ROSLIB.Topic(), document.createElement('button'), canvas);
       },
-      expectInvalidCamera,
+      expectInvalidCamera
       );
     });
     /* test for canvas verification */
@@ -63,7 +63,7 @@ describe('Test CamerPublisher', function() {
       assert.throws( () => {
         new CameraPublisher(new ROSLIB.Topic(), camera, undefined);
       },
-      expectInvalidCanvas,
+      expectInvalidCanvas
       );
     });
     /* test for correct canvas verification */
@@ -71,7 +71,7 @@ describe('Test CamerPublisher', function() {
       assert.throws( () => {
         new CameraPublisher(new ROSLIB.Topic(), camera, document.createElement('button'));
       },
-      expectInvalidCanvas,
+      expectInvalidCanvas
       );
     });
     it('should accept publisher with topic and camera', function() {

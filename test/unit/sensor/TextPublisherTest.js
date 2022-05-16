@@ -40,7 +40,7 @@ describe('Test TextPublisher', function() {
           () => {
             new TextPublisher(new ROSLIB.Topic(), undefined);
           },
-          expectInvalidInputElement,
+          expectInvalidInputElement
       );
     });
     it('should reject any input argument that is not an HTMLInputElement',
@@ -49,7 +49,7 @@ describe('Test TextPublisher', function() {
               () => {
                 new TextPublisher(new ROSLIB.Topic(), 'not an input element');
               },
-              expectInvalidInputElement,
+              expectInvalidInputElement
           );
         });
 
@@ -60,7 +60,7 @@ describe('Test TextPublisher', function() {
           () => {
             new TextPublisher(undefined, document.createElement('input'));
           },
-          expectInvalidTopic,
+          expectInvalidTopic
       );
     });
     it('should reject any topic argument that is not a ROSLIB.Topic instance',
@@ -70,7 +70,7 @@ describe('Test TextPublisher', function() {
                 new TextPublisher('not a topic',
                     document.createElement('input'));
               },
-              expectInvalidTopic,
+              expectInvalidTopic
           );
         });
 
@@ -86,7 +86,7 @@ describe('Test TextPublisher', function() {
               },
               (error) => {
                 return false;
-              },
+              }
           );
 
           assert.equal(publisher.inputElement, inputElement);

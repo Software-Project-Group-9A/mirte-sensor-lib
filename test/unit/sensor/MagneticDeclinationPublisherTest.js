@@ -23,7 +23,7 @@ describe('Test MagneticDeclinationPublisher', function() {
           () => {
             new MagneticDeclinationPublisher(undefined);
           },
-          expectInvalidTopic,
+          expectInvalidTopic
       );
     });
     it('should reject any topic argument ' +
@@ -32,7 +32,7 @@ describe('Test MagneticDeclinationPublisher', function() {
           () => {
             new MagneticDeclinationPublisher('not a topic');
           },
-          expectInvalidTopic,
+          expectInvalidTopic
       );
     });
 
@@ -43,7 +43,7 @@ describe('Test MagneticDeclinationPublisher', function() {
           },
           (error) => {
             return false;
-          },
+          }
       );
     });
   });
@@ -188,7 +188,7 @@ describe('Test MagneticDeclinationPublisher', function() {
           () => {
             publisher.createSnapshot();
           },
-          orientationNotReady,
+          orientationNotReady
       );
     });
   });
