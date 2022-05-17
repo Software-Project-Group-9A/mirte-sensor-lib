@@ -47,11 +47,32 @@ class GPSDeclinationPublisher extends IntervalPublisher {
     this.oldCompass = null;
 
     // No support for IOS yet
-    window.addEventListener('deviceorientation', (event) => {
-      this.onReadOrientation(event);
-    }, true);
-  }
 
+    // boolean test to check if the user agent is on an iOS device
+    const isIOS = /iPad|iPhone|iPod|Macintosh/.test(window.navigator.userAgent);
+    if ( isIOS && !this.requestPermission(DeviceOrientationEvent)) {
+      throw new PermissionDeniedError('Permission to use Device Orientation denied');
+    } else {
+      window.addEventListener('deviceorientation', (event) => {
+        this.onReadOrientation(event);
+      }, true);
+    }
+  }
+  /**
+   * Adds a button to the document to ask for permission to use IMU sensor on iOS.
+   * @param {Event} event to request permission from.
+   * @return {Boolean} true if permission is granted, else false.
+   */
+  requestPermission(event) {
+    event.requestPermission()
+        .then((response) => {
+          if (response == 'granted') {
+            return true;
+          }
+        })
+        .catch(console.error);
+    return false;
+  }
   /**
    * Callback for when error occurs while reading sensor data.
    * @param {Error} event containing error info.

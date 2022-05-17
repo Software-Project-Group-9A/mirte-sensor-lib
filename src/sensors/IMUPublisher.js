@@ -38,19 +38,21 @@ class IMUPublisher extends IntervalPublisher {
     this.vbeta = 0;
     this.vgamma = 0;
 
-    // Enable callback for deviceOrientationEvent
+    // boolean test to check if the user agent is on an iOS device
+    const isIOS = /iPad|iPhone|iPod|Macintosh/.test(window.navigator.userAgent);
 
-    if ( /iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent) && !this.requestPermission(DeviceOrientationEvent)) {
+    if ( isIOS && !this.requestPermission(DeviceOrientationEvent)) {
       throw new PermissionDeniedError('Permission to use Device Orientation denied');
     } else {
+      // Enable callback for deviceOrientationEvent
       window.addEventListener('deviceorientation', (event) => {
         this.onReadOrientation(event);
       });
     }
-    if ( /iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent) && !this.requestPermission(DeviceMotionEvent)) {
+    if ( isIOS && !this.requestPermission(DeviceMotionEvent)) {
       throw new PermissionDeniedError('Permission to use Device Orientation denied');
     } else {
-    // Enable callback for deviceMotionEvent
+      // Enable callback for deviceMotionEvent
       if (window.DeviceMotionEvent) {
         window.addEventListener('devicemotion', (event) => {
           this.onReadMotion.bind(this)(event);

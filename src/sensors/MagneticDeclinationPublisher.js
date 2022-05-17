@@ -34,7 +34,10 @@ class MagneticDeclinationPublisher extends IntervalPublisher {
 
     // No support for IOS yet
     // Checks if the device runs on iOS device
-    if ( /iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent) && !this.requestPermission()) {
+
+    // boolean test to check if the user agent is on an iOS device
+    const isIOS = /iPad|iPhone|iPod|Macintosh/.test(window.navigator.userAgent);
+    if ( isIOS && !this.requestPermission(DeviceOrientationEvent)) {
       throw new PermissionDeniedError('Permission to use Device Orientation denied');
     } else {
       window.addEventListener('deviceorientation', (event) => {
@@ -45,10 +48,11 @@ class MagneticDeclinationPublisher extends IntervalPublisher {
 
   /**
    * Adds a button to the document to ask for permission to use IMU sensor on iOS.
+   * @param {Event} event to request permission from.
    * @return {Boolean} true if permission is granted, else false.
    */
-  requestPermission() {
-    DeviceOrientationEvent.requestPermission()
+  requestPermission(event) {
+    event.requestPermission()
         .then((response) => {
           if (response == 'granted') {
             return true;
