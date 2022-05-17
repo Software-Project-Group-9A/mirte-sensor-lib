@@ -10,6 +10,7 @@ stages:
 
 before_script:
   - npm install -g grunt-cli
+  - npm install canvas --savedev
   - npm install
 
 build:
