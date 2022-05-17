@@ -1,4 +1,4 @@
-image: node:latest
+image: node:14.19.2
 
 cache:
   paths:
@@ -11,7 +11,6 @@ stages:
 before_script:
   - node -v
   - npm install -g grunt-cli
-  - npm install canvas --savedev
   - npm install
 
 build:
