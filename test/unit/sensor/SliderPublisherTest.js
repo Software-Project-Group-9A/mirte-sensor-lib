@@ -1,21 +1,9 @@
-const assert = require('assert');
-
-// Sinon library for mocking
-// Allows for fake timers, which might be useful in future testing
-const sinon = require('sinon');
-
-// JSDOM for simulating browser environment
-const {JSDOM} = require('jsdom');
-const {window} = new JSDOM(``, {});
+require('../../globalSetup.js');
 
 // Module to test
 const SliderPublisher = require('../../../src/sensors/SliderPublisher.js');
 
-// define JSDOM window in global scope, if not already defined
-global.window = global.window || window;
 const {document} = global.window;
-
-require('../../globalSetup.js');
 
 describe('SliderPublisher', function() {
   /**
@@ -45,7 +33,7 @@ describe('SliderPublisher', function() {
       assert(error instanceof TypeError);
       assert(
           error.message === 'slider argument was not of type HTMLInputElement' ||
-          error.message === 'slider argument does not have type range',
+          error.message === 'slider argument does not have type range'
       );
 
       return true;
@@ -123,7 +111,7 @@ describe('SliderPublisher', function() {
 
       const publishedMessage = topic.publish.getCall(0).args[0];
 
-      assert.equal(typeof publishedMessage.msg.data, 'number');
+      assert.equal(typeof publishedMessage.data, 'number');
     });
     it('should publish a message with the updated slider value when the slider changes', function() {
       const slider = createSlider();

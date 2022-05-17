@@ -1,9 +1,7 @@
-const assert = require('assert');
+require('../../globalSetup.js');
 
 // Module to test
 const SensorPublisher = require('../../../src/sensors/SensorPublisher.js');
-
-require('../../globalSetup.js');
 
 describe('Test SensorPublisher', function() {
   describe('#constructor(topic)', function() {
@@ -42,7 +40,7 @@ describe('Test SensorPublisher', function() {
           },
           (error) => {
             return false;
-          },
+          }
       );
 
       assert.equal(publisher.topic, topic);

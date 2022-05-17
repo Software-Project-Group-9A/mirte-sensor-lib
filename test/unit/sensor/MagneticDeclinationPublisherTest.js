@@ -1,21 +1,8 @@
-const assert = require('assert');
-
-// Sinon library for mocking
-// Allows for fake timers, which might be useful in future testing
-const sinon = require('sinon');
-
-// JSDOM for simulating browser environment
-const {JSDOM} = require('jsdom');
-const {window} = new JSDOM(``, {});
+require('../../globalSetup.js');
 
 // Module to test
 const MagneticDeclinationPublisher =
     require('../../../src/sensors/MagneticDeclinationPublisher.js');
-
-// define JSDOM window in global scope
-global.window = global.window || window;
-
-require('../../globalSetup.js');
 
 describe('Test MagneticDeclinationPublisher', function() {
   describe('#constructor(topic)', function() {
@@ -36,7 +23,7 @@ describe('Test MagneticDeclinationPublisher', function() {
           () => {
             new MagneticDeclinationPublisher(undefined);
           },
-          expectInvalidTopic,
+          expectInvalidTopic
       );
     });
     it('should reject any topic argument ' +
@@ -45,7 +32,7 @@ describe('Test MagneticDeclinationPublisher', function() {
           () => {
             new MagneticDeclinationPublisher('not a topic');
           },
-          expectInvalidTopic,
+          expectInvalidTopic
       );
     });
 
@@ -56,7 +43,7 @@ describe('Test MagneticDeclinationPublisher', function() {
           },
           (error) => {
             return false;
-          },
+          }
       );
     });
   });
@@ -91,7 +78,7 @@ describe('Test MagneticDeclinationPublisher', function() {
 
           publisher.onReadOrientation(eventParam);
 
-          assert.equal(publisher.alpha, 1);
+          assert.equal(publisher.alpha, 359);
           assert(publisher.onReadOrientation);
         });
   });
@@ -201,7 +188,7 @@ describe('Test MagneticDeclinationPublisher', function() {
           () => {
             publisher.createSnapshot();
           },
-          orientationNotReady,
+          orientationNotReady
       );
     });
   });

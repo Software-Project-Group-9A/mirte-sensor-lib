@@ -34,7 +34,7 @@ class MagneticDeclinationPublisher extends IntervalPublisher {
     // No support for IOS yet
     window.addEventListener('deviceorientation', (event) => {
       this.onReadOrientation(event);
-    });
+    }, true);
   }
 
   /**
@@ -53,7 +53,7 @@ class MagneticDeclinationPublisher extends IntervalPublisher {
      * @param {DeviceOrientationEvent} event object containing sensor data.
      */
   onReadOrientation(event) {
-    this.alpha = event.alpha;
+    this.alpha = Math.abs(event.alpha - 360);
     this.orientationReady = true;
   }
 
@@ -65,7 +65,7 @@ class MagneticDeclinationPublisher extends IntervalPublisher {
     if (!this.orientationReady) {
       throw Error('Orientation is not read yet!');
     }
-    const compass = Math.abs(this.alpha - 360);
+    const compass = this.alpha;
     // Check if compass changed
     if (compass === this.oldCompass) {
       return;

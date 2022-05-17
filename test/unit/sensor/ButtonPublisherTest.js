@@ -1,19 +1,9 @@
-const assert = require('assert');
-// Sinon library for mocking
-const sinon = require('sinon');
-
-// JSDOM for simulating browser environment
-const {JSDOM} = require('jsdom');
-const {window} = new JSDOM(``, {});
+require('../../globalSetup.js');
 
 // Module to test
 const ButtonPublisher = require('../../../src/sensors/ButtonPublisher.js');
 
-// define JSDOM window in global scope, if not already defined
-global.window = global.window || window;
 const {document} = global.window;
-
-require('../../globalSetup.js');
 
 describe('Test ButtonPublisher', function() {
   describe('#constructor(topic, button)', function() {
@@ -26,7 +16,7 @@ describe('Test ButtonPublisher', function() {
     function expectInvalidButton(error) {
       assert(error instanceof TypeError);
       assert(
-          error.message === 'button argument was not of type HTMLButtonElement',
+          error.message === 'button argument was not of type HTMLButtonElement'
       );
 
       return true;
@@ -79,7 +69,7 @@ describe('Test ButtonPublisher', function() {
           },
           (error) => {
             return false;
-          },
+          }
       );
 
       assert.equal(publisher.button, button);
@@ -96,10 +86,10 @@ describe('Test ButtonPublisher', function() {
 
       assert.equal(button.addEventListener.callCount, 2);
       assert(
-          button.addEventListener.calledWith('mouseup', publisher.onMouseUp),
+          button.addEventListener.calledWith('mouseup', publisher.onMouseUp)
       );
       assert(
-          button.addEventListener.calledWith('mousedown', publisher.onMouseDown),
+          button.addEventListener.calledWith('mousedown', publisher.onMouseDown)
       );
     });
     it('should result in onMouseDown being called at mousedown event 1', function() {
@@ -170,11 +160,11 @@ describe('Test ButtonPublisher', function() {
       assert(
           button.removeEventListener.calledWith(
               'mousedown',
-              publisher.onMouseDown,
-          ),
+              publisher.onMouseDown
+          )
       );
       assert(
-          button.removeEventListener.calledWith('mouseup', publisher.onMouseUp),
+          button.removeEventListener.calledWith('mouseup', publisher.onMouseUp)
       );
     });
     it('should prevent onMouseDown from being called at mousedown event', function() {

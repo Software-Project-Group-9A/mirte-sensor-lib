@@ -1,21 +1,9 @@
-const assert = require('assert');
-
-// Sinon library for mocking
-// Allows for fake timers, which might be useful in future testing
-const sinon = require('sinon');
-
-// JSDOM for simulating browser environment
-const {JSDOM} = require('jsdom');
-const {window} = new JSDOM(``, {});
+require('../../globalSetup.js');
 
 // Module to test
 const TextPublisher = require('../../../src/sensors/TextPublisher.js');
 
-// define JSDOM window in global scope
-global.window = global.window || window;
 const {document} = global.window;
-
-require('../../globalSetup.js');
 
 describe('Test TextPublisher', function() {
   describe('#constructor(topic, inputElement)', function() {
@@ -52,7 +40,7 @@ describe('Test TextPublisher', function() {
           () => {
             new TextPublisher(new ROSLIB.Topic(), undefined);
           },
-          expectInvalidInputElement,
+          expectInvalidInputElement
       );
     });
     it('should reject any input argument that is not an HTMLInputElement',
@@ -61,7 +49,7 @@ describe('Test TextPublisher', function() {
               () => {
                 new TextPublisher(new ROSLIB.Topic(), 'not an input element');
               },
-              expectInvalidInputElement,
+              expectInvalidInputElement
           );
         });
 
@@ -72,7 +60,7 @@ describe('Test TextPublisher', function() {
           () => {
             new TextPublisher(undefined, document.createElement('input'));
           },
-          expectInvalidTopic,
+          expectInvalidTopic
       );
     });
     it('should reject any topic argument that is not a ROSLIB.Topic instance',
@@ -82,7 +70,7 @@ describe('Test TextPublisher', function() {
                 new TextPublisher('not a topic',
                     document.createElement('input'));
               },
-              expectInvalidTopic,
+              expectInvalidTopic
           );
         });
 
@@ -98,7 +86,7 @@ describe('Test TextPublisher', function() {
               },
               (error) => {
                 return false;
-              },
+              }
           );
 
           assert.equal(publisher.inputElement, inputElement);
@@ -187,16 +175,54 @@ describe('Test TextPublisher', function() {
       inputElement.value = 'test text';
 
       publisher.start();
-      const keyDownEvent = new window.Event('keyup');
+      const keyUpEvent = new window.Event('keyup');
       inputElement.dispatchEvent(new window.Event('input'));
-      keyDownEvent.key = 'Enter';
-      inputElement.dispatchEvent(keyDownEvent);
+      keyUpEvent.key = 'Enter';
+      inputElement.dispatchEvent(keyUpEvent);
 
       const expectedMessage = new ROSLIB.Message({data: 'test text'});
       assert.equal(publisher.onKeyUp.callCount, 1);
       assert.equal(topic.publish.callCount, 1);
       assert.deepEqual(topic.publish.getCall(0).args[0], expectedMessage);
     });
+  });
+
+  describe('#onKeyUp()', function() {
+    it('should not clear text when clearOnPublish=false',
+        function() {
+          const inputElement = document.createElement('input');
+          const topic = sinon.spy(new ROSLIB.Topic());
+          const publisher = sinon.spy(new TextPublisher(topic, inputElement, {clearOnPublish: false}));
+
+          inputElement.value = 'test text';
+
+          publisher.start();
+          const keyUpEvent = new window.Event('keyup');
+          inputElement.dispatchEvent(new window.Event('input'));
+          keyUpEvent.key = 'Enter';
+          inputElement.dispatchEvent(keyUpEvent);
+
+          assert.equal(inputElement.value, 'test text');
+        });
+  });
+
+  describe('#onKeyUp()', function() {
+    it('should clear text when clearOnPublish=true',
+        function() {
+          const inputElement = document.createElement('input');
+          const topic = sinon.spy(new ROSLIB.Topic());
+          const publisher = sinon.spy(new TextPublisher(topic, inputElement));
+
+          inputElement.value = 'test text';
+
+          publisher.start();
+          const keyUpEvent = new window.Event('keyup');
+          inputElement.dispatchEvent(new window.Event('input'));
+          keyUpEvent.key = 'Enter';
+          inputElement.dispatchEvent(keyUpEvent);
+
+          assert.equal(inputElement.value, '');
+        });
   });
 
   describe('#stop()', function() {

@@ -1,9 +1,7 @@
-const assert = require('assert');
+require('../../globalSetup.js');
 
 // Module to test
 const Subscriber = require('../../../src/actuators/Subscriber.js');
-
-require('../../globalSetup.js');
 
 describe('Test Subscriber', function() {
   describe('#constructor(topic)', function() {
@@ -42,7 +40,7 @@ describe('Test Subscriber', function() {
           },
           (error) => {
             return false;
-          },
+          }
       );
 
       assert.equal(subscriber.topic, topic);
