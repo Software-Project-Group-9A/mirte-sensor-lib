@@ -2,16 +2,24 @@ const Subscriber = require('./Subscriber');
 const NotSupportedError = require('../error/NotSupportedError');
 
 /**
+ * ImageSubscriber subscribes to a ROS topic and displays any images published to that topic on a canvas.
+ * These images can either be provided as an sensor_msgs/Image or sensor_msgs/CompressedImage ROS message.
  *
+ * It is recommended to use compressed messages, as to minimalize the network strain. In theory, nearly any image format
+ * is supported by ImageSubscriber, as long the image format is supported by the current browser. However, only the PNG,
+ * JPEG, BMP, GIF and SVG formats have been tested so far.
+ *
+ * It is also possible to make use of uncompressed images, but support for different pixel data encodings is limited.
+ * Currently, only the rgb8 (24-bit color) and rgba8 (24-bit color with alpha channel) encodings are supported.
  */
 class ImageSubscriber extends Subscriber {
   /**
-    * Creates a new ImageSubscriber, that will display the images published to the provided topic.
-    * Both compressed (sensor_msgs/CompressedImage) and non-compressed images (sensor_msgs/Image)
+    * Creates a new ImageSubscriber, which will display the images published
     * to the provided topic on the provided canvas.
+    * Both compressed (sensor_msgs/CompressedImage) and non-compressed images (sensor_msgs/Image) are supported.
     * @param {ROSLIB.Topic} topic topic from which to subscribe to
     * @param {HTMLCanvasElement} canvas canvas to draw published images on
-    * @param {boolean} compressed  whether compressed images are published to the topic. True by defeault.
+    * @param {boolean} [compressed=true]  whether compressed images are published to the topic. True by default.
     */
   constructor(topic, canvas, compressed = true) {
     super(topic);
@@ -45,12 +53,10 @@ class ImageSubscriber extends Subscriber {
   }
 
   /**
-   *
-   * @param {*} src
-   * @param {*} ctx
+   * Draws the image encoded in the provided dataURL to the canvas of this ImageSubscriber.
+   * @param {string} dataURL dataURL containing image to draw to canvas.
    */
-  drawImage(src) {
-    // draw image to canvas
+  drawImage(dataURL) {
     const canvas = this.canvas;
     const ctx = canvas.getContext('2d');
     const image = new window.Image();
@@ -63,7 +69,7 @@ class ImageSubscriber extends Subscriber {
       throw Error('could not draw image');
     };
 
-    image.src = src;
+    image.src = dataURL;
   }
 
   /**
@@ -76,12 +82,16 @@ class ImageSubscriber extends Subscriber {
    * @return {Uint8ClampedArray} array containing pixel data in rgba format
    */
   static convertImageData(pixelData, format, pixels) {
+    // check for unsupported encodings
     if (format !== 'rgb8' && format !== 'rgba8') {
       throw new NotSupportedError('Subscriber only supports uncompressed images in rgb8 or rgba8 format');
     }
     const hasAlphaChannel = (format === 'rgba8');
+    // decode base64 encoded pixelData to string of bytes
     const binaryString = window.atob(pixelData);
 
+    // fill imageData array, which contains pixel data in rgba encoding
+    // each color channel is store as a byte (Uint8)
     const imageData = new Uint8ClampedArray(pixels * 4);
 
     let charIndex = 0;
