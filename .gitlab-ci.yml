@@ -9,6 +9,7 @@ stages:
   - test
 
 before_script:
+  - node -v
   - npm install -g grunt-cli
   - npm install canvas --savedev
   - npm install
