@@ -29,12 +29,31 @@ To use Mirte Sensor Library, it must be imbedded as a script in a webpage. Pleas
 A pre-built file of the library can be found in the */build* folder of this repository. Alternatively, the  files can be built from scratch by running the ```grunt build``` command on your local machine. For more information regarding the tools of this project, see the *Running the tools* section of this file.
 
 Once Mirte Sensor Library has been imported, it functionality is exposed through the global ```SENSORLIB``` object.
-From this object, it is possible to create a number of different ```SensorPublisher```s, to share the data of a specific sensor to ROS. These ```SensorPublisher```s all require a Topic from roslibjs to function. The details for how to create and use the different ```SensorPublisher```s can be found in the documentation. 
+From this object, it is possible to create a number of different ```SensorPublisher```s, to share the data of a specific sensor to ROS. These ```SensorPublisher```s all require a Topic from roslibjs to function. In the options of the topic, you will need to specify the handle of the ROS instance to publish to, together with the name of the topic to publish to. The ROS handle can once again be created through the roslibjs library, by connecting to a running ROS instance. An example of this can be seen below, where a ```ButtonPublisher``` is setup to publish the state of an HTML button:
+
+```
+var ros = new ROSLIB.Ros();
+
+ros.connect('ws://localhost:9090');
+
+var topic = new ROSLIB.Topic({
+    ros : ros,
+    name : '/button'
+});
+
+var publisher = new SENSORLIB.ButtonPublisher(topic, document.getElementById("button"));
+publisher.start();
+```
+
+The details for how to create and use the different ```SensorPublisher```s can be found in the documentation. 
 
 A number of example for how to do this can be found in the ```/examples``` folder.
 
 Please note that many of the ```SensorPublisher```s require user permission in order to start publishing their respective sensor data. If your browser throws a pop-up requesting permission to use one of your sensors, make sure to accept it.
 
+## Documentation
+Currently, the documentation of Mirte Sensor Library is only available to generating it youself from the source code.
+See *running the tools* for more details.
 
 ## Setup
 
@@ -45,9 +64,6 @@ To setup the project, run the following commands:
 npm install -g grunt-cli  
 npm install .
 ```
-
-
-## Documentation
 
 ## Running the tools
 
@@ -83,6 +99,8 @@ run:
 ```
 grunt doc
 ``` 
+
+The documentation will be generated in the ```/doc``` folder of the project.
 
 ## Authors and acknowledgment
 
