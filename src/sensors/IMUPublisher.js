@@ -50,7 +50,7 @@ class IMUPublisher extends IntervalPublisher {
       });
     }
     if ( isIOS && !this.requestPermission(DeviceMotionEvent)) {
-      throw new PermissionDeniedError('Permission to use Device Orientation denied');
+      throw new PermissionDeniedError('Permission to use Device Motion denied');
     } else {
       // Enable callback for deviceMotionEvent
       if (window.DeviceMotionEvent) {
