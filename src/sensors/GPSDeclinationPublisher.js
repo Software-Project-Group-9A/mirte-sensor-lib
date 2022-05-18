@@ -6,7 +6,6 @@
 
 // Dependencies
 const IntervalPublisher = require('./IntervalPublisher.js');
-const NotSupportedError = require('../error/NotSupportedError');
 
 /**
  * GPSDeclinationPublisher publishes the rotation as a compass to
@@ -33,6 +32,10 @@ class GPSDeclinationPublisher extends IntervalPublisher {
       throw new TypeError('Coordinates were not of type Number');
     }
 
+    if (latitude > 90 || latitude < -90 || longitude > 180 || longitude < -180) {
+      throw new Error('Range of given coordinates is invalid');
+    }
+
     this.topic = topic;
 
     // Sets, fields for compass
@@ -57,11 +60,6 @@ class GPSDeclinationPublisher extends IntervalPublisher {
     //   throw new NotSupportedError('Unable to create GPSPublisher, ' +
     //     'Geolocation API not supported');
     // }
-
-    // No support for IOS yet
-    window.addEventListener('deviceorientationabsolute', (event) => {
-      this.onReadOrientation(event);
-    }, true);
   }
 
   /**
@@ -69,6 +67,11 @@ class GPSDeclinationPublisher extends IntervalPublisher {
    */
   start() {
     super.start();
+
+    // No support for IOS yet
+    window.addEventListener('deviceorientationabsolute', (event) => {
+      this.onReadOrientation(event);
+    }, true);
 
     this.watchId = window.navigator.geolocation.watchPosition(
         this.locationHandler.bind(this),

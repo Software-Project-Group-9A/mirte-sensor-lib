@@ -19,6 +19,17 @@ require('../../globalSetup.js');
 
 describe('Test GPSDeclinationPublisher', function() {
   describe('#constructor(topic, latitude, longitude)', function() {
+    /**
+     * Helper functions for checking whether correct error is raised for
+     * invalid topics.
+     * @param {Error} error The raised error.
+     * @return {boolean} true if valid.
+     */
+    function expectOutOfRange(error) {
+      assert(error.message === 'Range of given coordinates is invalid');
+
+      return true;
+    }
     it('should accept an undefined latitude', function() {
       assert.doesNotThrow(
           () => {
@@ -38,6 +49,17 @@ describe('Test GPSDeclinationPublisher', function() {
             return false;
           }
       );
+    });
+
+    it('should not accept an out of range latitude', function() {
+      assert.throws(() => {
+        new GPSDeclinationPublisher(new ROSLIB.Topic(), -100, 1);
+      }, expectOutOfRange);
+    });
+    it('should not accept an out of range undefined longitude', function() {
+      assert.throws(() => {
+        new GPSDeclinationPublisher(new ROSLIB.Topic(), 1, 200);
+      }, expectOutOfRange);
     });
 
     it('should accept a well defined coördinates', function() {
@@ -106,6 +128,7 @@ describe('Test GPSDeclinationPublisher', function() {
 
       global.window.navigator.geolocation = mockGeolocation;
 
+      publisher.locationHandler(geoPos);
       publisher.onReadOrientation(eventParam);
       publisher.createSnapshot();
 
@@ -142,12 +165,13 @@ describe('Test GPSDeclinationPublisher', function() {
 
       global.window.navigator.geolocation = mockGeolocation;
 
+      publisher.locationHandler(geoPos);
       publisher.onReadOrientation(eventParam);
       publisher.createSnapshot();
       publisher.createSnapshot();
 
-      assert.equal(publisher.calcDegreeToPoint.callCount, 2);
-      assert.equal(publisher.locationHandler.callCount, 2);
+      assert.equal(publisher.calcDegreeToPoint.callCount, 1);
+      assert.equal(publisher.locationHandler.callCount, 1);
       assert.equal(publisher.createSnapshot.callCount, 2);
 
       const expectedMessage = new ROSLIB.Message({data: 180});

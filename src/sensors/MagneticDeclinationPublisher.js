@@ -30,6 +30,13 @@ class MagneticDeclinationPublisher extends IntervalPublisher {
 
     // Prevents double message publishing
     this.oldCompass = null;
+  }
+
+  /**
+   * Start the publishing of data to ROS with frequency of <freq> Hz.
+   */
+  start() {
+    super.start();
 
     // No support for IOS yet
     window.addEventListener('deviceorientationabsolute', (event) => {
