@@ -1,8 +1,40 @@
 # Mirte Sensor Library
 
-## Project 
+## About 
 
-In this project we will be designing and implementing a way to get the sensor data (IMU, GPS, camera and many others) of a mobile phone into ROS.
+The Mirte Sensor Library is JavaScript library for getting the sensor data of a mobile phone into ROS.
+
+It currently offers support for publishing IMU, GPS, compass and camera sensor data.
+
+Additionally, it allows for publishing the state of certain HTML UI elements to ROS.
+
+## Dependencies
+
+The library has the following dependencies:
+
+- eventemitter2: [https://github.com/EventEmitter2/EventEmitter2]
+- roslibjs: [https://github.com/RobotWebTools/roslibjs]
+
+To allow the library to function correctly, these dependencies must already be loaded before importing the Mirte Sensor Library.
+
+## How To Use
+
+To use Mirte Sensor Library, it must be imbedded as a script in a webpage. Please make sure the necessary dependencies are already imported, before adding the Mirte Sensor Library. This can be done as follows:
+```
+<script src="http://static.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
+<script src="http://static.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
+<script src="/path/to/RosSensorLib.min.js"></script>
+```
+
+A pre-built file of the library can be found in the */build* folder of this repository. Alternatively, the  files can be built from scratch by running the ```grunt build``` command on your local machine. For more information regarding the tools of this project, see the *Running the tools* section of this file.
+
+Once Mirte Sensor Library has been imported, it functionality is exposed through the global ```SENSORLIB``` object.
+From this object, it is possible to create a number of different ```SensorPublisher```s, to share the data of a specific sensor to ROS. These ```SensorPublisher```s all require a Topic from roslibjs to function. The details for how to create and use the different ```SensorPublisher```s can be found in the documentation. 
+
+A number of example for how to do this can be found in the ```/examples``` folder.
+
+Please note that many of the ```SensorPublisher```s require user permission in order to start publishing their respective sensor data. If your browser throws a pop-up requesting permission to use one of your sensors, make sure to accept it.
+
 
 ## Setup
 
@@ -14,7 +46,12 @@ npm install -g grunt-cli
 npm install .
 ```
 
-## Usage
+
+## Documentation
+
+## Running the tools
+
+
 
 ### **To build**
 ```
@@ -38,8 +75,6 @@ npm run coverage
 ```
 
 A report of the test coverage will be generated in build/report/nyc
-
-
 
 
 ### **To generate documentation**
