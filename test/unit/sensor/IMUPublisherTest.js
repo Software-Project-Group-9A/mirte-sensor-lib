@@ -67,6 +67,19 @@ describe('Test IMU Publisher', function() {
       assert(global.window.addEventListener.calledWith('deviceorientation'));
       assert.equal(global.window.alert.callCount, 1);
     });
+    it('should not start reading orientation user is on iOS', function() {
+      // This is to 'fake' a device running on iOS
+      const original = global.window.navigator.userAgent;
+      global.window.navigator.__defineGetter__('userAgent', () => {
+        return 'iPhone';
+      });
+      assert.equal(global.window.navigator.userAgent, 'iPhone');
+      createStandardIMU();
+      assert.equal(global.window.addEventListener.callCount, 0);
+      global.window.navigator.__defineGetter__('userAgent', () => {
+        return original;
+      });
+    });
   });
 
   // createSnapshot tests

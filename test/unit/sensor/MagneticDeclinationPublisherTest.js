@@ -1,9 +1,9 @@
 require('../../globalSetup.js');
-
 // Module to test
 const MagneticDeclinationPublisher =
     require('../../../src/sensors/MagneticDeclinationPublisher.js');
 
+// define JSDOM window in global scope, if not already defined
 describe('Test MagneticDeclinationPublisher', function() {
   describe('#constructor(topic)', function() {
     /**
@@ -46,8 +46,40 @@ describe('Test MagneticDeclinationPublisher', function() {
           }
       );
     });
+
+    it('should not start reading immeadiately orientation user is on iOS', function() {
+      // This is to 'fake' a device running on iOS
+      const sandbox = sinon.createSandbox();
+      sandbox.spy(global.window);
+      const original = global.window.navigator.userAgent;
+
+      global.window.navigator.__defineGetter__('userAgent', () => {
+        return '"Mozilla/5.0 (iPhone; CPU iPhone OS 14_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko)'+
+        ' CriOS/88.0.4292.0 Mobile/15E148 Safari/604.1"';
+      });
+      assert.equal(global.window.navigator.userAgent,
+          'Mozilla/5.0 (iPhone; CPU OS 13_1_1 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) Mobile/9B206');
+      new MagneticDeclinationPublisher(new ROSLIB.Topic());
+
+      assert.equal(global.window.addEventListener.callCount, 0);
+
+      sandbox.restore();
+      window.__defineGetter__('userAgent', () => {
+        return original;
+      });
+    });
   });
 
+  describe('#requestPermission', function() {
+    it('should create a new button', function() {
+      // global.window.navigator.__defineGetter__('userAgent', () => {
+      //   return 'mozilla';
+      // });
+      new MagneticDeclinationPublisher(new ROSLIB.Topic());
+      assert(global.window.document.querySelector('button') !== null);
+      assert(global.window.document.getElementById('permission') !== null);
+    });
+  });
   describe('#onReadOrientation()', function() {
     it('should find the current location',
         function() {
