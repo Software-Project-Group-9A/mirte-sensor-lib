@@ -15,7 +15,6 @@ class FlashLightSubscriber extends Subscriber {
   constructor(topic) {
     super(topic);
 
-
     // Test browser support
     const SUPPORTS_MEDIA_DEVICES = 'mediaDevices' in navigator;
 
@@ -27,7 +26,20 @@ class FlashLightSubscriber extends Subscriber {
         if (cameras.length === 0) {
           throw Error('No camera found on this device.');
         }
-        this.camera = cameras[cameras.length - 1];
+        const camera = cameras[cameras.length - 1];
+        navigator.mediaDevices.getUserMedia({
+          video: {
+            deviceId: camera.deviceId,
+            facingMode: ['user', 'environment'],
+            height: {ideal: 1080},
+            width: {ideal: 1920},
+          },
+        }).then((stream) => {
+          this.track = stream.getVideoTracks()[0];
+
+          // Create image capture object and get camera capabilities
+          this.imageCapture = new ImageCapture(this.track);
+        });
       });
     } else {
       throw Error('Browser does not support this feature');
@@ -41,25 +53,12 @@ class FlashLightSubscriber extends Subscriber {
    */
   onMessage(msg) {
     // Create stream and get video track
-    navigator.mediaDevices.getUserMedia({
-      video: {
-        deviceId: this.camera.deviceId,
-        facingMode: ['user', 'environment'],
-        height: {ideal: 1080},
-        width: {ideal: 1920},
-      },
-    }).then((stream) => {
-      const track = stream.getVideoTracks()[0];
+    this.imageCapture.getPhotoCapabilities().then(() => {
+      // todo: check if camera has a torch
 
-      // Create image capture object and get camera capabilities
-      const imageCapture = new ImageCapture(track);
-      imageCapture.getPhotoCapabilities().then(() => {
-        // todo: check if camera has a torch
-
-        // turn torch on or off depending on msg
-        track.applyConstraints({
-          advanced: [{torch: msg}],
-        });
+      // turn torch on or off depending on msg
+      this.track.applyConstraints({
+        advanced: [{torch: msg.data}],
       });
     });
 

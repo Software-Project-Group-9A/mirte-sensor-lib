@@ -20,14 +20,24 @@
                 name : '/flash_light',
                 messageType: 'std_msgs/Bool'
             });
+
+            var subscriber = new SENSORLIB.FlashLightSubscriber(topic);
+            subscriber.start();
         </script>
     </head>
     <body>
-        <h1 id='connection_info'></h1>
-        <button onclick="publisher.onMessage(true)">On</button>
-        <button onclick="publisher.onMessage(false)">Off</button>
         <script>
-            var publisher = new SENSORLIB.FlashLightSubscriber(topic);
+            const msgTrue = new ROSLIB.Message({
+                                    data: true,
+                                });
+
+            const msgFalse = new ROSLIB.Message({
+                                    data: false,
+                                });
+            
         </script>
+        <h1 id='connection_info'></h1>
+        <button onclick="topic.publish(msgTrue)">On</button>
+        <button onclick="topic.publish(msgFalse)">Off</button>
     </body>
 </html>
