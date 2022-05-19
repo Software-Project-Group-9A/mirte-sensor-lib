@@ -6,6 +6,7 @@
 
 // Dependencies
 const IntervalPublisher = require('./IntervalPublisher.js');
+const NotSupportedError = require('../error/NotSupportedError');
 
 /**
  * GPSDeclinationPublisher publishes the rotation as a compass to
@@ -50,16 +51,14 @@ class GPSDeclinationPublisher extends IntervalPublisher {
     // Prevents double message publishing
     this.oldCompass = null;
 
-    /**
-     * Id of geolocation watch callback
-     */
+    // Id of geolocation watch callback
     this.watchId = -1;
 
-    // // check support for API
-    // if (!window.navigator.geolocation) {
-    //   throw new NotSupportedError('Unable to create GPSPublisher, ' +
-    //     'Geolocation API not supported');
-    // }
+    // check support for API
+    if (!window.navigator.geolocation) {
+      throw new NotSupportedError('Unable to create GPSPublisher, ' +
+        'Geolocation API not supported');
+    }
   }
 
   /**
@@ -127,14 +126,10 @@ class GPSDeclinationPublisher extends IntervalPublisher {
     // By this it becomes
     // North = 360, East = 90, South = 180, West = 270
     degree = degree + 180;
-    // Since we work in range [0, 360[
+    // Since we work in range [0, 359]
     if (degree === 360) {
       degree = 0;
     }
-
-    console.log('My pos: ' + latitude + ', '+ longitude);
-    console.log('Point to: ' + this.lat + ', ' + this.lng);
-    console.log('Degree: ' + degree);
 
     return degree;
   }

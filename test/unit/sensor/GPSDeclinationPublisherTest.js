@@ -15,6 +15,8 @@ const GPSDeclinationPublisher =
 // define JSDOM window in global scope
 global.window = global.window || window;
 
+global.window.navigator.geolocation = true;
+
 require('../../globalSetup.js');
 
 describe('Test GPSDeclinationPublisher', function() {
