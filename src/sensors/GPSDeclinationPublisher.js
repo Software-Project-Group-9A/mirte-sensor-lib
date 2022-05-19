@@ -46,33 +46,53 @@ class GPSDeclinationPublisher extends IntervalPublisher {
     // Prevents double message publishing
     this.oldCompass = null;
 
-    // No support for IOS yet
+    /*
+    * Support for iOS
+    * For DeviceOrientationEvent to work on Safari on iOS 13 and up, the user has to give permission
+    * through a user activation event, such as a button press.
+    */
+    const isIOS = !window.MSStream && /iPad|iPhone|iPod|Macintosh/.test(window.navigator.userAgent);
+    if (isIOS) {
+      // Add a button that requests permission for sensor use on press
+      const permbutton = this.document.createElement('button');
+      permbutton.innerHTML = 'requestPermission';
+      permbutton.addEventListener('click', () => {
+        const permission = requestPermissionIOS(DeviceOrientationEvent);
+        // if permission, Enable callback for deviceOrientationEvent
+        if (permission) {
+          window.addEventListener('deviceorientation', (event) => {
+            this.onReadOrientation(event);
+          });
+        } else {
+          throw new PermissionDeniedError('No permission granted for Device Orientation');
+        }
+      });
 
-    // boolean test to check if the user agent is on an iOS device
-    const isIOS = /iPad|iPhone|iPod|Macintosh/.test(window.navigator.userAgent);
-    if ( isIOS && !this.requestPermission(DeviceOrientationEvent)) {
-      throw new PermissionDeniedError('Permission to use Device Orientation denied');
+      this.document.body.appendChild(permbutton);
     } else {
+      // If user is not on iOS, sensor data can be read as normal.
       window.addEventListener('deviceorientation', (event) => {
         this.onReadOrientation(event);
-      }, true);
+      });
     }
   }
+
   /**
    * Adds a button to the document to ask for permission to use IMU sensor on iOS.
    * @param {Event} event to request permission from.
    * @return {Boolean} true if permission is granted, else false.
    */
   requestPermission(event) {
-    event.requestPermission()
-        .then((response) => {
-          if (response == 'granted') {
-            return true;
-          }
-        })
-        .catch(console.error);
+    if (typeof(event.requestPermission) === 'function') {
+      event.requestPermission().then((reponse) => {
+        if (reponse === 'granted') {
+          return true;
+        }
+      });
+    }
     return false;
   }
+
   /**
    * Callback for when error occurs while reading sensor data.
    * @param {Error} event containing error info.

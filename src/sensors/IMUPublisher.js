@@ -38,21 +38,43 @@ class IMUPublisher extends IntervalPublisher {
     this.vbeta = 0;
     this.vgamma = 0;
 
-    // boolean test to check if the user agent is on an iOS device
-    const isIOS = /iPad|iPhone|iPod|Macintosh/.test(window.navigator.userAgent);
-
-    if ( isIOS && !this.requestPermission(DeviceOrientationEvent)) {
-      throw new PermissionDeniedError('Permission to use Device Orientation denied');
-    } else {
-      // Enable callback for deviceOrientationEvent
-      window.addEventListener('deviceorientation', (event) => {
-        this.onReadOrientation(event);
+    /*
+    * Support for iOS
+    * For DeviceOrientationEvent and DeviceMotionEvent to work on Safari on iOS 13 and up,
+    * the user has to give permission through a user activation event, such as a button press.
+    */
+    const isIOS = !window.MSStream && /iPad|iPhone|iPod|Macintosh/.test(window.navigator.userAgent);
+    if (isIOS) {
+      // Add a button that requests permission for sensor use on press
+      const permbutton = this.document.createElement('button');
+      permbutton.innerHTML = 'requestPermission';
+      permbutton.addEventListener('click', () => {
+        const permissionOrientation = requestPermissionIOS(DeviceOrientationEvent);
+        const permissionMotion = requestPermissionIOS(DeviceOrientationEvent);
+        if (permissionOrientation && permissionMotion) {
+          // if permission, enable callback for device orientation
+          window.addEventListener('deviceorientation', (event) => {
+            this.onReadOrientation.bind(this)(event);
+          });
+          // Enable callback for deviceMotionEvent
+          if (window.DeviceMotionEvent) {
+            window.addEventListener('devicemotion', (event) => {
+              this.onReadMotion.bind(this)(event);
+            });
+          } else {
+            window.alert('acceleration not supported!');
+          }
+        } else {
+          throw new PermissionDeniedError('No permission granted for either device orientation or device motion');
+        }
       });
-    }
-    if ( isIOS && !this.requestPermission(DeviceMotionEvent)) {
-      throw new PermissionDeniedError('Permission to use Device Motion denied');
+
+      this.document.body.appendChild(permbutton);
     } else {
-      // Enable callback for deviceMotionEvent
+      // If user is not on iOS, sensor data can be read as normal.
+      window.addEventListener('deviceorientation', (event) => {
+        this.onReadOrientation.bind(this)(event);
+      });
       if (window.DeviceMotionEvent) {
         window.addEventListener('devicemotion', (event) => {
           this.onReadMotion.bind(this)(event);
@@ -65,18 +87,17 @@ class IMUPublisher extends IntervalPublisher {
 
   /**
    * Adds a button to the document to ask for permission to use IMU sensor on iOS.
-   *
    * @param {Event} event to request permission from.
    * @return {Boolean} true if permission is granted, else false.
    */
   requestPermission(event) {
-    event.requestPermission()
-        .then((response) => {
-          if (response == 'granted') {
-            return true;
-          }
-        })
-        .catch(console.error);
+    if (typeof(event.requestPermission) === 'function') {
+      event.requestPermission().then((reponse) => {
+        if (reponse === 'granted') {
+          return true;
+        }
+      });
+    }
     return false;
   }
   /**
