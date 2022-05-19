@@ -8,6 +8,7 @@
 // Dependencies
 const THREE = require('three');
 const IntervalPublisher = require('./IntervalPublisher.js');
+const PermissionDeniedError = require('../error/PermissionDeniedError.js');
 
 /**
  * Object that publishes IMU sensor data to the provided ROS topic.
@@ -45,31 +46,8 @@ class IMUPublisher extends IntervalPublisher {
     */
     const isIOS = !window.MSStream && /iPad|iPhone|iPod|Macintosh/.test(window.navigator.userAgent);
     if (isIOS) {
-      // Add a button that requests permission for sensor use on press
-      const permbutton = this.document.createElement('button');
-      permbutton.innerHTML = 'requestPermission';
-      permbutton.addEventListener('click', () => {
-        const permissionOrientation = requestPermissionIOS(DeviceOrientationEvent);
-        const permissionMotion = requestPermissionIOS(DeviceOrientationEvent);
-        if (permissionOrientation && permissionMotion) {
-          // if permission, enable callback for device orientation
-          window.addEventListener('deviceorientation', (event) => {
-            this.onReadOrientation.bind(this)(event);
-          });
-          // Enable callback for deviceMotionEvent
-          if (window.DeviceMotionEvent) {
-            window.addEventListener('devicemotion', (event) => {
-              this.onReadMotion.bind(this)(event);
-            });
-          } else {
-            window.alert('acceleration not supported!');
-          }
-        } else {
-          throw new PermissionDeniedError('No permission granted for either device orientation or device motion');
-        }
-      });
-
-      this.document.body.appendChild(permbutton);
+      // request permission for sensor use
+      this.requestPermission();
     } else {
       // If user is not on iOS, sensor data can be read as normal.
       window.addEventListener('deviceorientation', (event) => {
@@ -87,19 +65,49 @@ class IMUPublisher extends IntervalPublisher {
 
   /**
    * Adds a button to the document to ask for permission to use IMU sensor on iOS.
-   * @param {Event} event to request permission from.
-   * @return {Boolean} true if permission is granted, else false.
    */
-  requestPermission(event) {
-    if (typeof(event.requestPermission) === 'function') {
-      event.requestPermission().then((reponse) => {
-        if (reponse === 'granted') {
-          return true;
-        }
-      });
-    }
-    return false;
+  requestPermission() {
+    const permbutton = window.document.createElement('button');
+    permbutton.innerHTML = 'requestPermission';
+    permbutton.addEventListener('click', () => {
+      if (typeof(window.DeviceOrientationEvent.requestPermission) === 'function') {
+        // if permission, Enable callback for deviceOrientationEvent
+        window.DeviceOrientationEvent.requestPermission().then((response) => {
+          if (response==='granted') {
+            // If user is not on iOS, sensor data can be read as normal.
+            window.addEventListener('deviceorientation', (event) => {
+              this.onReadOrientation.bind(this)(event);
+            });
+          } else {
+            throw new PermissionDeniedError('No permission granted for Device Orientation');
+          }
+        });
+      } else {
+        throw new Error('requestPermission for device orientation iOS is not a function!');
+      }
+      if (typeof(window.DeviceOrientationEvent.requestPermission) === 'function') {
+        // if permission, Enable callback for devicemotion
+        window.DeviceMotionEvent.requestPermission().then((response) => {
+          if (response==='granted') {
+            if (window.DeviceMotionEvent) {
+              window.addEventListener('devicemotion', (event) => {
+                this.onReadMotion.bind(this)(event);
+              });
+            } else {
+              window.alert('acceleration not supported!');
+            }
+          } else {
+            throw new PermissionDeniedError('No permission granted for Device Motion');
+          }
+        });
+      } else {
+        throw new Error('requestPermission for device Motion iOS is not a function!');
+      }
+    });
+
+    window.document.body.appendChild(permbutton);
   }
+
   /**
      * Callback for reading orientation data.
      * @param {*} event object containing sensor data.
