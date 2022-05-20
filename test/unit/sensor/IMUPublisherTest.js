@@ -71,14 +71,67 @@ describe('Test IMU Publisher', function() {
       // This is to 'fake' a device running on iOS
       const original = global.window.navigator.userAgent;
       global.window.navigator.__defineGetter__('userAgent', () => {
-        return 'iPhone';
+        return 'Mozilla/5.0 (iPhone; CPU OS 13_1_1 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) Mobile/9B206';
       });
-      assert.equal(global.window.navigator.userAgent, 'iPhone');
+      assert.equal(global.window.navigator.userAgent,
+          'Mozilla/5.0 (iPhone; CPU OS 13_1_1 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) Mobile/9B206');
       createStandardIMU();
       assert.equal(global.window.addEventListener.callCount, 0);
+
       global.window.navigator.__defineGetter__('userAgent', () => {
         return original;
       });
+    });
+  });
+
+  // requestPermission tests
+  describe('#requestPermission', function() {
+    const sandbox = sinon.createSandbox();
+    const originalAgent = global.window.navigator.userAgent;
+    /**
+     * Helper functions for checking whether correct error is raised for
+     * invalid topics.
+     * @param {Error} error The raised error.
+     * @return {boolean} true if valid.
+     */
+    function expectInvalid(error) {
+      assert(error instanceof Error);
+      assert(error.message === 'topic argument was not of type ROSLIB.Topic');
+
+      return true;
+    }
+
+    beforeEach(function() {
+      global.window.alert = function() {};
+      sandbox.spy(global.window);
+      global.window.navigator.__defineGetter__('userAgent', () => {
+        return 'Mozilla/5.0 (iPhone; CPU OS 13_1_1 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) Mobile/9B206';
+      });
+    });
+
+    afterEach(function() {
+      sandbox.restore();
+      global.window.navigator.__defineGetter__('userAgent', () => {
+        return originalAgent;
+      });
+    });
+
+    it('should create a new button', function() {
+      const publisher = sinon.spy(createStandardIMU());
+
+      assert.equal(publisher.requestPermission.callCount, 0);
+      assert(global.window.document.querySelector('button') !== null);
+    });
+    it('should throw an errror if event.requestPermission is not a function', function() {
+      sinon.spy(createStandardIMU());
+      assert(global.window.document.querySelector('button') !== null);
+      const button = global.window.document.querySelector('button');
+
+      assert.throws(() => {
+        button.dispatchEvent(new window.Event('click'));
+      },
+      expectInvalid
+      );
     });
   });
 

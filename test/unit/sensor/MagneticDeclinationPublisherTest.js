@@ -54,8 +54,7 @@ describe('Test MagneticDeclinationPublisher', function() {
       const original = global.window.navigator.userAgent;
 
       global.window.navigator.__defineGetter__('userAgent', () => {
-        return '"Mozilla/5.0 (iPhone; CPU iPhone OS 14_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko)'+
-        ' CriOS/88.0.4292.0 Mobile/15E148 Safari/604.1"';
+        return 'Mozilla/5.0 (iPhone; CPU OS 13_1_1 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) Mobile/9B206';
       });
       assert.equal(global.window.navigator.userAgent,
           'Mozilla/5.0 (iPhone; CPU OS 13_1_1 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) Mobile/9B206');
@@ -75,9 +74,18 @@ describe('Test MagneticDeclinationPublisher', function() {
       // global.window.navigator.__defineGetter__('userAgent', () => {
       //   return 'mozilla';
       // });
-      new MagneticDeclinationPublisher(new ROSLIB.Topic());
+      assert.equal(global.window.navigator.userAgent,
+          'Mozilla/5.0 (iPhone; CPU OS 13_1_1 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) Mobile/9B206');
+      const publisher = sinon.spy(new MagneticDeclinationPublisher(new ROSLIB.Topic()));
+
+      // assert.equal(publisher.requestPermission.callCount, 1);
       assert(global.window.document.querySelector('button') !== null);
       assert(global.window.document.getElementById('permission') !== null);
+    });
+    it('should throw an errror if event.requestPermission is not a function', function() {
+      sinon.spy(new MagneticDeclinationPublisher(new ROSLIB.Topic()));
+      assert(global.window.document.querySelector('button') !== null);
+      const button = global.window.document.querySelector('button');
     });
   });
   describe('#onReadOrientation()', function() {

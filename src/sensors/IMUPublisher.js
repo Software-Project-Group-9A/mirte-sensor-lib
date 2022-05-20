@@ -47,7 +47,7 @@ class IMUPublisher extends IntervalPublisher {
     const isIOS = !window.MSStream && /iPad|iPhone|iPod|Macintosh/.test(window.navigator.userAgent);
     if (isIOS) {
       // request permission for sensor use
-      this.requestPermission();
+      this.requestPermission.bind(this)();
     } else {
       // If user is not on iOS, sensor data can be read as normal.
       window.addEventListener('deviceorientation', (event) => {
@@ -70,7 +70,7 @@ class IMUPublisher extends IntervalPublisher {
     const permbutton = window.document.createElement('button');
     permbutton.innerHTML = 'requestPermission';
     permbutton.addEventListener('click', () => {
-      if (typeof(window.DeviceOrientationEvent.requestPermission) === 'function') {
+      if (typeof(window.DeviceOrientationEvent) === 'function') {
         // if permission, Enable callback for deviceOrientationEvent
         window.DeviceOrientationEvent.requestPermission().then((response) => {
           if (response==='granted') {
@@ -85,7 +85,7 @@ class IMUPublisher extends IntervalPublisher {
       } else {
         throw new Error('requestPermission for device orientation iOS is not a function!');
       }
-      if (typeof(window.DeviceOrientationEvent.requestPermission) === 'function') {
+      if (typeof(window.DeviceMotionEvent.requestPermission) === 'function') {
         // if permission, Enable callback for devicemotion
         window.DeviceMotionEvent.requestPermission().then((response) => {
           if (response==='granted') {
@@ -101,7 +101,7 @@ class IMUPublisher extends IntervalPublisher {
           }
         });
       } else {
-        throw new Error('requestPermission for device Motion iOS is not a function!');
+        throw new Error('requestPermission for device motion iOS is not a function!');
       }
     });
 
