@@ -1,32 +1,41 @@
+/**
+ * 
+ * @param {HTMLElement} node 
+ */
+function tryPublishNode(node, ros) {
+    const id = node.id;
 
-
-function tryPublishNode(node) {
-    switch(node) {
-        case node instanceof window.HTMLButtonElement:
-            console.log('yo');
-            break;
-        default:
-            console.log('no');
-    }
+  switch (node) {
+    case node instanceof window.HTMLButtonElement:
+      break;
+    default:
+      console.log('no');
+  }
 }
 
 /**
- *  
- * @param {ROSLIB.Ros} ros 
- * @param {HTMLElement} parentNode 
+ *
+ * @param {ROSLIB.Ros} ros
+ * @param {HTMLElement} parentNode
  * @return {Object} dictionary of all created publishers.
  */
 function publishAllChildren(ros, parentNode) {
-    // if no parent node is specified, publish to entire document by default
-    if (!parentNode) {
-        parentNode = window.self;
+    if (!(ros instanceof ROSLIB.Ros)) {
+        throw Error('ros argument must be valid ROSLIB.Ros instance');
     }
+    
+  // if no parent node is specified, publish to entire document by default
+  if (!parentNode) {
+    parentNode = window.self;
+  }
 
-    if (parentNode.children === 0) {
-        return;
-    }
+  if (parentNode.children === 0) {
+    return;
+  }
 
-    for (const childNode in parentNode.childNodes) {
-        tryPublishNode(childNode, ros, dictionary);
-    }
+  for (const childNode in parentNode.childNodes) {
+    tryPublishNode(childNode, ros, dictionary);
+  }
+
+  return dictionary;
 }
