@@ -69,23 +69,22 @@ class GPSDeclinationPublisher extends IntervalPublisher {
    */
   requestPermission() {
     const permbutton = window.document.createElement('button');
-    permbutton.setAttribute('id', 'permission');
     permbutton.innerHTML = 'requestPermission';
     permbutton.addEventListener('click', () => {
-      if (typeof(window.DeviceOrientationEvent.requestPermission) === 'function') {
-        // if permission, Enable callback for deviceOrientationEvent
-        window.DeviceOrientationEvent.requestPermission().then((response) => {
-          if (response==='granted') {
-            window.addEventListener('deviceorientation', (event) => {
-              this.onReadOrientation(event);
-            });
-          } else {
-            throw new PermissionDeniedError('No permission granted for Device Orientation');
-          }
-        });
-      } else {
-        throw new Error('requestPermission for iOS is not a function!');
+      if (typeof(window.DeviceOrientationEvent.requestPermission()) === 'function') {
+        throw new Error('requestPermission for device orientation on iOS is not a function!');
       }
+      // if permission, Enable callback for deviceOrientationEvent
+      window.DeviceOrientationEvent.requestPermission().then((response) => {
+        if (response==='granted') {
+          // If user is not on iOS, sensor data can be read as normal.
+          window.addEventListener('deviceorientation', (event) => {
+            this.onReadOrientation.bind(this)(event);
+          });
+        } else {
+          throw new PermissionDeniedError('No permission granted for Device Orientation');
+        }
+      });
     });
 
     window.document.body.appendChild(permbutton);

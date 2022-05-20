@@ -1,4 +1,5 @@
 require('../../globalSetup.js');
+
 // Module to test
 const MagneticDeclinationPublisher =
     require('../../../src/sensors/MagneticDeclinationPublisher.js');

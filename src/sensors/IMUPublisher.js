@@ -65,16 +65,27 @@ class IMUPublisher extends IntervalPublisher {
 
   /**
    * Adds a button to the document to ask for permission to use IMU sensor on iOS.
-   * @param {*} event event
    */
-  requestPermission(event) {
+  requestPermission() {
     const permbutton = window.document.createElement('button');
     permbutton.innerHTML = 'requestPermission';
     permbutton.addEventListener('click', () => {
-      if (typeof(window.DeviceOrientationEvent.requestPermission()) === 'function') {
-        throw new Error('requestPermission for device orientation iOS is not a function!');
+      if (typeof(window.DeviceOrientationEvent.requestPermission()) === 'function' ||
+      typeof(window.DeviceOrientationEvent.requestPermission()) === 'function') {
+        throw new Error('requestPermission for device orientation or device motion on iOS is not a function!');
       }
+
       // if permission, Enable callback for deviceOrientationEvent
+      window.DeviceOrientationEvent.requestPermission().then((response) => {
+        if (response==='granted') {
+          // If user is not on iOS, sensor data can be read as normal.
+          window.addEventListener('deviceorientation', (event) => {
+            this.onReadOrientation.bind(this)(event);
+          });
+        } else {
+          throw new PermissionDeniedError('No permission granted for Device Orientation');
+        }
+      });
       window.DeviceOrientationEvent.requestPermission().then((response) => {
         if (response==='granted') {
           // If user is not on iOS, sensor data can be read as normal.
@@ -89,54 +100,6 @@ class IMUPublisher extends IntervalPublisher {
 
     window.document.body.appendChild(permbutton);
   }
-  /**
-   * Does stuff
-   * @param {*} event event
-   */
-  clickHandler(event) {
-
-  }
-  // requestPermission() {
-  //   const permbutton = window.document.createElement('button');
-  //   permbutton.innerHTML = 'requestPermission';
-  //   permbutton.addEventListener('click', () => {
-  //     if (typeof(window.DeviceOrientationEvent) === 'function') {
-  //       // if permission, Enable callback for deviceOrientationEvent
-  //       window.DeviceOrientationEvent.requestPermission().then((response) => {
-  //         if (response==='granted') {
-  //           // If user is not on iOS, sensor data can be read as normal.
-  //           window.addEventListener('deviceorientation', (event) => {
-  //             this.onReadOrientation.bind(this)(event);
-  //           });
-  //         } else {
-  //           throw new PermissionDeniedError('No permission granted for Device Orientation');
-  //         }
-  //       });
-  //     } else {
-  //       throw new Error('requestPermission for device orientation iOS is not a function!');
-  //     }
-  //     if (typeof(window.DeviceMotionEvent.requestPermission) === 'function') {
-  //       // if permission, Enable callback for devicemotion
-  //       window.DeviceMotionEvent.requestPermission().then((response) => {
-  //         if (response==='granted') {
-  //           if (window.DeviceMotionEvent) {
-  //             window.addEventListener('devicemotion', (event) => {
-  //               this.onReadMotion.bind(this)(event);
-  //             });
-  //           } else {
-  //             window.alert('acceleration not supported!');
-  //           }
-  //         } else {
-  //           throw new PermissionDeniedError('No permission granted for Device Motion');
-  //         }
-  //       });
-  //     } else {
-  //       throw new Error('requestPermission for device motion iOS is not a function!');
-  //     }
-  //   });
-
-  //   window.document.body.appendChild(permbutton);
-  // }
 
   /**
      * Callback for reading orientation data.
