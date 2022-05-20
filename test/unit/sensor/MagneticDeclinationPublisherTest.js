@@ -76,16 +76,10 @@ describe('Test MagneticDeclinationPublisher', function() {
       // });
       assert.equal(global.window.navigator.userAgent,
           'Mozilla/5.0 (iPhone; CPU OS 13_1_1 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) Mobile/9B206');
-      const publisher = sinon.spy(new MagneticDeclinationPublisher(new ROSLIB.Topic()));
+      sinon.spy(new MagneticDeclinationPublisher(new ROSLIB.Topic()));
 
-      // assert.equal(publisher.requestPermission.callCount, 1);
       assert(global.window.document.querySelector('button') !== null);
       assert(global.window.document.getElementById('permission') !== null);
-    });
-    it('should throw an errror if event.requestPermission is not a function', function() {
-      sinon.spy(new MagneticDeclinationPublisher(new ROSLIB.Topic()));
-      assert(global.window.document.querySelector('button') !== null);
-      const button = global.window.document.querySelector('button');
     });
   });
   describe('#onReadOrientation()', function() {

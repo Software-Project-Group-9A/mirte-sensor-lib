@@ -88,18 +88,6 @@ describe('Test IMU Publisher', function() {
   describe('#requestPermission', function() {
     const sandbox = sinon.createSandbox();
     const originalAgent = global.window.navigator.userAgent;
-    /**
-     * Helper functions for checking whether correct error is raised for
-     * invalid topics.
-     * @param {Error} error The raised error.
-     * @return {boolean} true if valid.
-     */
-    function expectInvalid(error) {
-      assert(error instanceof Error);
-      assert(error.message === 'topic argument was not of type ROSLIB.Topic');
-
-      return true;
-    }
 
     beforeEach(function() {
       global.window.alert = function() {};
@@ -122,17 +110,7 @@ describe('Test IMU Publisher', function() {
       assert.equal(publisher.requestPermission.callCount, 0);
       assert(global.window.document.querySelector('button') !== null);
     });
-    it('should throw an errror if event.requestPermission is not a function', function() {
-      sinon.spy(createStandardIMU());
-      assert(global.window.document.querySelector('button') !== null);
-      const button = global.window.document.querySelector('button');
-
-      assert.throws(() => {
-        button.dispatchEvent(new window.Event('click'));
-      },
-      expectInvalid
-      );
-    });
+    // TODO: Look at ways to test requestPermission of the Device Orientation/Motion events
   });
 
   // createSnapshot tests

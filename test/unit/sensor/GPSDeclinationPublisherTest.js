@@ -50,6 +50,57 @@ describe('Test GPSDeclinationPublisher', function() {
           }
       );
     });
+
+    it('should not start reading orientation user is on iOS', function() {
+      // This is to 'fake' a device running on iOS
+      const sandbox = sinon.createSandbox();
+      global.window.alert = function() {};
+      sandbox.spy(global.window);
+
+      const original = global.window.navigator.userAgent;
+      global.window.navigator.__defineGetter__('userAgent', () => {
+        return 'Mozilla/5.0 (iPhone; CPU OS 13_1_1 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) Mobile/9B206';
+      });
+      assert.equal(global.window.navigator.userAgent,
+          'Mozilla/5.0 (iPhone; CPU OS 13_1_1 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) Mobile/9B206');
+      new GPSDeclinationPublisher(new ROSLIB.Topic(), 1, 1);
+      assert.equal(global.window.addEventListener.callCount, 0);
+
+      global.window.navigator.__defineGetter__('userAgent', () => {
+        return original;
+      });
+
+      sandbox.restore();
+    });
+  });
+
+  // requestPermission tests
+  describe('#requestPermission', function() {
+    const sandbox = sinon.createSandbox();
+    const originalAgent = global.window.navigator.userAgent;
+
+    beforeEach(function() {
+      global.window.alert = function() {};
+      sandbox.spy(global.window);
+      global.window.navigator.__defineGetter__('userAgent', () => {
+        return 'Mozilla/5.0 (iPhone; CPU OS 13_1_1 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) Mobile/9B206';
+      });
+    });
+
+    afterEach(function() {
+      sandbox.restore();
+      global.window.navigator.__defineGetter__('userAgent', () => {
+        return originalAgent;
+      });
+    });
+
+    it('should create a new button', function() {
+      const publisher = sinon.spy(new GPSDeclinationPublisher(new ROSLIB.Topic(), 1, 1));
+
+      assert.equal(publisher.requestPermission.callCount, 0);
+      assert(global.window.document.querySelector('button') !== null);
+    });
+    // TODO: Look at ways to test requestPermission of the Device Orientation/Motion events
   });
 
   describe('#calcDegreeToPoint(latitude, longitude)', function() {
