@@ -80,7 +80,6 @@ describe('Test MagneticDeclinationPublisher', function() {
       sinon.spy(new MagneticDeclinationPublisher(new ROSLIB.Topic()));
 
       assert(global.window.document.querySelector('button') !== null);
-      assert(global.window.document.getElementById('permission') !== null);
     });
   });
   describe('#onReadOrientation()', function() {
