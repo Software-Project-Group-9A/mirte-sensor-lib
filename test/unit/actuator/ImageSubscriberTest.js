@@ -149,22 +149,8 @@ describe('ImageSubscriber', function() {
       const imageData = ImageSubscriber.convertImageData(pixelData, format, pixels);
 
       assert.equal(imageData.length, 16);
-      assert.equal(imageData[0], 255);
-      assert.equal(imageData[1], 0);
-      assert.equal(imageData[2], 0);
-      assert.equal(imageData[3], 255);
-      assert.equal(imageData[4], 0);
-      assert.equal(imageData[5], 255);
-      assert.equal(imageData[6], 0);
-      assert.equal(imageData[7], 255);
-      assert.equal(imageData[8], 0);
-      assert.equal(imageData[9], 0);
-      assert.equal(imageData[10], 255);
-      assert.equal(imageData[11], 255);
-      assert.equal(imageData[12], 0);
-      assert.equal(imageData[13], 0);
-      assert.equal(imageData[14], 0);
-      assert.equal(imageData[15], 255);
+      const expectedPixelData = Uint8ClampedArray.from([255, 0, 0, 255, 0, 255, 0, 255, 0, 0, 255, 255, 0, 0, 0, 255]);
+      assert.deepEqual(imageData, expectedPixelData);
     });
     it('should correctly convert multiple rgba8 encoded pixels', function() {
       // red, green, blue and white pixel, with alpha of 255
@@ -175,22 +161,8 @@ describe('ImageSubscriber', function() {
       const imageData = ImageSubscriber.convertImageData(pixelData, format, pixels);
 
       assert.equal(imageData.length, 16);
-      assert.equal(imageData[0], 255);
-      assert.equal(imageData[1], 0);
-      assert.equal(imageData[2], 0);
-      assert.equal(imageData[3], 255);
-      assert.equal(imageData[4], 0);
-      assert.equal(imageData[5], 255);
-      assert.equal(imageData[6], 0);
-      assert.equal(imageData[7], 255);
-      assert.equal(imageData[8], 0);
-      assert.equal(imageData[9], 0);
-      assert.equal(imageData[10], 255);
-      assert.equal(imageData[11], 255);
-      assert.equal(imageData[12], 0);
-      assert.equal(imageData[13], 0);
-      assert.equal(imageData[14], 0);
-      assert.equal(imageData[15], 255);
+      const expectedPixelData = Uint8ClampedArray.from([255, 0, 0, 255, 0, 255, 0, 255, 0, 0, 255, 255, 0, 0, 0, 255]);
+      assert.deepEqual(imageData, expectedPixelData);
     });
   });
 });
