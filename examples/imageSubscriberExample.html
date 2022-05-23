@@ -29,14 +29,6 @@
         <script>
             var subscriber = new SENSORLIB.ImageSubscriber(imageTopic, document.getElementById("outputCanvas"), true);
             subscriber.start();
-
-            // subscriber.onMessage({
-            //     data: '/wAA/wAA/wAA/wAA/wAA/wAA/wAA/wAA/wAA/wAA/wAA/wAA/wAA/wAA/wAA/wAA/wAA/wAA/wAA/wAA/wAA/wAA/wAA/wAA/wAA',
-            //     encoding: 'rgb8',
-            //     width: 5,
-            //     height: 5,
-            // });
-            
         </script>
         <button onclick="subscriber.start()">subscribe</button>
         <button onclick="subscriber.stop()">unsubscribe</button>
