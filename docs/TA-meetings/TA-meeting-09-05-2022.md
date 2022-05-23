@@ -1,0 +1,13 @@
+- TA meeting
+    - Project plan feedback.
+        - looks good overall, more info friday
+    - Demo for TA on progress
+    - New Repository for 'Mirte Web Interface'✔
+    - New Repository for 'Mirte sensor python'✔
+    - Midterm general idea
+        - rubric for midterm -> follow
+        - presentation and demo
+        - presentation not strict and not formal
+        - RH tshirts?
+        - physical midterm
+            - think about reserving ewi project rooms if coach does not want to come to RH

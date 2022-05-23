@@ -16,7 +16,7 @@ describe('Test ButtonPublisher', function() {
     function expectInvalidButton(error) {
       assert(error instanceof TypeError);
       assert(
-          error.message === 'button argument was not of type HTMLButtonElement',
+          error.message === 'button argument was not of type HTMLButtonElement'
       );
 
       return true;
@@ -69,7 +69,7 @@ describe('Test ButtonPublisher', function() {
           },
           (error) => {
             return false;
-          },
+          }
       );
 
       assert.equal(publisher.button, button);
@@ -86,10 +86,10 @@ describe('Test ButtonPublisher', function() {
 
       assert.equal(button.addEventListener.callCount, 2);
       assert(
-          button.addEventListener.calledWith('mouseup', publisher.onMouseUp),
+          button.addEventListener.calledWith('mouseup', publisher.onMouseUp)
       );
       assert(
-          button.addEventListener.calledWith('mousedown', publisher.onMouseDown),
+          button.addEventListener.calledWith('mousedown', publisher.onMouseDown)
       );
     });
     it('should result in onMouseDown being called at mousedown event 1', function() {
@@ -160,11 +160,11 @@ describe('Test ButtonPublisher', function() {
       assert(
           button.removeEventListener.calledWith(
               'mousedown',
-              publisher.onMouseDown,
-          ),
+              publisher.onMouseDown
+          )
       );
       assert(
-          button.removeEventListener.calledWith('mouseup', publisher.onMouseUp),
+          button.removeEventListener.calledWith('mouseup', publisher.onMouseUp)
       );
     });
     it('should prevent onMouseDown from being called at mousedown event', function() {

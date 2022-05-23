@@ -30,7 +30,7 @@ describe('ImageSubscriber', function() {
           () => {
             new ImageSubscriber(new ROSLIB.Topic(), undefined);
           },
-          TypeError,
+          TypeError
       );
     });
     it('should accept an HTMLCanvasElement as canvas argument', function() {

@@ -6,6 +6,7 @@
 
 // Dependencies
 const IntervalPublisher = require('./IntervalPublisher.js');
+const NotSupportedError = require('../error/NotSupportedError');
 
 /**
  * GPSDeclinationPublisher publishes the rotation as a compass to
@@ -32,6 +33,10 @@ class GPSDeclinationPublisher extends IntervalPublisher {
       throw new TypeError('Coordinates were not of type Number');
     }
 
+    if (latitude > 90 || latitude < -90 || longitude > 180 || longitude < -180) {
+      throw new Error('Range of given coordinates is invalid');
+    }
+
     this.topic = topic;
 
     // Sets, fields for compass
@@ -41,9 +46,45 @@ class GPSDeclinationPublisher extends IntervalPublisher {
 
     // First need to detect first device orientation.
     this.orientationReady = false;
+    this.gpsReady = false;
 
     // Prevents double message publishing
     this.oldCompass = null;
+
+    // Id of geolocation watch callback
+    this.watchId = -1;
+
+    // check support for API
+    if (!window.navigator.geolocation) {
+      throw new NotSupportedError('Unable to create GPSPublisher, ' +
+        'Geolocation API not supported');
+    }
+  }
+
+  /**
+   * Start the publishing of data to ROS with frequency of <freq> Hz.
+   */
+  start() {
+    super.start();
+
+    // No support for IOS yet
+    window.addEventListener('deviceorientationabsolute', (event) => {
+      this.onReadOrientation(event);
+    }, true);
+
+    this.watchId = window.navigator.geolocation.watchPosition(
+        this.locationHandler.bind(this),
+        (error) => {
+          throw Error('failed to watch position');
+        });
+  }
+
+  /**
+   * Stops the publishing of data to ROS.
+   */
+  stop() {
+    super.stop();
+    window.navigator.geolocation.clearWatch(this.watchId);
   }
 
   /**
@@ -62,6 +103,14 @@ class GPSDeclinationPublisher extends IntervalPublisher {
    * @return {Number} angle between current position and the North
    */
   calcDegreeToPoint(latitude, longitude) {
+    if (latitude === this.lat && longitude === this.lng) {
+      return 0;
+    }
+
+
+    // Copied code to calculate the degree
+    // But works in a weird way
+    // North = 180, East = -90, South = 0, West = 90
     const phiK = (this.lat * Math.PI) / 180.0;
     const lambdaK = (this.lng * Math.PI) / 180.0;
     const phi = (latitude * Math.PI) / 180.0;
@@ -72,13 +121,23 @@ class GPSDeclinationPublisher extends IntervalPublisher {
           Math.sin(lambdaK - lambda),
           Math.cos(phi) * Math.tan(phiK) -
           Math.sin(phi) * Math.cos(lambdaK - lambda));
-    return Math.round(psi);
+    // Round to shift out small changes
+    let degree = Math.round(psi);
+    // By this it becomes
+    // North = 360, East = 90, South = 180, West = 270
+    degree = degree + 180;
+    // Since we work in range [0, 359]
+    if (degree === 360) {
+      degree = 0;
+    }
+
+    return degree;
   }
 
   /**
    * Gets the location and puts in variables
    *
-   * Then calculates the degeree and makes sure
+   * Then calculates the degree and makes sure
    * it is between 0 and 360
    * @param {Geolocation} position
    */
@@ -86,11 +145,34 @@ class GPSDeclinationPublisher extends IntervalPublisher {
     const {latitude, longitude} = position.coords;
     this.compass = this.calcDegreeToPoint(latitude, longitude);
 
-    if (this.compass < 0) {
-      this.compass = this.compass + 360;
-    }
+    this.gpsReady = true;
+  }
 
+  /**
+     * Callback for reading orientation data.
+     * context of object that called callback.
+     *
+     * @param {DeviceOrientationEvent} event object containing sensor data.
+     */
+  onReadOrientation(event) {
+    this.alpha = Math.round(Math.abs(event.alpha - 360));
     this.orientationReady = true;
+  }
+
+  /**
+   * difference between current rotation and aiming for
+   * @return {Number} difference
+   */
+  accountForRotation() {
+    // Does point to - current looking at
+    let diff = this.compass - this.alpha;
+    // If it is smaller then 0 it means alpha is bigger
+    // We could turn left that amount of degrees but taking compass [0, 360[ we account for that
+    // So ex. -10 (10 degrees left) becomes 350 (350 degrees right)
+    if (diff < 0) {
+      diff = 360 + diff;
+    }
+    return diff;
   }
 
   /**
@@ -98,10 +180,12 @@ class GPSDeclinationPublisher extends IntervalPublisher {
    * in a ROS message and publishes it
    */
   createSnapshot() {
-    window.navigator.geolocation.getCurrentPosition(this.locationHandler);
-    if (!this.orientationReady) {
+    if (!(this.orientationReady && this.gpsReady)) {
       throw Error('Orientation is not read yet!');
     }
+
+    this.compass = this.accountForRotation();
+
     // Check if compass changed
     if (this.compass === this.oldCompass) {
       return;

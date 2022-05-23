@@ -40,7 +40,7 @@ describe('Test SensorPublisher', function() {
           },
           (error) => {
             return false;
-          },
+          }
       );
 
       assert.equal(publisher.topic, topic);

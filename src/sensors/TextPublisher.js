@@ -11,19 +11,20 @@ const SensorPublisher = require('./SensorPublisher.js');
 class TextPublisher extends SensorPublisher {
   /**
    * Creates a new TextPublisher.
+   *
    * @param {ROSLIB.Topic} topic topic to which to publish text data
-   * @param {HTMLInputElement} inputElement input element from which to
-   * publish data
-   * @param {object} options options:
-   *  - onEnter: if true publishes on enter, else publishes every key press.
+   * @param {HTMLInputElement} inputElement input element from which to publish data.
+   * @param {Object} [options] configuration options.
+   * @param {boolean} [options.onEnter=true] if true publishes on enter, else publishes every key press.
+   * @param {boolean} [options.clearOnPublish=true] if false, does not clear the inputElement after publishing.
    */
   constructor(topic, inputElement, options) {
     super(topic);
 
     // Set default options
     this.options = options === undefined ? {} : options;
-    this.options.onEnter = this.options.onEnter === undefined ? true :
-                                                          this.options.onEnter;
+    this.options.onEnter = this.options.onEnter === undefined ? true : this.options.onEnter;
+    this.options.clearOnPublish = this.options.clearOnPublish === undefined ? true : this.options.clearOnPublish;
 
     if (!(inputElement instanceof window.HTMLInputElement)) {
       throw new TypeError('input element was not of type HTMLInputElement');
@@ -40,16 +41,26 @@ class TextPublisher extends SensorPublisher {
     this.inputElement = inputElement;
 
     this.onInput = function() {
-      const msg = this.createStrMsg(this.inputElement.value);
-      this.topic.publish(msg);
+      this.publishMessage();
     }.bind(this);
 
     this.onKeyUp = function(event) {
       if (event.key === 'Enter') {
-        const msg = this.createStrMsg(this.inputElement.value);
-        this.topic.publish(msg);
+        this.publishMessage();
       }
     }.bind(this);
+  }
+
+  /**
+   * Reads text from inputElement and publishes it.
+   */
+  publishMessage() {
+    const msg = this.createStrMsg(this.inputElement.value);
+    this.topic.publish(msg);
+
+    if (this.options.clearOnPublish) {
+      this.inputElement.value = '';
+    }
   }
 
   /**
