@@ -5,4 +5,5 @@
  */
 module.exports = {
   TextSubscriber: require('./TextSubscriber'),
+  ImageSubscriber: require('./ImageSubscriber'),
 };

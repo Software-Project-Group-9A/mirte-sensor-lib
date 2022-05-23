@@ -5,6 +5,7 @@
     "coverage": "nyc npm run test"
   },
   "devDependencies": {
+    "canvas": ">=2.7.0",
     "eslint": "^8.14.0",
     "eslint-config-google": "^0.14.0",
     "grunt": "~1.5.2",
@@ -20,8 +21,6 @@
     "mocha": "~9.2.2",
     "mocha-jsdom": "^2.0.0",
     "nyc": "~15.1.0",
-    "sinon": "^13.0.2",
-    "three": "^0.140.2"
-  },
-  "dependencies": {}
+    "sinon": "^13.0.2"
+  }
 }
