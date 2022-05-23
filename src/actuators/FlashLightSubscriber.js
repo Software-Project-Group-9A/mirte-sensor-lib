@@ -24,8 +24,9 @@ class FlashLightSubscriber extends Subscriber {
         const cameras = devices.filter((device) => device.kind === 'videoinput');
 
         if (cameras.length === 0) {
-          throw Error('No camera found on this device.');
+          throw Error('No camera found on this device');
         }
+
         const camera = cameras[cameras.length - 1];
         navigator.mediaDevices.getUserMedia({
           video: {
@@ -61,7 +62,6 @@ class FlashLightSubscriber extends Subscriber {
         advanced: [{torch: msg.data}],
       });
     });
-
 
     // The light will be on as long the track exists
   }
