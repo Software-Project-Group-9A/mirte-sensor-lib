@@ -29,16 +29,20 @@ class ButtonPublisher extends SensorPublisher {
 
     /**
      * Callback for when button is pressed.
+     * @param {Event} event event from callback
      */
-    this.onMouseDown = function() {
+    this.onMouseDown = function(event) {
       const msg = this.createBoolMsg(true);
       this.topic.publish(msg);
     }.bind(this);
 
     /**
      * Callback for when button is released.
+     * @param {Event} event event from callback
      */
-    this.onMouseUp = function() {
+    this.onMouseUp = function(event) {
+      event.stopPropagation();
+      event.preventDefault();
       const msg = this.createBoolMsg(false);
       this.topic.publish(msg);
     }.bind(this);
@@ -60,8 +64,8 @@ class ButtonPublisher extends SensorPublisher {
    */
   start() {
     super.start();
-    this.button.addEventListener('mousedown', this.onMouseDown);
-    this.button.addEventListener('mouseup', this.onMouseUp);
+    this.button.addEventListener('mousedown touchstart', this.onMouseDown);
+    this.button.addEventListener('mouseup touchend touchcancel', this.onMouseUp);
   }
 
   /**
@@ -69,8 +73,8 @@ class ButtonPublisher extends SensorPublisher {
    */
   stop() {
     super.stop();
-    this.button.removeEventListener('mousedown', this.onMouseDown);
-    this.button.removeEventListener('mouseup', this.onMouseUp);
+    this.button.removeEventListener('mousedown touchstart', this.onMouseDown);
+    this.button.removeEventListener('mouseup touchend touchcancel', this.onMouseUp);
   }
 }
 
