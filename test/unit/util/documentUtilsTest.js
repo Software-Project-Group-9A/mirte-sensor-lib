@@ -5,7 +5,7 @@ const ButtonPublisher = require('../../../src/sensors/ButtonPublisher');
 const SliderPublisher = require('../../../src/sensors/SliderPublisher');
 const TextPublisher = require('../../../src/sensors/TextPublisher');
 // Module to test
-const {tryPublishElement} = require('../../../src/util/documentUtils');
+const {tryPublishElement, publishChildElements} = require('../../../src/util/documentUtils');
 
 const {document} = global.window;
 
@@ -76,6 +76,94 @@ describe('documentUtils', function() {
       assert(textSubscriber instanceof TextSubscriber);
       assert.equal(textSubscriber.HTMLElement, textOutput);
       assert.equal(textSubscriber.topic.name, textOutputId);
+    });
+    it('should ignore elements without an id', function() {
+      const textOutput = document.createElement('p');
+      const ros = new ROSLIB.Ros();
+      const map = new Map();
+
+      tryPublishElement(textOutput, ros, map);
+
+      assert.equal(map.size, 0);
+    });
+  });
+  describe('#publishChildElements(parentElement, ros, map)', function() {
+    it('should reject a non-HTMLElement parentElement argument', function() {
+      const ros = new ROSLIB.Ros();
+
+      assert.throws(
+          () => publishChildElements('string', ros),
+          TypeError
+      );
+    });
+    it('should reject a non-ROSLIB.Ros ros argument', function() {
+      const div = document.createElement('div');
+
+      assert.throws(
+          () => publishChildElements(div, 'ros'),
+          TypeError
+      );
+    });
+    it('should reject a non-Map map argument', function() {
+      const div = document.createElement('div');
+      const ros = new ROSLIB.Ros();
+
+      assert.throws(
+          () => publishChildElements(div, ros, 'map'),
+          TypeError
+      );
+    });
+    it('should return an empty map if parentElement has no children', function() {
+      const div = document.createElement('div');
+      const ros = new ROSLIB.Ros();
+
+      const publisherMap = publishChildElements(div, ros);
+
+      assert.equal(publisherMap.size, 0);
+    });
+    it('should return an non-empty map if parentElement has publishable children', function() {
+      const buttonA = document.createElement('button');
+      const buttonAId = 'buttonA';
+      buttonA.id = buttonAId;
+
+      const buttonB = document.createElement('button');
+      const buttonBId = 'buttonB';
+      buttonB.id = buttonBId;
+
+      const div = document.createElement('div');
+      div.appendChild(buttonA);
+      div.appendChild(buttonB);
+
+      const ros = new ROSLIB.Ros();
+
+      const publisherMap = publishChildElements(div, ros);
+
+      assert.equal(publisherMap.size, 2);
+      assert(publisherMap.has(buttonAId));
+      assert(publisherMap.has(buttonBId));
+    });
+    it('should recursively publish children\'s children', function() {
+      const buttonA = document.createElement('button');
+      const buttonAId = 'buttonA';
+      buttonA.id = buttonAId;
+
+      const buttonB = document.createElement('button');
+      const buttonBId = 'buttonB';
+      buttonB.id = buttonBId;
+
+      const childDiv = document.createElement('div');
+      childDiv.appendChild(buttonA);
+      childDiv.appendChild(buttonB);
+      const parentDiv = document.createElement('div');
+      parentDiv.appendChild(childDiv);
+
+      const ros = new ROSLIB.Ros();
+
+      const publisherMap = publishChildElements(parentDiv, ros);
+
+      assert.equal(publisherMap.size, 2);
+      assert(publisherMap.has(buttonAId));
+      assert(publisherMap.has(buttonBId));
     });
   });
 });
