@@ -75,8 +75,10 @@ describe('Test IMU Publisher', function() {
       });
       assert.equal(global.window.navigator.userAgent,
           'Mozilla/5.0 (iPhone; CPU OS 13_1_1 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) Mobile/9B206');
-      createStandardIMU();
-      assert.equal(global.window.addEventListener.callCount, 0);
+      const imu = sinon.spy( createStandardIMU());
+      imu.requestPermission = sinon.stub();
+
+      assert.equal(imu.requestPermission.callCount, 0);
 
       global.window.navigator.__defineGetter__('userAgent', () => {
         return original;
@@ -86,31 +88,24 @@ describe('Test IMU Publisher', function() {
 
   // requestPermission tests
   describe('#requestPermission', function() {
-    const sandbox = sinon.createSandbox();
-    const originalAgent = global.window.navigator.userAgent;
+    it('should create a new button for iOS', function() {
+      const sandbox = sinon.createSandbox();
+      const originalAgent = global.window.navigator.userAgent;
 
-    beforeEach(function() {
-      global.window.alert = function() {};
       sandbox.spy(global.window);
       global.window.navigator.__defineGetter__('userAgent', () => {
         return 'Mozilla/5.0 (iPhone; CPU OS 13_1_1 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) Mobile/9B206';
       });
-    });
+      const publisher = sinon.spy(createStandardIMU());
 
-    afterEach(function() {
+      assert.equal(publisher.requestPermission.callCount, 0);
+      assert(global.window.document.querySelector('button') !== null);
+
       sandbox.restore();
       global.window.navigator.__defineGetter__('userAgent', () => {
         return originalAgent;
       });
     });
-
-    it('should create a new button', function() {
-      const publisher = sinon.spy(createStandardIMU());
-
-      assert.equal(publisher.requestPermission.callCount, 0);
-      assert(global.window.document.querySelector('button') !== null);
-    });
-    // TODO: Look at ways to test requestPermission of the Device Orientation/Motion events
   });
 
   // createSnapshot tests

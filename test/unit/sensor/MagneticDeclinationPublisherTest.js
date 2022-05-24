@@ -59,9 +59,10 @@ describe('Test MagneticDeclinationPublisher', function() {
       });
       assert.equal(global.window.navigator.userAgent,
           'Mozilla/5.0 (iPhone; CPU OS 13_1_1 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) Mobile/9B206');
-      new MagneticDeclinationPublisher(new ROSLIB.Topic());
 
-      assert.equal(global.window.addEventListener.callCount, 0);
+      const glob = sinon.spy(new MagneticDeclinationPublisher(new ROSLIB.Topic()));
+
+      assert.equal(glob.requestPermission.callCount, 0);
 
       sandbox.restore();
       window.__defineGetter__('userAgent', () => {
@@ -72,11 +73,6 @@ describe('Test MagneticDeclinationPublisher', function() {
 
   describe('#requestPermission', function() {
     it('should create a new button', function() {
-      // global.window.navigator.__defineGetter__('userAgent', () => {
-      //   return 'mozilla';
-      // });
-      assert.equal(global.window.navigator.userAgent,
-          'Mozilla/5.0 (iPhone; CPU OS 13_1_1 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) Mobile/9B206');
       sinon.spy(new MagneticDeclinationPublisher(new ROSLIB.Topic()));
 
       assert(global.window.document.querySelector('button') !== null);

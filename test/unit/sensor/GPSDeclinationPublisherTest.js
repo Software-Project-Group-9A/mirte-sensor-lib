@@ -64,7 +64,7 @@ describe('Test GPSDeclinationPublisher', function() {
       assert.equal(global.window.navigator.userAgent,
           'Mozilla/5.0 (iPhone; CPU OS 13_1_1 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) Mobile/9B206');
       new GPSDeclinationPublisher(new ROSLIB.Topic(), 1, 1);
-      assert.equal(global.window.addEventListener.callCount, 0);
+      assert.equal(global.window.addEventListener.callCount, 1);
 
       global.window.navigator.__defineGetter__('userAgent', () => {
         return original;
