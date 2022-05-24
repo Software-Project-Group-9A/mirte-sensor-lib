@@ -1,6 +1,14 @@
+const ButtonPublisher = require('../sensors/ButtonPublisher');
+const SliderPublisher = require('../sensors/SliderPublisher');
+const TextPublisher = require('../sensors/TextPublisher');
+// const ImageSubscriber = require('../actuators/ImageSubscriber');
+const TextSubscriber = require('../actuators/TextSubscriber');
+
 /**
- *
- * @param {HTMLElement} element
+ * 
+ * @param {HTMLElement} element 
+ * @param {ROSLIB.Ros} ros 
+ * @param {Map} map 
  */
 function tryPublishElement(element, ros, map) {
   const topicName = node.id;
@@ -10,15 +18,27 @@ function tryPublishElement(element, ros, map) {
     return;
   }
 
-  if (map.has(topicName)) {
-    throw error('');
-  }
+  const topic = {
+    topicName: topicName,
+    ros: ros,
+  };
 
-  switch (node) {
-    case node instanceof window.HTMLButtonElement:
-      break;
+  switch (node.constructor.name) {
+    case 'HTMLButtonElement':
+      map.set(topicName, new ButtonPublisher(element, topic));
+      return;
+    case 'HTMLInputElement':
+      if (node.type === 'range') {
+        map.set(topicName, new SliderPublisher(element, topic));
+      } else if (node.type === 'text') {
+        map.set(topicName, new TextPublisher(element, topic));
+      }
+      return;
+    case 'HTMLCanvasElement':
+      // map.set(topicName, new ImageSubscriber(element, topic));
+      return;
     default:
-      console.log('no');
+      map.set(topicName, new TextSubscriber(element, topic));
   }
 }
 
