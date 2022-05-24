@@ -1,9 +1,18 @@
 /**
- * 
- * @param {HTMLElement} node 
+ *
+ * @param {HTMLElement} element
  */
-function tryPublishNode(node, ros) {
-    const id = node.id;
+function tryPublishElement(element, ros, map) {
+  const topicName = node.id;
+
+  // do not publish elements without id
+  if (topicName.length < 1) {
+    return;
+  }
+
+  if (map.has(topicName)) {
+    throw error('');
+  }
 
   switch (node) {
     case node instanceof window.HTMLButtonElement:
@@ -15,27 +24,42 @@ function tryPublishNode(node, ros) {
 
 /**
  *
- * @param {ROSLIB.Ros} ros
  * @param {HTMLElement} parentNode
- * @return {Object} dictionary of all created publishers.
+ * @param {ROSLIB.Ros} ros
+ * @param {Map} map
+ * @return {Map} map where each publisher is stored under it's respective topic name
  */
-function publishAllChildren(ros, parentNode) {
-    if (!(ros instanceof ROSLIB.Ros)) {
-        throw Error('ros argument must be valid ROSLIB.Ros instance');
-    }
-    
+function publishChildElements(parentNode, ros, map) {
+  // create default map
+  map = map || new Map();
   // if no parent node is specified, publish to entire document by default
-  if (!parentNode) {
-    parentNode = window.self;
+  parentNode = parentNode || window.self;
+
+  if (!(ros instanceof ROSLIB.Ros)) {
+    throw new TypeError('ros argument must be of type ROSLIB.Ros');
+  }
+
+  if (!(parentNode instanceof HTMLElement)) {
+    throw new TypeError('parentNode argument must be of type HTMLElement');
+  }
+
+  if (!(map instanceof Map)) {
+    throw new TypeError('map argument must be of type Map');
   }
 
   if (parentNode.children === 0) {
     return;
   }
 
-  for (const childNode in parentNode.childNodes) {
-    tryPublishNode(childNode, ros, dictionary);
+  // Depth-first search through all children for valid elements to publish
+  for (let i = 0; i < parentNode.childElementCount; i++) {
+    const childNode = parentNode.children[i];
+
+    tryPublishElement(childNode, ros, map);
+    publishChildElements(childNode, ros, map);
   }
 
-  return dictionary;
+  return map;
 }
+
+module.exports = publishChildElements;
