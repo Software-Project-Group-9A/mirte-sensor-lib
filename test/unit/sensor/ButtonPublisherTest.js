@@ -204,6 +204,20 @@ describe('Test ButtonPublisher', function() {
       assert.equal(topic.publish.callCount, 1);
       assert.deepEqual(topic.publish.getCall(0).args[0], expectedMessage);
     });
+    it('should publish only once upon double callback', function() {
+      const button = document.createElement('button');
+      const topic = sinon.spy(new ROSLIB.Topic());
+      const publisher = sinon.spy(new ButtonPublisher(topic, button));
+
+      publisher.start();
+      button.dispatchEvent(new window.Event('mousedown'));
+      button.dispatchEvent(new window.Event('mousedown'));
+
+      const expectedMessage = new ROSLIB.Message({data: true});
+      assert.equal(publisher.onMouseDown.callCount, 2);
+      assert.equal(topic.publish.callCount, 1);
+      assert.deepEqual(topic.publish.getCall(0).args[0], expectedMessage);
+    });
   });
 
   describe('#stop()', function() {

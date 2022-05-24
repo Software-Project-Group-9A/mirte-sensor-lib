@@ -55,6 +55,7 @@ class ButtonPublisher extends SensorPublisher {
       if (!flag) {
         return;
       }
+      flag = false;
       const msg = this.createBoolMsg(false);
       this.topic.publish(msg);
     }.bind(this);
