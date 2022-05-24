@@ -11,34 +11,34 @@ const TextSubscriber = require('../actuators/TextSubscriber');
  * @param {Map} map 
  */
 function tryPublishElement(element, ros, map) {
-  const topicName = node.id;
+  const topicName = element.id;
 
   // do not publish elements without id
   if (topicName.length < 1) {
     return;
   }
 
-  const topic = {
-    topicName: topicName,
+  const topic = new ROSLIB.Topic({
+    name: topicName,
     ros: ros,
-  };
+  });
 
-  switch (node.constructor.name) {
+  switch (element.constructor.name) {
     case 'HTMLButtonElement':
-      map.set(topicName, new ButtonPublisher(element, topic));
+      map.set(topicName, new ButtonPublisher(topic, element));
       return;
     case 'HTMLInputElement':
-      if (node.type === 'range') {
-        map.set(topicName, new SliderPublisher(element, topic));
-      } else if (node.type === 'text') {
-        map.set(topicName, new TextPublisher(element, topic));
+      if (element.type === 'range') {
+        map.set(topicName, new SliderPublisher(topic, element));
+      } else if (element.type === 'text') {
+        map.set(topicName, new TextPublisher(topic, element));
       }
       return;
     case 'HTMLCanvasElement':
-      // map.set(topicName, new ImageSubscriber(element, topic));
+      // map.set(topicName, new ImageSubscriber(topic, element));
       return;
     default:
-      map.set(topicName, new TextSubscriber(element, topic));
+      map.set(topicName, new TextSubscriber(topic, element));
   }
 }
 
@@ -82,4 +82,7 @@ function publishChildElements(parentNode, ros, map) {
   return map;
 }
 
-module.exports = publishChildElements;
+module.exports = {
+  publishChildElements: publishChildElements,
+  tryPublishElement: tryPublishElement,
+};
