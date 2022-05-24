@@ -37,16 +37,16 @@ class MagneticDeclinationPublisher extends IntervalPublisher {
     * For DeviceOrientationEvent to work on Safari on iOS 13 and up, the user has to give permission
     * through a user activation event, such as a button press.
     */
-    const isIOS = !window.MSStream && /iPad|iPhone|iPod|Macintosh/.test(window.navigator.userAgent);
-    if (isIOS) {
-      // Add a button that requests permission for sensor use on press
+    if (!window.MSStream && /iPad|iPhone|iPod|Macintosh/.test(window.navigator.userAgent)) {
+      // request permission for sensor use
       this.requestPermission();
-    } else {
-      // If user is not on iOS, sensor data can be read as normal.
-      window.addEventListener('deviceorientation', (event) => {
-        this.onReadOrientation(event);
-      });
     }
+    // If user is not on iOS, sensor data can be read as normal.
+    window.addEventListener('deviceorientation', (event) => {
+      if (event.isTrusted) {
+        this.onReadOrientation(event);
+      }
+    });
   }
 
   /**
@@ -56,16 +56,16 @@ class MagneticDeclinationPublisher extends IntervalPublisher {
     const permbutton = window.document.createElement('button');
     permbutton.innerHTML = 'requestPermission';
     permbutton.addEventListener('click', () => {
-      if (typeof(window.DeviceOrientationEvent.requestPermission()) === 'function') {
-        throw new Error('requestPermission for device orientation on iOS is not a function!');
+      if (typeof(window.DeviceOrientationEvent.requestPermission()) === 'function' ||
+      typeof(window.DeviceMotionEvent.requestPermission()) === 'function') {
+        throw new Error('requestPermission for device orientation or device motion on iOS is not a function!');
       }
-      // if permission, Enable callback for deviceOrientationEvent
+
+      // If permission is granted, Enable callback for deviceOrientationEvent and remove permissions button
       window.DeviceOrientationEvent.requestPermission().then((response) => {
         if (response==='granted') {
-          // If user is not on iOS, sensor data can be read as normal.
-          window.addEventListener('deviceorientation', (event) => {
-            this.onReadOrientation.bind(this)(event);
-          });
+          permbutton.remove();
+          return true;
         } else {
           throw new PermissionDeniedError('No permission granted for Device Orientation');
         }
