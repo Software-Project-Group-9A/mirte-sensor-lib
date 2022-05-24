@@ -84,12 +84,24 @@ describe('Test ButtonPublisher', function() {
 
       publisher.start();
 
-      assert.equal(button.addEventListener.callCount, 2);
+      assert.equal(button.addEventListener.callCount, 6);
       assert(
           button.addEventListener.calledWith('mouseup', publisher.onMouseUp)
       );
       assert(
           button.addEventListener.calledWith('mousedown', publisher.onMouseDown)
+      );
+      assert(
+          button.addEventListener.calledWith('touchstart', publisher.onMouseDown)
+      );
+      assert(
+          button.addEventListener.calledWith('mouseleave', publisher.onMouseUp)
+      );
+      assert(
+          button.addEventListener.calledWith('touchend', publisher.onMouseUp)
+      );
+      assert(
+          button.addEventListener.calledWith('touchcancel', publisher.onMouseUp)
       );
     });
     it('should result in onMouseDown being called at mousedown event 1', function() {
@@ -109,7 +121,48 @@ describe('Test ButtonPublisher', function() {
       const publisher = sinon.spy(new ButtonPublisher(topic, button));
 
       publisher.start();
+
+      button.dispatchEvent(new window.Event('touchstart'));
+
+      assert.equal(publisher.onMouseDown.callCount, 1);
+    });
+    it('should result in onMouseUp being called at mousedown event 1', function() {
+      const button = document.createElement('button');
+      const topic = new ROSLIB.Topic();
+      const publisher = sinon.spy(new ButtonPublisher(topic, button));
+
+      publisher.start();
       button.dispatchEvent(new window.Event('mouseup'));
+
+      assert.equal(publisher.onMouseUp.callCount, 1);
+    });
+    it('should result in onMouseUp being called at mousedown event 2', function() {
+      const button = document.createElement('button');
+      const topic = new ROSLIB.Topic();
+      const publisher = sinon.spy(new ButtonPublisher(topic, button));
+
+      publisher.start();
+      button.dispatchEvent(new window.Event('mouseleave'));
+
+      assert.equal(publisher.onMouseUp.callCount, 1);
+    });
+    it('should result in onMouseUp being called at mousedown event 3', function() {
+      const button = document.createElement('button');
+      const topic = new ROSLIB.Topic();
+      const publisher = sinon.spy(new ButtonPublisher(topic, button));
+
+      publisher.start();
+      button.dispatchEvent(new window.Event('touchend'));
+
+      assert.equal(publisher.onMouseUp.callCount, 1);
+    });
+    it('should result in onMouseUp being called at mousedown event 4', function() {
+      const button = document.createElement('button');
+      const topic = new ROSLIB.Topic();
+      const publisher = sinon.spy(new ButtonPublisher(topic, button));
+
+      publisher.start();
+      button.dispatchEvent(new window.Event('touchcancel'));
 
       assert.equal(publisher.onMouseUp.callCount, 1);
     });
@@ -124,10 +177,16 @@ describe('Test ButtonPublisher', function() {
       publisher.start();
       button.dispatchEvent(new window.Event('mouseup'));
 
+      assert.equal(topic.publish.callCount, 0);
+
+      // First mousedown should be called before mouseup can be called
+      button.dispatchEvent(new window.Event('mousedown'));
+      button.dispatchEvent(new window.Event('mouseup'));
+
       const expectedMessage = new ROSLIB.Message({data: false});
-      assert.equal(publisher.onMouseUp.callCount, 1);
-      assert.equal(topic.publish.callCount, 1);
-      assert.deepEqual(topic.publish.getCall(0).args[0], expectedMessage);
+      assert.equal(publisher.onMouseUp.callCount, 2);
+      assert.equal(topic.publish.callCount, 2);
+      assert.deepEqual(topic.publish.getCall(1).args[0], expectedMessage);
     });
   });
 
@@ -156,15 +215,24 @@ describe('Test ButtonPublisher', function() {
       publisher.start();
       publisher.stop();
 
-      assert.equal(button.removeEventListener.callCount, 2);
+      assert.equal(button.removeEventListener.callCount, 6);
       assert(
-          button.removeEventListener.calledWith(
-              'mousedown',
-              publisher.onMouseDown
-          )
+          button.removeEventListener.calledWith('mousedown', publisher.onMouseDown)
+      );
+      assert(
+          button.removeEventListener.calledWith('touchstart', publisher.onMouseDown)
       );
       assert(
           button.removeEventListener.calledWith('mouseup', publisher.onMouseUp)
+      );
+      assert(
+          button.removeEventListener.calledWith('touchend', publisher.onMouseUp)
+      );
+      assert(
+          button.removeEventListener.calledWith('mouseleave', publisher.onMouseUp)
+      );
+      assert(
+          button.removeEventListener.calledWith('touchcancel', publisher.onMouseUp)
       );
     });
     it('should prevent onMouseDown from being called at mousedown event', function() {
