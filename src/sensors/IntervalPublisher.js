@@ -63,8 +63,10 @@ class IntervalPublisher extends SensorPublisher {
 
     this.freq = hz;
     // Restart timer with new frequency
-    this.stop();
-    this.start();
+    if (this.started) {
+      this.stop();
+      this.start();
+    }
   }
 }
 
