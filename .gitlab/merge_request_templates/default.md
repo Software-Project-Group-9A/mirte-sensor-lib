@@ -1,0 +1,6 @@
+# Title
+## Changes
+- ... is changed.
+## Issues
+- Related to: #...
+- Closes: #...

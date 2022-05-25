@@ -16,7 +16,7 @@
             var topic = new ROSLIB.Topic({
                 ros : ros,
                 name : '/gpsDeclination',
-                messageType: 'std_msgs/Float32'
+                messageType: 'std_msgs/Int32'
             });
 
             ros.connect('ws://localhost:9090');
@@ -25,12 +25,22 @@
     <body>
         <h1 id='connection_info'></h1>
         <h1>Latitude</h1>
-        <input id="latitude" type="number" value="0">
+        <input id="latitude">
         <h1>Longitude</h1>
-        <input id="longitude" type="number" value="0">
+        <input id="longitude">
+        <button onclick="startDemo()">start</button>
+        <button onclick="stopDemo()">stop</button>
         <script>
-            var publisher = new SENSORLIB.GPSDeclinationPublisher(topic, parseInt(document.getElementById("latitude")), parseInt(document.getElementById("longitude")));
-            publisher.start();
+            let publisher;
+            function startDemo() {
+                const latt = parseFloat(document.getElementById("latitude").value);
+                const longi = parseFloat(document.getElementById("longitude").value);
+                publisher = new SENSORLIB.GPSDeclinationPublisher(topic, latt, longi);
+                publisher.start();
+            }
+            function stopDemo() {
+                publisher.stop();
+            }
         </script>
     </body>
 </html>
