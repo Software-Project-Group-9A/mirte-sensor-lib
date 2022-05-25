@@ -35,7 +35,6 @@ class ButtonPublisher extends SensorPublisher {
      * @param {Event} event event from callback
      */
     this.onMouseDown = function(event) {
-      event.stopPropagation();
       event.preventDefault();
       if (flag) {
         return;
@@ -50,7 +49,6 @@ class ButtonPublisher extends SensorPublisher {
      * @param {Event} event event from callback
      */
     this.onMouseUp = function(event) {
-      event.stopPropagation();
       event.preventDefault();
       if (!flag) {
         return;
