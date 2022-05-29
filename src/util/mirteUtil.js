@@ -1,7 +1,7 @@
 const IMUPublisher = require('../sensors/IMUPublisher');
 const MagneticDeclinationPublisher = require('../sensors/MagneticDeclinationPublisher');
 
-const sensorTypes = ['remote_imu', 'remote_gps'];
+const sensorTypes = ['remote_imu', 'remote_magnetic_declination'];
 /**
  * Array containing initializers for every type of sensor.
  * An initializer is a function that takes a properties object and ros instance,
@@ -23,7 +23,7 @@ const sensorInitializers = {
 function initializeIntervalPublisher(properties, constructor, ros) {
   const topic = new ROSLIB.Topic({
     ros: ros,
-    name: properties.instanceName,
+    name: properties.name,
     messageType: 'sensor_msgs/IMU',
   });
 
@@ -65,4 +65,6 @@ function readSensorsFromConfig(params, ros) {
 }
 
 
-module.exports = readSensorsFromConfig;
+module.exports = {
+  readSensorsFromConfig: readSensorsFromConfig,
+};
