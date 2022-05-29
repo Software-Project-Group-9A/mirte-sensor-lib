@@ -18,10 +18,11 @@ const IntervalPublisher = require('./IntervalPublisher.js');
 class MagneticDeclinationPublisher extends IntervalPublisher {
   /**
    * Creates a new sensor publisher that publishes to the provided topic.
+   * @param {ROSLIB.Ros} ros a ROS instance to publish to
    * @param {Topic} topic a Topic from RosLibJS
    */
-  constructor(topic) {
-    super(topic);
+  constructor(ros, topic) {
+    super(ros, topic);
 
     this.topic = topic;
 

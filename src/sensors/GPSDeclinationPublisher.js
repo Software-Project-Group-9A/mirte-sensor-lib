@@ -22,12 +22,13 @@ class GPSDeclinationPublisher extends IntervalPublisher {
    * Creates a new sensor publisher that publishes the angle
    * between the device and the provided Coordinates to the provided topic.
    * Will point to the North Pole (latitude 90, longitude 0) if not coordinates are specified.
+   * @param {ROSLIB.Ros} ros a ROS instance to publish to
    * @param {Topic} topic a Topic from RosLibJS
    * @param {Number} latitude float that gives the latitude of point where to aim for
    * @param {Number} longitude float that gives the longitude of point where to aim for
    */
-  constructor(topic, latitude = 90, longitude = 0) {
-    super(topic);
+  constructor(ros, topic, latitude = 90, longitude = 0) {
+    super(ros, topic);
 
     if (!((typeof latitude === 'number') && (typeof longitude === 'number'))) {
       throw new TypeError('Coordinates were not of type Number');

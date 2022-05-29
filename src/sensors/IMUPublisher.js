@@ -17,11 +17,12 @@ const IntervalPublisher = require('./IntervalPublisher.js');
 class IMUPublisher extends IntervalPublisher {
   /**
      * Creates a new sensor publisher that publishes to the provided topic.
+   * @param {ROSLIB.Ros} ros a ROS instance to publish to
      * @param {Topic} topic a Topic from RosLibJS
      */
-  constructor(topic) {
+  constructor(ros, topic) {
     // Frequency 5 used by estimation, could be further researched in the future.
-    super(topic, 5);
+    super(ros, topic, 5);
     this.topic = topic;
 
     // Flags used to detect whether callbacks
