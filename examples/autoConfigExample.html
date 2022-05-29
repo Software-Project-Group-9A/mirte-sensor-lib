@@ -11,12 +11,6 @@
 
         ros.on('close', function() { document.getElementById("connection_info").innerHTML = 'Connection to websocket server closed.'; });
 
-        var topic = new ROSLIB.Topic({
-            ros : ros,
-            name : '/button',
-            messageType: 'std_msgs/Bool'
-        });
-
         ros.connect('ws://localhost:9090');
     </script>
 </head>
@@ -24,35 +18,17 @@
     <h1 id='connection_info'></h1>
     <button id="button">Press Here!</button>
     <script>
+        const config = {
+            remote_imu: {
+                imu: {
+                    name: 'imu',
+                    frequency: 1.0,
+                },
+            },
+        };
 
-        const param = new ROSLIB.Param({
-            ros: ros,
-            name: 'remote_imu'
-        });
-        console.dir(SENSORLIB);
+        var sensorMap = SENSORLIB.readSensorsFromConfig(config, ros);
         
-        param.get(function(p) {
-            const object1 = {
-  a: 'somestring',
-  b: 42
-};
-            console.dir(Object.entries(p));
-            console.dir(Object.entries(object1));
-
-            for (let [sensorName, sensorProperties] of Object.entries(p)) {
-                console.log(sensorName);
-                console.log(sensorProperties);
-
-                const topic = new ROSLIB.Topic({
-                    ros: ros,
-                    name: sensorName,
-                    messageType: 'sensor_msgs/IMU'
-                });
-
-                const publisher = new SENSORLIB.IMUPublisher(topic);
-                publisher.start();
-                publisher.setPublishFrequency(sensorProperties.frequency);
-            }
-        });
+        console.dir(sensorMap);
     </script>
 </body>

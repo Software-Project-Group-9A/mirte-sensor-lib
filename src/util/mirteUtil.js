@@ -8,9 +8,9 @@ const sensorTypes = ['remote_imu', 'remote_magnetic_declination'];
  * and returns the corresponding SensorPublisher.
  */
 const sensorInitializers = {
-  'remote_imu': (properties, ros) => initializeIntervalPublisher(properties, IMUPublisher, ros),
+  'remote_imu': (properties, ros) => initializeIntervalPublisher(properties, (topic) => new IMUPublisher(topic), ros),
   'remote_magnetic_declination': (properties, ros) =>
-    initializeIntervalPublisher(properties, MagneticDeclinationPublisher, ros),
+    initializeIntervalPublisher(properties, (topic) => new MagneticDeclinationPublisher(topic), ros),
 };
 
 /**
@@ -27,7 +27,7 @@ function initializeIntervalPublisher(properties, constructor, ros) {
     messageType: 'sensor_msgs/IMU',
   });
 
-  const publisher = new constructor(topic);
+  const publisher = constructor(topic);
   publisher.start();
   publisher.setPublishFrequency(properties.frequency);
 

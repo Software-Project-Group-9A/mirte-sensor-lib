@@ -14,5 +14,7 @@ Object.assign(SENSORLIB, require('./sensors'));
 Object.assign(SENSORLIB, require('./error'));
 // Add actuator components
 Object.assign(SENSORLIB, require('./actuators'));
+// Add util
+Object.assign(SENSORLIB, require('./util'));
 
 global.SENSORLIB = SENSORLIB;
