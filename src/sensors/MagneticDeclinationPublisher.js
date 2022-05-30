@@ -19,12 +19,10 @@ class MagneticDeclinationPublisher extends IntervalPublisher {
   /**
    * Creates a new sensor publisher that publishes to the provided topic.
    * @param {ROSLIB.Ros} ros a ROS instance to publish to
-   * @param {ROSLIB.Topic} topic a Topic from RosLibJS
+   * @param {ROSLIB.Topic} topicname a Topic from RosLibJS
    */
-  constructor(ros, topic) {
-    super(ros, topic);
-
-    this.topic = topic;
+  constructor(ros, topicname) {
+    super(ros, topicname);
 
     // First need to detect first device orientation.
     this.orientationReady = false;

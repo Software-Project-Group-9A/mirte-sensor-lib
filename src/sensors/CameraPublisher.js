@@ -11,12 +11,12 @@ class CameraPublisher extends IntervalPublisher {
   /**
      * Creates a new Camera publisher that publishes to the provided topic.
    * @param {ROSLIB.Ros} ros a ROS instance to publish to
-     * @param {ROSLIB.Topic} topic a Topic from RosLibJS
+     * @param {ROSLIB.Topic} topicname a Topic from RosLibJS
      * @param {HTMLVideoElement} camera the video element of which to publish the data from.
      * @param {HTMLCanvasElement} canvas a canvas element for making publishing video data possible
      */
-  constructor(ros, topic, camera, canvas) {
-    super(ros, topic);
+  constructor(ros, topicname, camera, canvas) {
+    super(ros, topicname);
 
     if (!(camera instanceof window.HTMLVideoElement)) {
       throw new TypeError('camera argument was not of type HTMLVideoElement');

@@ -11,11 +11,11 @@ class TextSubscriber extends Subscriber {
   /**
    * Creates a new TextSubscriber.
    * @param {ROSLIB.Ros} ros a ROS instance to publish to
-   * @param {ROSLIB.Topic} topic topic to which to subscribe to
+   * @param {ROSLIB.Topic} topicname topic to which to subscribe to
    * @param {HTMLElement} HTMLElement HTML element in which the messages will be displayed.
    */
-  constructor(ros, topic, HTMLElement) {
-    super(ros, topic);
+  constructor(ros, topicname, HTMLElement) {
+    super(ros, topicname);
 
     if (!(HTMLElement instanceof window.HTMLElement)) {
       throw new TypeError('HTMLElement argument was not of type HTMLElement');

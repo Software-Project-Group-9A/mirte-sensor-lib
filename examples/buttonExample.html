@@ -13,12 +13,8 @@
 
             ros.on('close', function() { document.getElementById("connection_info").innerHTML = 'Connection to websocket server closed.'; });
 
-            var topic = new ROSLIB.Topic({
-                ros : ros,
-                name : '/button',
-                messageType: 'std_msgs/Bool'
-            });
-
+            var topicname = "/button";
+            console.log((topicname) instanceof String)
             ros.connect('ws://localhost:9090');
         </script>
     </head>
@@ -26,7 +22,7 @@
         <h1 id='connection_info'></h1>
         <button id="button">Press Here!</button>
         <script>
-            var publisher = new SENSORLIB.ButtonPublisher(topic, document.getElementById("button"));
+            var publisher = new SENSORLIB.ButtonPublisher(ros, topicname, document.getElementById("button"));
             publisher.start();
         </script>
     </body>

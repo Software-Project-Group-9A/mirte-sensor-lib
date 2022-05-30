@@ -12,11 +12,11 @@ class SliderPublisher extends IntervalPublisher {
   /**
    * Creates a new ButtonPublisher.
    * @param {ROSLIB.Ros} ros a ROS instance to publish to
-   * @param {ROSLIB.Topic} topic topic to which to publish slider data
+   * @param {ROSLIB.Topic} topicname topic to which to publish slider data
    * @param {HTMLInputElement} slider slider of which to publish data, must have type 'range'
    */
-  constructor(ros, topic, slider) {
-    super(ros, topic);
+  constructor(ros, topicname, slider) {
+    super(ros, topicname);
 
     if (!(slider instanceof window.HTMLInputElement)) {
       throw new TypeError('slider argument was not of type HTMLInputElement');

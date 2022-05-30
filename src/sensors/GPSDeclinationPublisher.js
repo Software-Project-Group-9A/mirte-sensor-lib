@@ -23,12 +23,12 @@ class GPSDeclinationPublisher extends IntervalPublisher {
    * between the device and the provided Coordinates to the provided topic.
    * Will point to the North Pole (latitude 90, longitude 0) if not coordinates are specified.
    * @param {ROSLIB.Ros} ros a ROS instance to publish to
-   * @param {ROSLIB.Topic} topic a Topic from RosLibJS
+   * @param {ROSLIB.Topic} topicname a Topic from RosLibJS
    * @param {Number} latitude float that gives the latitude of point where to aim for
    * @param {Number} longitude float that gives the longitude of point where to aim for
    */
-  constructor(ros, topic, latitude = 90, longitude = 0) {
-    super(ros, topic);
+  constructor(ros, topicname, latitude = 90, longitude = 0) {
+    super(ros, topicname);
 
     if (!((typeof latitude === 'number') && (typeof longitude === 'number'))) {
       throw new TypeError('Coordinates were not of type Number');
@@ -37,8 +37,6 @@ class GPSDeclinationPublisher extends IntervalPublisher {
     if (latitude > 90 || latitude < -90 || longitude > 180 || longitude < -180) {
       throw new Error('Range of given coordinates is invalid');
     }
-
-    this.topic = topic;
 
     // Sets, fields for compass
     this.compass = 0;
