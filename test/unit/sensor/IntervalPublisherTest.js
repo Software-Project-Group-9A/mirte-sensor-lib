@@ -127,9 +127,10 @@ describe('Test IntervalPublisher', function() {
       assert.equal(IVPublisher.createSnapshot.callCount, 110);
     });
 
-    it('Should have the publisher restart at change of frequency', function() {
+    it('Should restart when already started', function() {
       // Arrange
       const IVPublisher = createIntervalPublisher();
+      IVPublisher.start();
       IVPublisher.start = sinon.spy();
       IVPublisher.stop = sinon.spy();
 
@@ -141,6 +142,22 @@ describe('Test IntervalPublisher', function() {
       // Assert
       assert.equal(IVPublisher.stop.callCount, 3);
       assert.equal(IVPublisher.start.callCount, 3);
+    });
+
+    it('Should not restart when not started yet', function() {
+      // Arrange
+      const IVPublisher = createIntervalPublisher();
+      IVPublisher.start = sinon.spy();
+      IVPublisher.stop = sinon.spy();
+
+      // Act
+      IVPublisher.setPublishFrequency(10);
+      IVPublisher.setPublishFrequency(100);
+      IVPublisher.setPublishFrequency(1);
+
+      // Assert
+      assert.equal(IVPublisher.stop.callCount, 0);
+      assert.equal(IVPublisher.start.callCount, 0);
     });
 
     it('Frequency of 0 Hz does not work', function() {
