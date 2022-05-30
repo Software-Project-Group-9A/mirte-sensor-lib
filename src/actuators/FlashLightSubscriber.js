@@ -1,13 +1,14 @@
 const Subscriber = require('./Subscriber.js');
+const NotSupportedError = require('../error/NotSupportedError');
 
 /**
- * FlashLightSubscriber subscribes to a ROS topic and turns the flashLight on on command.
+ * FlashlightSubscriber subscribes to a ROS topic and turns the flashlight on on command.
  * Used source: https://codepen.io/adamrifai/pen/YLxjKa
  *
  * The data should be from a topic with message type
  * ROS std_msgs/Bool message.
  */
-class FlashLightSubscriber extends Subscriber {
+class FlashlightSubscriber extends Subscriber {
   /**
    * Creates a new TextSubscriber.
    * @param {ROSLIB.Topic} topic topic to which to subscribe to
@@ -43,7 +44,7 @@ class FlashLightSubscriber extends Subscriber {
         });
       });
     } else {
-      throw Error('Browser does not support this feature');
+      throw new NotSupportedError('Browser does not support this feature');
     }
   }
 
@@ -67,4 +68,4 @@ class FlashLightSubscriber extends Subscriber {
   }
 }
 
-module.exports = FlashLightSubscriber;
+module.exports = FlashlightSubscriber;

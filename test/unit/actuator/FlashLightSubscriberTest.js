@@ -1,9 +1,9 @@
 require('../../globalSetup.js');
 
 // Module to test
-const FlashLightSubscriber = require('../../../src/actuators/FlashLightSubscriber.js');
+const FlashlightSubscriber = require('../../../src/actuators/FlashlightSubscriber.js');
 
-describe('Test FlashLightSubscriber', function() {
+describe('Test FlashlightSubscriber', function() {
   describe('#constructor(topic)', function() {
     // /**
     //  * Helper functions for checking whether correct error is raised for
@@ -59,7 +59,7 @@ describe('Test FlashLightSubscriber', function() {
 
       assert.doesNotThrow(
           () => {
-            subscriber = new FlashLightSubscriber(new ROSLIB.Topic());
+            subscriber = new FlashlightSubscriber(new ROSLIB.Topic());
           },
           (error) => {
             return false;
@@ -73,7 +73,7 @@ describe('Test FlashLightSubscriber', function() {
       };
 
       assert.throws(() => {
-        new FlashLightSubscriber(new ROSLIB.Topic());
+        new FlashlightSubscriber(new ROSLIB.Topic());
       }, expectUnsuportedBrowser);
     });
 
@@ -104,7 +104,7 @@ describe('Test FlashLightSubscriber', function() {
     //     };
 
   //     assert.throws(() => {
-  //       new FlashLightSubscriber(new ROSLIB.Topic());
+  //       new FlashlightSubscriber(new ROSLIB.Topic());
   //     }, expectNoCameraAvailable);
   //   });
   });

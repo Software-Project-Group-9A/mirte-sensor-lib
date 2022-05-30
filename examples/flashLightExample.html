@@ -17,11 +17,11 @@
 
             var topic = new ROSLIB.Topic({
                 ros : ros,
-                name : '/flash_light',
+                name : '/flashlight',
                 messageType: 'std_msgs/Bool'
             });
 
-            var subscriber = new SENSORLIB.FlashLightSubscriber(topic);
+            var subscriber = new SENSORLIB.FlashlightSubscriber(topic);
             subscriber.start();
         </script>
     </head>
