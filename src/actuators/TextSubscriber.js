@@ -10,11 +10,12 @@ const Subscriber = require('./Subscriber.js');
 class TextSubscriber extends Subscriber {
   /**
    * Creates a new TextSubscriber.
+   * @param {ROSLIB.Ros} ros a ROS instance to publish to
    * @param {ROSLIB.Topic} topic topic to which to subscribe to
    * @param {HTMLElement} HTMLElement HTML element in which the messages will be displayed.
    */
-  constructor(topic, HTMLElement) {
-    super(topic);
+  constructor(ros, topic, HTMLElement) {
+    super(ros, topic);
 
     if (!(HTMLElement instanceof window.HTMLElement)) {
       throw new TypeError('HTMLElement argument was not of type HTMLElement');

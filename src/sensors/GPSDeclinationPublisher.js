@@ -23,7 +23,7 @@ class GPSDeclinationPublisher extends IntervalPublisher {
    * between the device and the provided Coordinates to the provided topic.
    * Will point to the North Pole (latitude 90, longitude 0) if not coordinates are specified.
    * @param {ROSLIB.Ros} ros a ROS instance to publish to
-   * @param {Topic} topic a Topic from RosLibJS
+   * @param {ROSLIB.Topic} topic a Topic from RosLibJS
    * @param {Number} latitude float that gives the latitude of point where to aim for
    * @param {Number} longitude float that gives the longitude of point where to aim for
    */

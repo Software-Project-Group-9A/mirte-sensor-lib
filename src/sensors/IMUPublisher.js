@@ -18,7 +18,7 @@ class IMUPublisher extends IntervalPublisher {
   /**
      * Creates a new sensor publisher that publishes to the provided topic.
    * @param {ROSLIB.Ros} ros a ROS instance to publish to
-     * @param {Topic} topic a Topic from RosLibJS
+     * @param {ROSLIB.Topic} topic a Topic from RosLibJS
      */
   constructor(ros, topic) {
     // Frequency 5 used by estimation, could be further researched in the future.
