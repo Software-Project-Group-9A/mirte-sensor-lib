@@ -104,7 +104,7 @@ describe('Test ButtonPublisher', function() {
           button.addEventListener.calledWith('touchcancel', publisher.onMouseUp)
       );
     });
-    it('should result in onMouseDown being called at mousedown event 1', function() {
+    it('should result in onMouseDown being called at mousedown', function() {
       const button = document.createElement('button');
       const topic = new ROSLIB.Topic();
       const publisher = sinon.spy(new ButtonPublisher(topic, button));
@@ -115,7 +115,7 @@ describe('Test ButtonPublisher', function() {
 
       assert.equal(publisher.onMouseDown.callCount, 1);
     });
-    it('should result in onMouseDown being called at mousedown event 2', function() {
+    it('should result in onMouseDown being called at touchstart', function() {
       const button = document.createElement('button');
       const topic = new ROSLIB.Topic();
       const publisher = sinon.spy(new ButtonPublisher(topic, button));
@@ -126,7 +126,7 @@ describe('Test ButtonPublisher', function() {
 
       assert.equal(publisher.onMouseDown.callCount, 1);
     });
-    it('should result in onMouseUp being called at mousedown event 1', function() {
+    it('should result in onMouseUp being called at mouseup', function() {
       const button = document.createElement('button');
       const topic = new ROSLIB.Topic();
       const publisher = sinon.spy(new ButtonPublisher(topic, button));
@@ -136,7 +136,7 @@ describe('Test ButtonPublisher', function() {
 
       assert.equal(publisher.onMouseUp.callCount, 1);
     });
-    it('should result in onMouseUp being called at mousedown event 2', function() {
+    it('should result in onMouseUp being called at mouseleave', function() {
       const button = document.createElement('button');
       const topic = new ROSLIB.Topic();
       const publisher = sinon.spy(new ButtonPublisher(topic, button));
@@ -146,7 +146,7 @@ describe('Test ButtonPublisher', function() {
 
       assert.equal(publisher.onMouseUp.callCount, 1);
     });
-    it('should result in onMouseUp being called at mousedown event 3', function() {
+    it('should result in onMouseUp being called at touchend', function() {
       const button = document.createElement('button');
       const topic = new ROSLIB.Topic();
       const publisher = sinon.spy(new ButtonPublisher(topic, button));
