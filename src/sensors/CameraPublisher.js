@@ -26,6 +26,13 @@ class CameraPublisher extends IntervalPublisher {
     }
     this.camera = camera;
     this.canvas = canvas;
+
+    // Set the topic to publish to
+    this.topic = new ROSLIB.Topic({
+      ros: this.ros,
+      name: this.topicname,
+      messageType: 'sensor_msgs/CompressedImage',
+    });
   }
 
   /**

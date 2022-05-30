@@ -19,6 +19,7 @@ class IntervalPublisher extends SensorPublisher {
      */
   constructor(ros, topicname, hz = 10) {
     super(ros, topicname);
+
     if (hz <= 0) {
       throw new Error('Cannot construct with frequency ' + hz);
     } else {

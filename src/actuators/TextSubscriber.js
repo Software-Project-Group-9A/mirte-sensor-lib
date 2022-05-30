@@ -21,6 +21,13 @@ class TextSubscriber extends Subscriber {
       throw new TypeError('HTMLElement argument was not of type HTMLElement');
     }
 
+    // Set the topic to publish to
+    this.topic = new ROSLIB.Topic({
+      ros: this.ros,
+      name: this.topicname,
+      messageType: 'sensor_msgs/CompressedImage',
+    });
+
     this.HTMLElement = HTMLElement;
   }
 

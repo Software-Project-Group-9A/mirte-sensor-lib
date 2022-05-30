@@ -38,6 +38,13 @@ class GPSDeclinationPublisher extends IntervalPublisher {
       throw new Error('Range of given coordinates is invalid');
     }
 
+    // Set the topic to publish to
+    this.topic = new ROSLIB.Topic({
+      ros: this.ros,
+      name: this.topicname,
+      messageType: 'std_msgs/Int32',
+    });
+
     // Sets, fields for compass
     this.compass = 0;
     this.lat = latitude;

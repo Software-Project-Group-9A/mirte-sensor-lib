@@ -22,7 +22,7 @@ class SensorPublisher {
     this.ros = ros;
 
     /**
-     * topic to which to publish data
+     * Topicname of the topic to publish to. The topic has to be set within every publisher
      */
     this.topicname = topicname;
 

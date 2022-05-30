@@ -24,6 +24,13 @@ class IMUPublisher extends IntervalPublisher {
     // Frequency 5 used by estimation, could be further researched in the future.
     super(ros, topicname, 5);
 
+    // Set the topic to publish to
+    this.topic = new ROSLIB.Topic({
+      ros: this.ros,
+      name: this.topicname,
+      messageType: 'sensor_msgs/Imu',
+    });
+
     // Flags used to detect whether callbacks
     // have been invoked.
     this.orientationReady = false;

@@ -17,17 +17,10 @@
 
             ros.on('close', function() { document.getElementById("connection_info").innerHTML = 'Connection to websocket server closed.'; });
 
-            /* Set up a topic, any slider data will be published to /slider */
-            var topic = new ROSLIB.Topic({
-                ros : ros,
-                name : '/slider',
-                messageType: 'std_msgs/Int32'
-            });
-
             ros.connect('ws://localhost:9090');
 
             /* Set up and start the publisher */
-            var publisher = new SENSORLIB.SliderPublisher(topic, document.getElementById("slider"));
+            var publisher = new SENSORLIB.SliderPublisher(ros, '/slider', document.getElementById("slider"));
             publisher.start();
         </script>
     </body>

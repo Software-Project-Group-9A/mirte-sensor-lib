@@ -26,6 +26,13 @@ class SliderPublisher extends IntervalPublisher {
       throw new TypeError('slider argument does not have type range');
     }
 
+    // Set the topic to publish to
+    this.topic = new ROSLIB.Topic({
+      ros: this.ros,
+      name: this.topicname,
+      messageType: 'std_msgs/Int32',
+    });
+
     /**
      * slider of which to publish data
      */
