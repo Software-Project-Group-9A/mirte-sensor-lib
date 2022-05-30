@@ -1,14 +1,25 @@
 const ButtonPublisher = require('../sensors/ButtonPublisher');
 const SliderPublisher = require('../sensors/SliderPublisher');
 const TextPublisher = require('../sensors/TextPublisher');
-// const ImageSubscriber = require('../actuators/ImageSubscriber');
+const ImageSubscriber = require('../actuators/ImageSubscriber');
 const TextSubscriber = require('../actuators/TextSubscriber');
 
 /**
- * 
- * @param {HTMLElement} element 
- * @param {ROSLIB.Ros} ros 
- * @param {Map} map 
+ * Takes an HTMLElement, and creates the an appropriate Publisher if possible.
+ * The data of the HTMLElement is published to a topic with the same name as the element's id.
+ * In order to be able to publish an element, the following must be true:
+ *  - The element must have an id
+ *  - The element must be an HTML element
+ *  - The element must be one of the following types:
+ *    > HTMLButtonElement (published as ButtonPublisher)
+ *    > HTMLInputElement  (published as SliderPublisher if type is set to 'range',
+ *      and as TextPublisher if type is set to 'text')
+ *    > HTMLCanvasElement (subscribed as ImageSubscriber)
+ *    > If none of the above are applicable, the element will be subscribed as a TextSubscriber
+ * Any resulting publisher or subscriber will be placed in the provided map, with its id as its key
+ * @param {HTMLElement} element HTMLElement to attempt to publish
+ * @param {ROSLIB.Ros} ros ros instance to which to publish/subscribe resulting publishers and subscribers
+ * @param {Map} map Map in which to place any created publisher or subscriber
  */
 function tryPublishElement(element, ros, map) {
   const topicName = element.id;
@@ -18,11 +29,16 @@ function tryPublishElement(element, ros, map) {
     return;
   }
 
+  if (!(element instanceof HTMLElement)) {
+    throw new TypeError('element was not instance of HTMLElement');
+  }
+
   const topic = new ROSLIB.Topic({
     name: topicName,
     ros: ros,
   });
 
+  // choose how to publish or subscribe element
   switch (element.constructor.name) {
     case 'HTMLButtonElement':
       map.set(topicName, new ButtonPublisher(topic, element));
@@ -35,7 +51,7 @@ function tryPublishElement(element, ros, map) {
       }
       return;
     case 'HTMLCanvasElement':
-      // map.set(topicName, new ImageSubscriber(topic, element));
+      map.set(topicName, new ImageSubscriber(topic, element));
       return;
     default:
       map.set(topicName, new TextSubscriber(topic, element));
@@ -43,11 +59,16 @@ function tryPublishElement(element, ros, map) {
 }
 
 /**
- *
- * @param {HTMLElement} parentElement
- * @param {ROSLIB.Ros} ros
- * @param {Map} map
- * @return {Map} map where each publisher is stored under it's respective topic name
+ * Recursively publishes all children of the provided parentElement.
+ * If no parentElement is provided, the root node of the document will be used.
+ * In order to be publishable, a child element must have an id.
+ * For more information on the publishing of these childnodes,
+ * see the comments on the @function tryPublishElement function
+ * @param {HTMLElement} parentElement element of which to publish child elements
+ * @param {ROSLIB.Ros} ros ros instance to which to publish child elements
+ * @param {Map} [map] map in which to place resulting publishers and subscribers.
+ *  Will create an empty map if no map is given.
+ * @return {Map} Map where each publisher is stored under it's respective topic name
  */
 function publishChildElements(parentElement, ros, map) {
   // create default map
