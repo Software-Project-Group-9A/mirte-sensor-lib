@@ -56,8 +56,6 @@ class FlashlightSubscriber extends Subscriber {
   onMessage(msg) {
     // Create stream and get video track
     this.imageCapture.getPhotoCapabilities().then(() => {
-      // todo: check if camera has a torch
-
       // turn torch on or off depending on msg
       this.track.applyConstraints({
         advanced: [{torch: msg.data}],
