@@ -1,6 +1,7 @@
 require('../../globalSetup');
 
 const TextSubscriber = require('../../../src/actuators/TextSubscriber');
+const ImageSubscriber = require('../../../src/actuators/ImageSubscriber');
 const ButtonPublisher = require('../../../src/sensors/ButtonPublisher');
 const SliderPublisher = require('../../../src/sensors/SliderPublisher');
 const TextPublisher = require('../../../src/sensors/TextPublisher');
@@ -77,6 +78,22 @@ describe('documentUtils', function() {
       assert.equal(textSubscriber.HTMLElement, textOutput);
       assert.equal(textSubscriber.topic.name, textOutputId);
     });
+    it('should be able properly publish a canvas for image publishing', function() {
+      const imageOutput = document.createElement('canvas');
+      const imageOutputId = 'imageA';
+      imageOutput.id = imageOutputId;
+
+      const ros = new ROSLIB.Ros();
+      const map = new Map();
+
+      tryPublishElement(imageOutput, ros, map);
+
+      assert(map.has(imageOutputId));
+      const imageSubscriber = map.get(imageOutputId);
+      assert(imageSubscriber instanceof ImageSubscriber);
+      assert.equal(imageSubscriber.canvas, imageOutput);
+      assert.equal(imageSubscriber.topic.name, imageOutputId);
+    });
     it('should ignore elements without an id', function() {
       const textOutput = document.createElement('p');
       const ros = new ROSLIB.Ros();
@@ -85,6 +102,16 @@ describe('documentUtils', function() {
       tryPublishElement(textOutput, ros, map);
 
       assert.equal(map.size, 0);
+    });
+    it('should throw an error for non-HTMLElement element argument', function() {
+      const element = 'canvas';
+      const ros = new ROSLIB.Ros();
+      const map = new Map();
+
+      assert.throws(
+          () => tryPublishElement(element, ros, map),
+          TypeError
+      );
     });
   });
   describe('#publishChildElements(parentElement, ros, map)', function() {

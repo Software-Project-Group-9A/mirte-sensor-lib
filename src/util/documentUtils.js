@@ -29,7 +29,7 @@ function tryPublishElement(element, ros, map) {
     return;
   }
 
-  if (!(element instanceof HTMLElement)) {
+  if (!(element instanceof window.HTMLElement)) {
     throw new TypeError('element was not instance of HTMLElement');
   }
 
@@ -60,7 +60,6 @@ function tryPublishElement(element, ros, map) {
 
 /**
  * Recursively publishes all children of the provided parentElement.
- * If no parentElement is provided, the root node of the document will be used.
  * In order to be publishable, a child element must have an id.
  * For more information on the publishing of these childnodes,
  * see the comments on the @function tryPublishElement function
@@ -73,8 +72,6 @@ function tryPublishElement(element, ros, map) {
 function publishChildElements(parentElement, ros, map) {
   // create default map
   map = map || new Map();
-  // if no parent node is specified, publish to entire document by default
-  parentElement = parentElement || window.self;
 
   if (!(ros instanceof ROSLIB.Ros)) {
     throw new TypeError('ros argument must be of type ROSLIB.Ros');
