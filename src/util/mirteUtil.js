@@ -1,5 +1,7 @@
+const GPSPublisher = require('../sensors/GPSPublisher');
 const IMUPublisher = require('../sensors/IMUPublisher');
 const MagneticDeclinationPublisher = require('../sensors/MagneticDeclinationPublisher');
+const GPSDeclinationPublisher = require('../sensors/GPSDeclinationPublisher');
 
 const sensorTypes = ['remote_imu', 'remote_magnetic_declination'];
 /**
@@ -11,6 +13,10 @@ const sensorInitializers = {
   'remote_imu': (properties, ros) => initializeIntervalPublisher(properties, (topic) => new IMUPublisher(topic), ros),
   'remote_magnetic_declination': (properties, ros) =>
     initializeIntervalPublisher(properties, (topic) => new MagneticDeclinationPublisher(topic), ros),
+  'remote_gps': (properties, ros) => initializeIntervalPublisher(properties, (topic) => new GPSPublisher(topic), ros),
+  'remote_gps_declination': (properties, ros) =>
+    initializeIntervalPublisher(properties, (topic) => new GPSDeclinationPublisher(topic), ros),
+  'remote_camera': (properties, ros) => initializeIntervalPublisher(properties, (topic) => new CameraPublisher(topic), ros),
 };
 
 /**
