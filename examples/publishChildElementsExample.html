@@ -1,0 +1,38 @@
+<html>
+    <head>
+        <script src="http://static.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
+        <script src="http://static.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
+        <script src="../build/RosSensorLib.min.js"></script>
+        <script>
+            var ros = new ROSLIB.Ros();
+
+            ros.on('connection', function() {document.getElementById("connection_info").innerHTML = "Connected to webserver."});
+
+            ros.on('error', function(error) { document.getElementById("connection_info").innerHTML = "Failed to connect to webserver."; });
+
+            ros.on('close', function() { document.getElementById("connection_info").innerHTML = 'Connection to websocket server closed.'; });
+
+            ros.connect('ws://localhost:9090');
+        </script>
+    </head>
+    <body>
+        <h1 id='connection_info'></h1>
+        <!--All elements in this div will be published-->
+        <div id="to-publish">
+          <!--Button Input-->
+          <button id="button">button</button>
+          <!--Slider Input-->
+          <input id="slider" type="range" min=0 max=200 value=50>
+          <!--Text Input-->
+          <input id="textInput" type="text">
+          <!--Text Output-->
+          <h3 id="textOutput"><h3>
+          <!--Image Output-->
+          <canvas id='outputCanvas' width="500", height="500">
+        </div>
+        <script>
+        // publish all publishable elements in the div with id "to-publish"
+        var map = SENSORLIB.publishChildElements(document.getElementById("to-publish"), ros);
+        </script>
+    </body>
+</html>

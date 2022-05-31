@@ -39,23 +39,32 @@ function tryPublishElement(element, ros, map) {
   });
 
   // choose how to publish or subscribe element
+  let mapEntry;
   switch (element.constructor.name) {
     case 'HTMLButtonElement':
-      map.set(topicName, new ButtonPublisher(topic, element));
-      return;
+      topic.messageType = 'std_msgs/Bool';
+      mapEntry = new ButtonPublisher(topic, element);
+      break;
     case 'HTMLInputElement':
       if (element.type === 'range') {
-        map.set(topicName, new SliderPublisher(topic, element));
+        topic.messageType = 'std_msgs/Int32';
+        mapEntry = new SliderPublisher(topic, element);
       } else if (element.type === 'text') {
-        map.set(topicName, new TextPublisher(topic, element));
+        topic.messageType = 'std_msgs/String';
+        mapEntry = new TextPublisher(topic, element);
       }
-      return;
+      break;
     case 'HTMLCanvasElement':
-      map.set(topicName, new ImageSubscriber(topic, element));
-      return;
+      topic.messageType = 'std_msgs/CompressedImage';
+      mapEntry = new ImageSubscriber(topic, element);
+      break;
     default:
-      map.set(topicName, new TextSubscriber(topic, element));
+      topic.messageType = 'std_msgs/String';
+      mapEntry = new TextSubscriber(topic, element);
   }
+
+  mapEntry.start();
+  map.set(topicName, mapEntry);
 }
 
 /**
