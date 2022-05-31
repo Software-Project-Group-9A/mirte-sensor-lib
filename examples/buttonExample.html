@@ -24,7 +24,13 @@
     </head>
     <body>
         <h1 id='connection_info'></h1>
-        <button id="button">Press Here!</button>
+        <button id="button" 
+        style="font-size : 20px; width: 100%; height: 100px; 
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;">Press Here!</button>
         <script>
             var publisher = new SENSORLIB.ButtonPublisher(topic, document.getElementById("button"));
             publisher.start();

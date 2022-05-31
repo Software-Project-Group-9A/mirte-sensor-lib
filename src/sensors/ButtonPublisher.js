@@ -27,18 +27,33 @@ class ButtonPublisher extends SensorPublisher {
      */
     this.button = button;
 
+    // Flag to check if button was already pressed
+    let flag = false;
+
     /**
      * Callback for when button is pressed.
+     * @param {Event} event event from callback
      */
-    this.onMouseDown = function() {
+    this.onMouseDown = function(event) {
+      event.preventDefault();
+      if (flag) {
+        return;
+      }
+      flag = true;
       const msg = this.createBoolMsg(true);
       this.topic.publish(msg);
     }.bind(this);
 
     /**
      * Callback for when button is released.
+     * @param {Event} event event from callback
      */
-    this.onMouseUp = function() {
+    this.onMouseUp = function(event) {
+      event.preventDefault();
+      if (!flag) {
+        return;
+      }
+      flag = false;
       const msg = this.createBoolMsg(false);
       this.topic.publish(msg);
     }.bind(this);
@@ -61,7 +76,11 @@ class ButtonPublisher extends SensorPublisher {
   start() {
     super.start();
     this.button.addEventListener('mousedown', this.onMouseDown);
+    this.button.addEventListener('touchstart', this.onMouseDown);
     this.button.addEventListener('mouseup', this.onMouseUp);
+    this.button.addEventListener('mouseleave', this.onMouseUp);
+    this.button.addEventListener('touchend', this.onMouseUp);
+    this.button.addEventListener('touchcancel', this.onMouseUp);
   }
 
   /**
@@ -70,7 +89,11 @@ class ButtonPublisher extends SensorPublisher {
   stop() {
     super.stop();
     this.button.removeEventListener('mousedown', this.onMouseDown);
+    this.button.removeEventListener('touchstart', this.onMouseDown);
     this.button.removeEventListener('mouseup', this.onMouseUp);
+    this.button.removeEventListener('mouseleave', this.onMouseUp);
+    this.button.removeEventListener('touchend', this.onMouseUp);
+    this.button.removeEventListener('touchcancel', this.onMouseUp);
   }
 }
 
