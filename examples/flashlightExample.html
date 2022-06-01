@@ -1,6 +1,5 @@
 <html>
     <head>
-        <script src="https://github.com/RobotWebTools/roslibjs/blob/develop/build/roslib.min.js"></script>
         <script src="http://static.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
         <script src="http://static.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
         <script src="../build/RosSensorLib.min.js"></script>
@@ -13,27 +12,31 @@
 
             ros.on('close', function() { document.getElementById("connection_info").innerHTML = 'Connection to websocket server closed.'; });
 
+            ros.connect('ws://localhost:9090');
+
             var topic = new ROSLIB.Topic({
                 ros : ros,
-                name : '/button',
+                name : '/flashlight',
                 messageType: 'std_msgs/Bool'
             });
 
-            ros.connect('ws://localhost:9090');
+            var subscriber = new SENSORLIB.FlashlightSubscriber(topic);
+            subscriber.start();
         </script>
     </head>
     <body>
-        <h1 id='connection_info'></h1>
-        <button id="button" 
-        style="font-size : 20px; width: 100%; height: 100px; 
-        -webkit-user-select: none;
-        -khtml-user-select: none;
-        -moz-user-select: none;
-        -ms-user-select: none;
-        user-select: none;">Press Here!</button>
         <script>
-            var publisher = new SENSORLIB.ButtonPublisher(topic, document.getElementById("button"));
-            publisher.start();
+            const msgTrue = new ROSLIB.Message({
+                                    data: true,
+                                });
+
+            const msgFalse = new ROSLIB.Message({
+                                    data: false,
+                                });
+            
         </script>
+        <h1 id='connection_info'></h1>
+        <button onclick="topic.publish(msgTrue)">On</button>
+        <button onclick="topic.publish(msgFalse)">Off</button>
     </body>
 </html>
