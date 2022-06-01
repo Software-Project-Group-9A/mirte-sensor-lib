@@ -14,9 +14,10 @@ class SliderPublisher extends IntervalPublisher {
    * @param {ROSLIB.Ros} ros a ROS instance to publish to
    * @param {ROSLIB.Topic} topicName topic to which to publish slider data
    * @param {HTMLInputElement} slider slider of which to publish data, must have type 'range'
+   * @param {Number} hz a standard frequency for this type of object.
    */
-  constructor(ros, topicName, slider) {
-    super(ros, topicName);
+  constructor(ros, topicName, slider, hz = 10) {
+    super(ros, topicName, hz);
 
     if (!(slider instanceof window.HTMLInputElement)) {
       throw new TypeError('slider argument was not of type HTMLInputElement');
