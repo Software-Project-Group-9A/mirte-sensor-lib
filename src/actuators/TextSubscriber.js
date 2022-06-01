@@ -21,7 +21,7 @@ class TextSubscriber extends Subscriber {
       throw new TypeError('HTMLElement argument was not of type HTMLElement');
     }
 
-    this.topic.messageType = 'sensor_msgs/CompressedImage';
+    this.topic.messageType = 'std_msgs/String';
 
     this.HTMLElement = HTMLElement;
   }
