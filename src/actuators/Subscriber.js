@@ -10,7 +10,7 @@ class Subscriber {
    */
   constructor(ros, topicname) {
     if (!(ros instanceof ROSLIB.Ros)) {
-      throw new TypeError('topic argument was not of type ROSLIB.Ros');
+      throw new TypeError('ros argument was not of type ROSLIB.Ros');
     }
     if (typeof(topicname) !== 'string') {
       throw new TypeError('topicname argument was not of type String');
