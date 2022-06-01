@@ -3,7 +3,7 @@
     "module": true,
     "EventEmitter2" : true,
     "ROSLIB" : true,
-    "ImageCapture" : true
+    "ImageCapture" : true,
     "AmbientLightSensor" : true
   },
   "curly": true,

@@ -1,3 +1,10 @@
+/**
+ * VERY IMPORTANT: This feature is not fully suported over all browsers
+ * To enable in Chrome, go to: chrome://flags/
+ * There enable: "Generic Sensor Extra Classes"
+ */
+
+
 // Dependencies
 const IntervalPublisher = require('./IntervalPublisher.js');
 const NotSupportedError = require('../error/NotSupportedError');
@@ -16,20 +23,20 @@ class AmbientLightPublisher extends IntervalPublisher {
    * Creates a new sensor publisher that publishes the amount of lux
    * the camera receives
    * @param {Topic} topic a Topic from RosLibJS
+   * @param {Number} hz a frequency to be called
    */
-  constructor(topic) {
+  constructor(topic, hz = 1) {
     // check support for API
     if (!('AmbientLightSensor' in window)) {
       throw new NotSupportedError('Unable to create AmbientLightSensor, ' +
           'AmbientLight API not supported');
     }
-
-    super(topic);
+    super(topic, hz);
 
     this.topic = topic;
 
-    this.lightReady = false;
-    this.light = 0;
+    this.oldLight = -1;
+    this.light = -1;
 
     this.sensor = new AmbientLightSensor();
   }
@@ -42,8 +49,6 @@ class AmbientLightPublisher extends IntervalPublisher {
 
     this.sensor.addEventListener('reading', (event) => {
       this.light = this.sensor.illuminance;
-      console.log(this.light);
-      this.lightReady = true;
     });
     this.sensor.start();
   }
@@ -54,11 +59,9 @@ class AmbientLightPublisher extends IntervalPublisher {
   stop() {
     super.stop();
 
-    this.lightReady = false;
+    this.sensor.stop();
 
     this.sensor.removeEventListener('reading', (event) => {});
-
-    this.sensor.stop();
   }
 
   /**
@@ -75,9 +78,11 @@ class AmbientLightPublisher extends IntervalPublisher {
    * in a ROS message and publishes it
    */
   createSnapshot() {
-    if (!(this.lightReady)) {
-      throw Error('AmbientLight is not read yet!');
+    if (this.oldLight === this.light) {
+      return;
     }
+
+    this.oldLight = this.light;
 
     const AmbientLightMessage = new ROSLIB.Message({
       data: this.light,
