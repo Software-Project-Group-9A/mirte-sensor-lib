@@ -72,7 +72,7 @@ describe('Test SensorPublisher', function() {
     });
   });
 
-  describe('#start()', function() {
+  describe('#start() & stop()', function() {
     /**
      * Helper functions for checking whether correct error is raised.
      * @param {Error} error The raised error.
