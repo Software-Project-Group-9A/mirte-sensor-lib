@@ -1,0 +1,42 @@
+<html>
+    <head>
+        <script src="http://static.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
+        <script src="http://static.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
+        <script src="../build/RosSensorLib.min.js"></script>
+        <script>
+            var ros = new ROSLIB.Ros();
+
+            ros.on('connection', function() {document.getElementById("connection_info").innerHTML = "Connected to webserver."});
+
+            ros.on('error', function(error) { document.getElementById("connection_info").innerHTML = "Failed to connect to webserver."; });
+
+            ros.on('close', function() { document.getElementById("connection_info").innerHTML = 'Connection to websocket server closed.'; });
+
+            ros.connect('ws://localhost:9090');
+
+            var topic = new ROSLIB.Topic({
+                ros : ros,
+                name : '/flashlight',
+                messageType: 'std_msgs/Bool'
+            });
+
+            var subscriber = new SENSORLIB.FlashlightSubscriber(topic);
+            subscriber.start();
+        </script>
+    </head>
+    <body>
+        <script>
+            const msgTrue = new ROSLIB.Message({
+                                    data: true,
+                                });
+
+            const msgFalse = new ROSLIB.Message({
+                                    data: false,
+                                });
+            
+        </script>
+        <h1 id='connection_info'></h1>
+        <button onclick="topic.publish(msgTrue)">On</button>
+        <button onclick="topic.publish(msgFalse)">Off</button>
+    </body>
+</html>
