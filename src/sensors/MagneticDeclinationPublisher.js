@@ -18,12 +18,13 @@ const IntervalPublisher = require('./IntervalPublisher.js');
 class MagneticDeclinationPublisher extends IntervalPublisher {
   /**
    * Creates a new sensor publisher that publishes to the provided topic.
-   * @param {Topic} topic a Topic from RosLibJS
+   * @param {ROSLIB.Ros} ros a ROS instance to publish to
+   * @param {ROSLIB.Topic} topicName a Topic from RosLibJS
    */
-  constructor(topic) {
-    super(topic);
+  constructor(ros, topicName) {
+    super(ros, topicName);
 
-    this.topic = topic;
+    this.topic.messageType = 'std_msgs/Int32';
 
     // First need to detect first device orientation.
     this.orientationReady = false;

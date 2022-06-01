@@ -21,6 +21,6 @@
 
     ros.connect('ws://localhost:9090');
 
-    var imu = new SENSORLIB.IMUPublisher(topic);
+    var imu = new SENSORLIB.IMUPublisher(ros, '/gyro');
     imu.start();
 </script>

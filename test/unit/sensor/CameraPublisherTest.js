@@ -45,38 +45,35 @@ describe('Test CamerPublisher', function() {
     /* test for camera verification */
     it('should reject an undefined camera', function() {
       assert.throws( () => {
-        new CameraPublisher(new ROSLIB.Topic(), undefined, canvas);
+        new CameraPublisher(new ROSLIB.Ros(), 'topic', undefined, canvas);
       },
-      expectInvalidCamera
-      );
+      expectInvalidCamera);
     });
     /* test for correct camera verification */
     it('should reject an element other than camera', function() {
       assert.throws( () => {
-        new CameraPublisher(new ROSLIB.Topic(), document.createElement('button'), canvas);
+        new CameraPublisher(new ROSLIB.Ros(), 'topic', document.createElement('button'), canvas);
       },
-      expectInvalidCamera
-      );
+      expectInvalidCamera);
     });
     /* test for canvas verification */
     it('should reject an undefined canvas', function() {
       assert.throws( () => {
-        new CameraPublisher(new ROSLIB.Topic(), camera, undefined);
+        new CameraPublisher(new ROSLIB.Ros(), 'topic', camera, undefined);
       },
-      expectInvalidCanvas
-      );
+      expectInvalidCanvas);
     });
     /* test for correct canvas verification */
     it('should reject an element other than canvas', function() {
       assert.throws( () => {
-        new CameraPublisher(new ROSLIB.Topic(), camera, document.createElement('button'));
+        new CameraPublisher(new ROSLIB.Ros(), 'topic', camera, document.createElement('button'));
       },
-      expectInvalidCanvas
-      );
+      expectInvalidCanvas);
     });
     it('should accept publisher with topic and camera', function() {
-      const topic = new ROSLIB.Topic(new ROSLIB.Topic());
-      const cameraPublisher = new CameraPublisher(topic, camera, canvas);
+      const ros = new ROSLIB.Ros();
+      const cameraPublisher = new CameraPublisher(ros, 'topic', camera, canvas);
+
       assert.equal(cameraPublisher.freq, 10);
       assert.equal(cameraPublisher.camera, camera);
       assert.equal(cameraPublisher.canvas, canvas);
@@ -97,8 +94,7 @@ describe('Test CamerPublisher', function() {
     it('should throw an error if there is no video source', function() {
       const camera = document.createElement('video');
       const canvas = document.createElement('canvas');
-      const topic = sinon.spy(new ROSLIB.Topic());
-      const publisher = sinon.spy(new CameraPublisher(topic, camera, canvas));
+      const publisher = sinon.spy(new CameraPublisher(new ROSLIB.Ros(), 'topic', camera, canvas));
 
       assert.throws(() => publisher.start(), expectInvalidSource);
     });
