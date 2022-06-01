@@ -23,12 +23,7 @@ class ButtonPublisher extends SensorPublisher {
       throw new TypeError('button argument was not of type HTMLButtonElement');
     }
 
-    // Set the topic to publish to
-    this.topic = new ROSLIB.Topic({
-      ros: this.ros,
-      name: this.topicname,
-      messageType: 'std_msgs/Bool',
-    });
+    this.topic.messageType = 'std_msgs/Bool';
 
     /**
      * button of which to publish data

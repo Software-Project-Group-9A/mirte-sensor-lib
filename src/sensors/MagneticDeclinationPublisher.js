@@ -24,12 +24,7 @@ class MagneticDeclinationPublisher extends IntervalPublisher {
   constructor(ros, topicname) {
     super(ros, topicname);
 
-    // Set the topic to publish to
-    this.topic = new ROSLIB.Topic({
-      ros: this.ros,
-      name: this.topicname,
-      messageType: 'std_msgs/Int32',
-    });
+    this.topic.messageType = 'std_msgs/Int32';
 
     // First need to detect first device orientation.
     this.orientationReady = false;

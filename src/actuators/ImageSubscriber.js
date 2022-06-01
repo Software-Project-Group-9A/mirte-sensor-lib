@@ -29,12 +29,7 @@ class ImageSubscriber extends Subscriber {
       throw new TypeError('canvas argument must be of type HTMLCanvasElement');
     }
 
-    // Set the topic to publish to
-    this.topic = new ROSLIB.Topic({
-      ros: this.ros,
-      name: this.topicname,
-      messageType: 'sensor_msgs/CompressedImage',
-    });
+    this.topic.messageType = 'sensor_msgs/CompressedImage';
 
     this.canvas = canvas;
     this.compressed = compressed;

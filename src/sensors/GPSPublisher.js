@@ -21,13 +21,8 @@ class GPSPublisher extends IntervalPublisher {
    */
   constructor(ros, topicname, hz = 1) {
     super(ros, topicname, hz);
-    this.topic.messageType = GPSPublisher.messageType;
 
-    // Set the topic to publish to
-    this.topic = new ROSLIB.Topic({
-      ros: this.ros,
-      name: this.topicname,
-    });
+    this.topic.messageType = GPSPublisher.messageType;
 
     /**
      * Id of geolocation watch callback

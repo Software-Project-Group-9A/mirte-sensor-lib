@@ -27,6 +27,14 @@ class Subscriber {
     this.topicname = topicname;
 
     /**
+     * topic to publish to. The message type of the topic has to be set within every publisher
+     */
+    this.topic = new ROSLIB.Topic({
+      ros: this.ros,
+      name: this.topicname,
+    });
+
+    /**
      * start/stop status of subscriber
      */
     this.started = false;

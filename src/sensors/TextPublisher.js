@@ -22,12 +22,7 @@ class TextPublisher extends SensorPublisher {
   constructor(ros, topicname, inputElement, options) {
     super(ros, topicname);
 
-    // Set the topic to publish to
-    this.topic = new ROSLIB.Topic({
-      ros: this.ros,
-      name: this.topicname,
-      messageType: 'boi',
-    });
+    this.topic.messageType = 'std_msgs/String';
 
     // Set default options
     this.options = options === undefined ? {} : options;
