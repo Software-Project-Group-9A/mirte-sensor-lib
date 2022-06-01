@@ -13,37 +13,62 @@ describe('Test Subscriber', function() {
      */
     function expectInvalidTopic(error) {
       assert(error instanceof TypeError);
-      assert(error.message === 'topic argument was not of type ROSLIB.Topic');
+      assert(error.message === 'topicname argument was not of type String');
+
+      return true;
+    }
+
+    /**
+     * Helper functions for checking whether correct error is raised for
+     * an invalid ros instance.
+     * @param {Error} error The raised error.
+     * @return {boolean} true if valid.
+     */
+    function expectInvalidRos(error) {
+      assert(error instanceof TypeError);
+      assert(error.message === 'ros argument was not of type ROSLIB.Ros');
 
       return true;
     }
 
     /* tests for topic verification */
+    it('should reject an undefined ros', function() {
+      assert.throws(() => {
+        new Subscriber(undefined, 'topic');
+      }, expectInvalidRos);
+    });
     it('should reject an undefined topic', function() {
       assert.throws(() => {
-        new Subscriber(undefined);
+        new Subscriber(new ROSLIB.Ros(), undefined);
       }, expectInvalidTopic);
     });
     it('should reject any topic argument that is not a ROSLIB.Topic instance', function() {
       assert.throws(() => {
-        new Subscriber('not a topic');
+        new Subscriber('not a ros instance', 'topic');
+      }, expectInvalidRos);
+    });
+    it('should reject any topic argument that is not a ROSLIB.Topic instance', function() {
+      assert.throws(() => {
+        new Subscriber(new ROSLIB.Ros(), 1);
       }, expectInvalidTopic);
     });
 
-    it('should accept a ROSLIB.Topic', function() {
+    it('should accept a topic name string argument and ros instance', function() {
       let subscriber;
-      const topic = new ROSLIB.Topic();
+      const topic = 'topic';
+      const ros = new ROSLIB.Ros();
 
       assert.doesNotThrow(
           () => {
-            subscriber = new Subscriber(topic);
+            subscriber = new Subscriber(ros, 'topic');
           },
           (error) => {
             return false;
           }
       );
 
-      assert.equal(subscriber.topic, topic);
+      assert.equal(subscriber.ros, ros);
+      assert.equal(subscriber.topic.name, topic);
     });
   });
 
@@ -71,8 +96,8 @@ describe('Test Subscriber', function() {
     }
 
     it('should start before stop', function() {
-      const topic = new ROSLIB.Topic();
-      const subscriber = new Subscriber(topic);
+      const ros = new ROSLIB.Ros();
+      const subscriber = new Subscriber(ros, 'topic');
 
       assert.throws(() => {
         subscriber.stop();
@@ -81,8 +106,8 @@ describe('Test Subscriber', function() {
 
 
     it('should start only one time', function() {
-      const topic = new ROSLIB.Topic();
-      const subscriber = new Subscriber(topic);
+      const ros = new ROSLIB.Ros();
+      const subscriber = new Subscriber(ros, 'topic');
       subscriber.start();
 
       assert.throws(() => {
@@ -91,8 +116,9 @@ describe('Test Subscriber', function() {
     });
 
     it('should stop only one time', function() {
-      const topic = new ROSLIB.Topic();
-      const subscriber = new Subscriber(topic);
+      const ros = new ROSLIB.Ros();
+      const subscriber = new Subscriber(ros, 'topic');
+
       subscriber.start();
       subscriber.stop();
       assert.throws(() => {
