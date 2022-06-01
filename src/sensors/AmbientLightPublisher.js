@@ -30,6 +30,8 @@ class AmbientLightPublisher extends IntervalPublisher {
 
     this.lightReady = false;
     this.light = 0;
+
+    this.sensor = new AmbientLightSensor();
   }
 
   /**
@@ -38,9 +40,12 @@ class AmbientLightPublisher extends IntervalPublisher {
   start() {
     super.start();
 
-    window.addEventListener('reading', (event) => {
-      this.onReadAmbientLight(this.illuminance);
+    this.sensor.addEventListener('reading', (event) => {
+      this.light = this.sensor.illuminance;
+      console.log(this.light);
+      this.lightReady = true;
     });
+    this.sensor.start();
   }
 
   /**
@@ -48,9 +53,12 @@ class AmbientLightPublisher extends IntervalPublisher {
    */
   stop() {
     super.stop();
-    window.removeEventListener('reading', (event) => {
-      this.onReadAmbientLight(event);
-    });
+
+    this.lightReady = false;
+
+    this.sensor.removeEventListener('reading', (event) => {});
+
+    this.sensor.stop();
   }
 
   /**
@@ -60,18 +68,6 @@ class AmbientLightPublisher extends IntervalPublisher {
   onError(event) {
     console.log('Error: ' + event);
     throw Error('ERROR!');
-  }
-
-  /**
-     * Callback for reading ambient light.
-     * context of object that called callback.
-     *
-     * @param {Number} illuminance brightness
-     */
-  onReadAmbientLight(illuminance) {
-    console.log(illuminance);
-    this.light = illuminance;
-    this.lightReady = true;
   }
 
   /**
