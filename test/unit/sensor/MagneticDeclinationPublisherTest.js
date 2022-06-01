@@ -32,9 +32,9 @@ describe('Test MagneticDeclinationPublisher', function() {
       assert.equal(global.window.navigator.userAgent,
           'Mozilla/5.0 (iPhone; CPU OS 13_1_1 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) Mobile/9B206');
 
-      const glob = sinon.spy(new MagneticDeclinationPublisher(new ROSLIB.Topic()));
+      const publisher = sinon.spy(new MagneticDeclinationPublisher(new ROSLIB.Ros(), 'topic'));
 
-      assert.equal(glob.requestPermission.callCount, 0);
+      assert.equal(publisher.requestPermission.callCount, 0);
 
       sandbox.restore();
       window.__defineGetter__('userAgent', () => {
@@ -45,7 +45,7 @@ describe('Test MagneticDeclinationPublisher', function() {
 
   describe('#requestPermission', function() {
     it('should create a new button', function() {
-      sinon.spy(new MagneticDeclinationPublisher(new ROSLIB.Topic()));
+      sinon.spy(new MagneticDeclinationPublisher(new ROSLIB.Ros(), 'topic'));
 
       assert(global.window.document.querySelector('button') !== null);
     });
