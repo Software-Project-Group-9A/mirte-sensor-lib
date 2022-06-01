@@ -92,8 +92,7 @@ describe('Test ButtonPublisher', function() {
     });
     it('should result in onMouseDown being called at touchstart', function() {
       const button = document.createElement('button');
-      const topic = new ROSLIB.Topic();
-      const publisher = sinon.spy(new ButtonPublisher(topic, button));
+      const publisher = sinon.spy(new ButtonPublisher(new ROSLIB.Ros(), 'topic', button));
 
       publisher.start();
 
@@ -113,8 +112,8 @@ describe('Test ButtonPublisher', function() {
     });
     it('should result in onMouseUp being called at mouseleave', function() {
       const button = document.createElement('button');
-      const topic = new ROSLIB.Topic();
-      const publisher = sinon.spy(new ButtonPublisher(topic, button));
+      const ros = new ROSLIB.Ros();
+      const publisher = sinon.spy(new ButtonPublisher(ros, 'topic', button));
 
       publisher.start();
       button.dispatchEvent(new window.Event('mouseleave'));
@@ -123,8 +122,8 @@ describe('Test ButtonPublisher', function() {
     });
     it('should result in onMouseUp being called at touchend', function() {
       const button = document.createElement('button');
-      const topic = new ROSLIB.Topic();
-      const publisher = sinon.spy(new ButtonPublisher(topic, button));
+      const ros = new ROSLIB.Ros();
+      const publisher = sinon.spy(new ButtonPublisher(ros, 'topic', button));
 
       publisher.start();
       button.dispatchEvent(new window.Event('touchend'));
@@ -133,8 +132,8 @@ describe('Test ButtonPublisher', function() {
     });
     it('should result in onMouseUp being called at mousedown event 4', function() {
       const button = document.createElement('button');
-      const topic = new ROSLIB.Topic();
-      const publisher = sinon.spy(new ButtonPublisher(topic, button));
+      const ros = new ROSLIB.Ros();
+      const publisher = sinon.spy(new ButtonPublisher(ros, 'topic', button));
 
       publisher.start();
       button.dispatchEvent(new window.Event('touchcancel'));
@@ -183,8 +182,8 @@ describe('Test ButtonPublisher', function() {
     });
     it('should publish only once upon double callback', function() {
       const button = document.createElement('button');
-      const topic = sinon.spy(new ROSLIB.Topic());
-      const publisher = sinon.spy(new ButtonPublisher(topic, button));
+      const publisher = sinon.spy(new ButtonPublisher(new ROSLIB.Ros(), 'topic', button));
+      const topic = sinon.spy(publisher.topic);
 
       publisher.start();
       button.dispatchEvent(new window.Event('mousedown'));

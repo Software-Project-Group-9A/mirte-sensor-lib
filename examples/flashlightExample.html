@@ -14,13 +14,7 @@
 
             ros.connect('ws://localhost:9090');
 
-            var topic = new ROSLIB.Topic({
-                ros : ros,
-                name : '/flashlight',
-                messageType: 'std_msgs/Bool'
-            });
-
-            var subscriber = new SENSORLIB.FlashlightSubscriber(topic);
+            var subscriber = new SENSORLIB.FlashlightSubscriber(ros, '/flashlight');
             subscriber.start();
         </script>
     </head>
