@@ -19,10 +19,10 @@ class MagneticDeclinationPublisher extends IntervalPublisher {
   /**
    * Creates a new sensor publisher that publishes to the provided topic.
    * @param {ROSLIB.Ros} ros a ROS instance to publish to
-   * @param {ROSLIB.Topic} topicname a Topic from RosLibJS
+   * @param {ROSLIB.Topic} topicName a Topic from RosLibJS
    */
-  constructor(ros, topicname) {
-    super(ros, topicname);
+  constructor(ros, topicName) {
+    super(ros, topicName);
 
     this.topic.messageType = 'std_msgs/Int32';
 

@@ -13,11 +13,11 @@ class ButtonPublisher extends SensorPublisher {
   /**
    * Creates a new ButtonPublisher.
    * @param {ROSLIB.Ros} ros a ROS instance to publish to
-   * @param {ROSLIB.Topic} topicname topic to which to publish button data
+   * @param {ROSLIB.Topic} topicName topic to which to publish button data
    * @param {HTMLButtonElement} button button of which to publish data
    */
-  constructor(ros, topicname, button) {
-    super(ros, topicname);
+  constructor(ros, topicName, button) {
+    super(ros, topicName);
 
     if (!(button instanceof window.HTMLButtonElement)) {
       throw new TypeError('button argument was not of type HTMLButtonElement');

@@ -18,11 +18,11 @@ class IMUPublisher extends IntervalPublisher {
   /**
      * Creates a new sensor publisher that publishes to the provided topic.
      * @param {ROSLIB.Ros} ros a ROS instance to publish to
-     * @param {ROSLIB.Topic} topicname a Topic from RosLibJS
+     * @param {ROSLIB.Topic} topicName a Topic from RosLibJS
      */
-  constructor(ros, topicname) {
+  constructor(ros, topicName) {
     // Frequency 5 used by estimation, could be further researched in the future.
-    super(ros, topicname, 5);
+    super(ros, topicName, 5);
 
     this.topic.messageType = 'sensor_msgs/Imu';
 

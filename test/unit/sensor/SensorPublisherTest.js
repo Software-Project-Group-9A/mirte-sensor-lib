@@ -13,7 +13,7 @@ describe('Test SensorPublisher', function() {
      */
     function expectInvalidTopic(error) {
       assert(error instanceof TypeError);
-      assert(error.message === 'topicname argument was not of type String');
+      assert(error.message === 'topicName argument was not of type String');
 
       return true;
     }

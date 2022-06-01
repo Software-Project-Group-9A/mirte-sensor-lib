@@ -5,15 +5,15 @@ class Subscriber {
   /**
    * Creates a new subscriber that subscribes to the provided topic.
    * @param {ROSLIB.Ros} ros a ROS instance to publish to
-   * @param {ROSLIB.Topic} topicname a Topic from RosLibJS
+   * @param {ROSLIB.Topic} topicName a Topic from RosLibJS
    * @throws TypeError if topic argument is not of type ROSLIB.Topic
    */
-  constructor(ros, topicname) {
+  constructor(ros, topicName) {
     if (!(ros instanceof ROSLIB.Ros)) {
       throw new TypeError('ros argument was not of type ROSLIB.Ros');
     }
-    if (typeof(topicname) !== 'string') {
-      throw new TypeError('topicname argument was not of type String');
+    if (typeof(topicName) !== 'string') {
+      throw new TypeError('topicName argument was not of type String');
     }
 
     /**
@@ -22,16 +22,16 @@ class Subscriber {
     this.ros = ros;
 
     /**
-     * topicname to which to name the topic
+     * topicName to which to name the topic
      */
-    this.topicname = topicname;
+    this.topicName = topicName;
 
     /**
      * topic to publish to. The message type of the topic has to be set within every publisher
      */
     this.topic = new ROSLIB.Topic({
       ros: this.ros,
-      name: this.topicname,
+      name: this.topicName,
     });
 
     /**
