@@ -50,20 +50,6 @@ class GPSPublisher extends IntervalPublisher {
   }
 
   /**
-   * Returns whether the two given geolocationPositions have the same longitude and latitude
-   * @param {GeolocationPosition} position1 first position
-   * @param {GeolocationPosition} position2 second position
-   * @return {boolean} whether the longitudes and latitudes of the two positions match
-   */
-  static isSamePosition(position1, position2) {
-    const coords1 = position1.coords;
-    const coords2 = position2.coords;
-
-    return coords1.latitude === coords2.latitude &&
-           coords1.longitude === coords2.longitude;
-  }
-
-  /**
    * Start the publishing of data to ROS with frequency of <freq> Hz.
    */
   start() {
@@ -121,16 +107,10 @@ class GPSPublisher extends IntervalPublisher {
       return;
     }
 
-    // if position did not change since last publishing, do not publish
-    if (this.lastPublishedPosition && GPSPublisher.isSamePosition(this.position, this.lastPublishedPosition)) {
-      return;
-    }
-
     // create and publish message
     const coordinates = this.position.coords;
     const message = GPSPublisher.createNavSatMessage(coordinates);
-    this.topic.publish(message);
-    this.lastPublishedPosition = this.position;
+    super.createSnapshot(message);
   }
 }
 

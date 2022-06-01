@@ -41,23 +41,6 @@ class SensorPublisher {
   }
 
   /**
-   * Callback for when error occurs while reading sensor data.
-   * @param {*} event containing error info.
-   */
-  onError(event) {
-    throw Error('onError method not defined!');
-  }
-
-  /**
-   * Callback for reading sensor data.
-   * Should publish data to ROS topic.
-   * @param {*} event object containing sensor data.
-   */
-  onReadData(event) {
-    throw Error('onReadData method not defined!');
-  }
-
-  /**
    * Start the publishing of data to ROS.
    */
   start() {
@@ -75,13 +58,6 @@ class SensorPublisher {
       throw new Error('Publisher did not start yet');
     }
     this.started = false;
-  }
-
-  /**
-   * Sets the maximum frequency at which new data can be published.
-   */
-  setPublishFrequency() {
-    throw Error('setPublishFrequency method not defined!');
   }
 }
 

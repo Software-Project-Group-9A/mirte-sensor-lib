@@ -49,9 +49,6 @@ class GPSDeclinationPublisher extends IntervalPublisher {
     this.orientationReady = false;
     this.gpsReady = false;
 
-    // Prevents double message publishing
-    this.oldCompass = null;
-
     // Id of geolocation watch callback
     this.watchId = -1;
 
@@ -86,15 +83,6 @@ class GPSDeclinationPublisher extends IntervalPublisher {
   stop() {
     super.stop();
     window.navigator.geolocation.clearWatch(this.watchId);
-  }
-
-  /**
-   * Callback for when error occurs while reading sensor data.
-   * @param {Error} event containing error info.
-   */
-  onError(event) {
-    console.log('Error: ' + event);
-    throw Error('ERROR!');
   }
 
   /**
@@ -187,18 +175,11 @@ class GPSDeclinationPublisher extends IntervalPublisher {
 
     this.compass = this.accountForRotation();
 
-    // Check if compass changed
-    if (this.compass === this.oldCompass) {
-      return;
-    }
-
-    this.oldCompass = this.compass;
-
     const GPSDeclinationMessage = new ROSLIB.Message({
       data: this.compass,
     });
 
-    this.topic.publish(GPSDeclinationMessage);
+    super.createSnapshot(GPSDeclinationMessage);
   }
 }
 
