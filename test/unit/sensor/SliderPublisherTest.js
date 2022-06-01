@@ -39,52 +39,27 @@ describe('SliderPublisher', function() {
       return true;
     }
 
-    /**
-     * Helper functions for checking whether correct error is raised for
-     * invalid topics.
-     * @param {Error} error The raised error.
-     * @return {boolean} true if valid.
-     */
-    function expectInvalidTopic(error) {
-      assert(error instanceof TypeError);
-      assert(error.message === 'topic argument was not of type ROSLIB.Topic');
-
-      return true;
-    }
-
     /* test for slider verification */
     it('should reject an undefined slider', function() {
       assert.throws(() => {
-        new SliderPublisher(new ROSLIB.Topic(), undefined);
+        new SliderPublisher(new ROSLIB.Ros(), 'topic', undefined);
       }, expectInvalidSlider);
     });
     it('should reject any slider argument that is not an HTML Input Element', function() {
       assert.throws(() => {
-        new SliderPublisher(new ROSLIB.Topic(), 'not a button');
+        new SliderPublisher(new ROSLIB.Ros(), 'topic', 'not a button');
       }, expectInvalidSlider);
     });
     it('should reject any slider argument that does not have field type set to range', function() {
       assert.throws(() => {
-        new SliderPublisher(new ROSLIB.Topic(), document.createElement('input'));
+        new SliderPublisher(new ROSLIB.Ros(), 'topic', document.createElement('input'));
       }, expectInvalidSlider);
-    });
-
-    /* tests for topic verification */
-    it('should reject an undefined topic', function() {
-      assert.throws(() => {
-        new SliderPublisher(undefined, createSlider());
-      }, expectInvalidTopic);
-    });
-    it('should reject any topic argument that is not a ROSLIB.Topic instance', function() {
-      assert.throws(() => {
-        new SliderPublisher('not a topic', createSlider());
-      }, expectInvalidTopic);
     });
 
     it('should accept a ROSLIB.Topic and an slider as arguments', function() {
       const slider = createSlider();
 
-      const publisher = new SliderPublisher(new ROSLIB.Topic(), slider);
+      const publisher = new SliderPublisher(new ROSLIB.Ros(), 'topic', slider);
 
       assert.equal(publisher.slider, slider);
     });
@@ -92,9 +67,9 @@ describe('SliderPublisher', function() {
 
   describe('#createSnapshot()', function() {
     it('should publish an std_msgs/Int32 message with the slider value to topic', function() {
-      const slider = createSlider(0, 100, 50);
-      const topic = sinon.spy(new ROSLIB.Topic());
-      const publisher = sinon.spy(new SliderPublisher(topic, slider));
+      const slider = createSlider();
+      const publisher = sinon.spy(new SliderPublisher(new ROSLIB.Ros(), 'topic', slider));
+      const topic = sinon.spy(publisher.topic);
 
       publisher.createSnapshot();
 
@@ -104,8 +79,8 @@ describe('SliderPublisher', function() {
     });
     it('should publish the slider as a number', function() {
       const slider = createSlider();
-      const topic = sinon.spy(new ROSLIB.Topic(0, 100, 50));
-      const publisher = sinon.spy(new SliderPublisher(topic, slider));
+      const publisher = sinon.spy(new SliderPublisher(new ROSLIB.Ros(), 'topic', slider));
+      const topic = sinon.spy(publisher.topic);
 
       publisher.createSnapshot();
 
@@ -115,8 +90,8 @@ describe('SliderPublisher', function() {
     });
     it('should publish a message with the updated slider value when the slider changes', function() {
       const slider = createSlider();
-      const topic = sinon.spy(new ROSLIB.Topic(0, 100, 50));
-      const publisher = sinon.spy(new SliderPublisher(topic, slider));
+      const publisher = sinon.spy(new SliderPublisher(new ROSLIB.Ros(), 'topic', slider));
+      const topic = sinon.spy(publisher.topic);
 
       publisher.createSnapshot();
 
@@ -132,8 +107,8 @@ describe('SliderPublisher', function() {
     });
     it('should not publish double messages', function() {
       const slider = createSlider();
-      const topic = sinon.spy(new ROSLIB.Topic(0, 100, 50));
-      const publisher = sinon.spy(new SliderPublisher(topic, slider));
+      const publisher = sinon.spy(new SliderPublisher(new ROSLIB.Ros(), 'topic', slider));
+      const topic = sinon.spy(publisher.topic);
 
       publisher.createSnapshot();
       publisher.createSnapshot();

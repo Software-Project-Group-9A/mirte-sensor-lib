@@ -13,37 +13,62 @@ describe('Test SensorPublisher', function() {
      */
     function expectInvalidTopic(error) {
       assert(error instanceof TypeError);
-      assert(error.message === 'topic argument was not of type ROSLIB.Topic');
+      assert(error.message === 'topicname argument was not of type String');
 
       return true;
     }
 
+    /**
+     * Helper functions for checking whether correct error is raised for
+     * an invalid ros instance.
+     * @param {Error} error The raised error.
+     * @return {boolean} true if valid.
+     */
+    function expectInvalidRos(error) {
+      assert(error instanceof TypeError);
+      assert(error.message === 'ros argument was not of type ROSLIB.Ros');
+
+      return true;
+    }
+
+
     /* tests for topic verification */
-    it('should reject an undefined topic', function() {
+    it('should reject an undefined ros', function() {
       assert.throws(() => {
-        new SensorPublisher(undefined);
+        new SensorPublisher(undefined, 'topic');
+      }, expectInvalidRos);
+    });
+    it('should reject an undefined topicName', function() {
+      assert.throws(() => {
+        new SensorPublisher(new ROSLIB.Ros(), undefined);
       }, expectInvalidTopic);
     });
-    it('should reject any topic argument that is not a ROSLIB.Topic instance', function() {
+    it('should reject any topicName argument that is not a string', function() {
       assert.throws(() => {
-        new SensorPublisher('not a topic');
+        new SensorPublisher('not a ros instance', 'topic');
+      }, expectInvalidRos);
+    });
+    it('should reject any topicName argument that is not a string', function() {
+      assert.throws(() => {
+        new SensorPublisher(new ROSLIB.Ros(), 1);
       }, expectInvalidTopic);
     });
 
     it('should accept a ROSLIB.Topic', function() {
       let publisher;
-      const topic = new ROSLIB.Topic();
+      const ros = new ROSLIB.Ros();
 
       assert.doesNotThrow(
           () => {
-            publisher = new SensorPublisher(topic);
+            publisher = new SensorPublisher(ros, 'topic');
           },
           (error) => {
             return false;
           }
       );
 
-      assert.equal(publisher.topic, topic);
+      assert.equal(publisher.ros, ros);
+      assert.equal(publisher.topic.name, 'topic');
     });
   });
 
@@ -71,8 +96,8 @@ describe('Test SensorPublisher', function() {
     }
 
     it('should start before stop', function() {
-      const topic = new ROSLIB.Topic();
-      publisher = new SensorPublisher(topic);
+      const ros = new ROSLIB.Ros();
+      publisher = new SensorPublisher(ros, 'topic');
 
       assert.throws(() => {
         publisher.stop();
@@ -81,8 +106,9 @@ describe('Test SensorPublisher', function() {
 
 
     it('should start only one time', function() {
-      const topic = new ROSLIB.Topic();
-      publisher = new SensorPublisher(topic);
+      const ros = new ROSLIB.Ros();
+      publisher = new SensorPublisher(ros, 'topic');
+
       publisher.start();
 
       assert.throws(() => {
@@ -91,8 +117,9 @@ describe('Test SensorPublisher', function() {
     });
 
     it('should stop only one time', function() {
-      const topic = new ROSLIB.Topic();
-      publisher = new SensorPublisher(topic);
+      const ros = new ROSLIB.Ros();
+      publisher = new SensorPublisher(ros, 'topic');
+
       publisher.start();
       publisher.stop();
       assert.throws(() => {
