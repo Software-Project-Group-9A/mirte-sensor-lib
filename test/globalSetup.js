@@ -32,6 +32,7 @@ global.ROSLIB = {
   Message: function(msg) {
     Object.assign(this, msg);
   },
+  Ros: function() {},
 };
 
 before(function() {

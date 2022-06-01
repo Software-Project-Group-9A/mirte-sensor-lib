@@ -7,45 +7,17 @@ const MagneticDeclinationPublisher =
 // define JSDOM window in global scope, if not already defined
 describe('Test MagneticDeclinationPublisher', function() {
   describe('#constructor(topic)', function() {
-    /**
-     * helper functions for checking whether correct error is raised
-     * @param {*} error
-     * @return {bool}
-     */
-    function expectInvalidTopic(error) {
-      assert(error instanceof TypeError);
-      assert.equal(error.message,
-          'topic argument was not of type ROSLIB.Topic');
-      return true;
-    }
-
-    it('should reject an undefined topic', function() {
-      assert.throws(
-          () => {
-            new MagneticDeclinationPublisher(undefined);
-          },
-          expectInvalidTopic
-      );
-    });
-    it('should reject any topic argument ' +
-        'that is not a ROSLIB.Topic instance', function() {
-      assert.throws(
-          () => {
-            new MagneticDeclinationPublisher('not a topic');
-          },
-          expectInvalidTopic
-      );
-    });
-
-    it('should accept a ROSLIB.Topic', function() {
+    it('should correctly construct a publisher and not start reading yet', function() {
+      let publisher;
       assert.doesNotThrow(
           () => {
-            new MagneticDeclinationPublisher(new ROSLIB.Topic());
+            publisher = new MagneticDeclinationPublisher(new ROSLIB.Ros(), 'topic');
           },
           (error) => {
             return false;
           }
       );
+      assert.equal(publisher.orientationReady, false);
     });
 
     it('should not start reading immeadiately orientation user is on iOS', function() {
@@ -81,8 +53,7 @@ describe('Test MagneticDeclinationPublisher', function() {
   describe('#onReadOrientation()', function() {
     it('should find the current location',
         function() {
-          const topic = sinon.spy(new ROSLIB.Topic());
-          const publisher = sinon.spy(new MagneticDeclinationPublisher(topic));
+          const publisher = sinon.spy(new MagneticDeclinationPublisher(new ROSLIB.Ros(), 'topic'));
 
           publisher.start();
 
@@ -127,8 +98,8 @@ describe('Test MagneticDeclinationPublisher', function() {
     }
 
     it('should create snapshot', function() {
-      const topic = sinon.spy(new ROSLIB.Topic());
-      const publisher = sinon.spy(new MagneticDeclinationPublisher(topic));
+      const publisher = sinon.spy(new MagneticDeclinationPublisher(new ROSLIB.Ros(), 'topic'));
+      const topic = sinon.spy(publisher.topic);
 
       global.eventParam = {
         'alpha': 0,
@@ -158,8 +129,8 @@ describe('Test MagneticDeclinationPublisher', function() {
       assert.deepEqual(topic.publish.getCall(0).args[0], expectedMessage);
     });
     it('should not create duplicate snapshot', function() {
-      const topic = sinon.spy(new ROSLIB.Topic());
-      const publisher = sinon.spy(new MagneticDeclinationPublisher(topic));
+      const publisher = sinon.spy(new MagneticDeclinationPublisher(new ROSLIB.Ros(), 'topic'));
+      const topic = sinon.spy(publisher.topic);
 
       global.eventParam = {
         'alpha': 0,
@@ -191,8 +162,7 @@ describe('Test MagneticDeclinationPublisher', function() {
       assert.deepEqual(topic.publish.getCall(0).args[0], expectedMessage);
     });
     it('should not create snapshot when orientation is not read yet', function() {
-      const topic = sinon.spy(new ROSLIB.Topic());
-      const publisher = sinon.spy(new MagneticDeclinationPublisher(topic));
+      const publisher = sinon.spy(new MagneticDeclinationPublisher(new ROSLIB.Ros(), 'topic'));
 
       global.eventParam = {
         'alpha': 0,

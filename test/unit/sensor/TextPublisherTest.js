@@ -21,58 +21,23 @@ describe('Test TextPublisher', function() {
       return true;
     }
 
-    /**
-     * Helper functions for checking whether correct error is raised for
-     * invalid topics.
-     * @param {Error} error The raised error.
-     * @return {boolean} true if valid.
-     */
-    function expectInvalidTopic(error) {
-      assert(error instanceof TypeError);
-      assert(error.message === 'topic argument was not of type ROSLIB.Topic');
-
-      return true;
-    }
-
     /* test for input element verification */
     it('should reject an undefined input element', function() {
       assert.throws(
           () => {
-            new TextPublisher(new ROSLIB.Topic(), undefined);
+            new TextPublisher(new ROSLIB.Ros(), 'topic', undefined);
           },
           expectInvalidInputElement
       );
     });
-    it('should reject any input argument that is not an HTMLInputElement',
-        function() {
-          assert.throws(
-              () => {
-                new TextPublisher(new ROSLIB.Topic(), 'not an input element');
-              },
-              expectInvalidInputElement
-          );
-        });
-
-    /* tests for topic verification */
-    /* functionality should probably be moved into superclass SensorPublisher */
-    it('should reject an undefined topic', function() {
+    it('should reject any input argument that is not an HTMLInputElement', function() {
       assert.throws(
           () => {
-            new TextPublisher(undefined, document.createElement('input'));
+            new TextPublisher(new ROSLIB.Ros(), 'topic', 'not an input element');
           },
-          expectInvalidTopic
+          expectInvalidInputElement
       );
     });
-    it('should reject any topic argument that is not a ROSLIB.Topic instance',
-        function() {
-          assert.throws(
-              () => {
-                new TextPublisher('not a topic',
-                    document.createElement('input'));
-              },
-              expectInvalidTopic
-          );
-        });
 
     it('should accept a ROSLIB.Topic and an HTML Input element as arguments',
         function() {
@@ -81,8 +46,7 @@ describe('Test TextPublisher', function() {
 
           assert.doesNotThrow(
               () => {
-                publisher = new TextPublisher(new ROSLIB.Topic(),
-                    inputElement);
+                publisher = new TextPublisher(new ROSLIB.Ros(), 'topic', inputElement);
               },
               (error) => {
                 return false;
@@ -97,8 +61,7 @@ describe('Test TextPublisher', function() {
     it('should subscribe onKeyUp callback to correct events',
         function() {
           const inputElement = sinon.spy(document.createElement('input'));
-          const topic = new ROSLIB.Topic();
-          const publisher = new TextPublisher(topic, inputElement);
+          const publisher = new TextPublisher(new ROSLIB.Ros(), 'topic', inputElement);
 
           publisher.start();
 
@@ -112,8 +75,7 @@ describe('Test TextPublisher', function() {
     it('should subscribe onInput callback to correct events',
         function() {
           const inputElement = sinon.spy(document.createElement('input'));
-          const topic = new ROSLIB.Topic();
-          const publisher = new TextPublisher(topic, inputElement, {onEnter: false});
+          const publisher = new TextPublisher(new ROSLIB.Ros(), 'topic', inputElement, {onEnter: false});
 
           publisher.start();
 
@@ -128,9 +90,9 @@ describe('Test TextPublisher', function() {
         'with onEnter=false',
     function() {
       const inputElement = document.createElement('input');
-      const topic = sinon.spy(new ROSLIB.Topic());
-      const publisher = sinon.spy(new TextPublisher(topic, inputElement,
+      const publisher = sinon.spy(new TextPublisher(new ROSLIB.Ros(), 'topic', inputElement,
           {onEnter: false}));
+      const topic = sinon.spy(publisher.topic);
 
       inputElement.value = 'test text';
 
@@ -150,8 +112,8 @@ describe('Test TextPublisher', function() {
         'with onEnter=true and no enter',
     function() {
       const inputElement = document.createElement('input');
-      const topic = sinon.spy(new ROSLIB.Topic());
-      const publisher = sinon.spy(new TextPublisher(topic, inputElement));
+      const publisher = sinon.spy(new TextPublisher(new ROSLIB.Ros(), 'topic', inputElement));
+      const topic = sinon.spy(publisher.topic);
 
       inputElement.value = 'test text';
 
@@ -169,8 +131,8 @@ describe('Test TextPublisher', function() {
         'with onEnter=true and enter',
     function() {
       const inputElement = document.createElement('input');
-      const topic = sinon.spy(new ROSLIB.Topic());
-      const publisher = sinon.spy(new TextPublisher(topic, inputElement));
+      const publisher = sinon.spy(new TextPublisher(new ROSLIB.Ros(), 'topic', inputElement));
+      const topic = sinon.spy(publisher.topic);
 
       inputElement.value = 'test text';
 
@@ -191,8 +153,8 @@ describe('Test TextPublisher', function() {
     it('should not clear text when clearOnPublish=false',
         function() {
           const inputElement = document.createElement('input');
-          const topic = sinon.spy(new ROSLIB.Topic());
-          const publisher = sinon.spy(new TextPublisher(topic, inputElement, {clearOnPublish: false}));
+          const publisher = sinon.spy(new TextPublisher(new ROSLIB.Ros(), 'topic', inputElement,
+              {clearOnPublish: false}));
 
           inputElement.value = 'test text';
 
@@ -210,8 +172,7 @@ describe('Test TextPublisher', function() {
     it('should clear text when clearOnPublish=true',
         function() {
           const inputElement = document.createElement('input');
-          const topic = sinon.spy(new ROSLIB.Topic());
-          const publisher = sinon.spy(new TextPublisher(topic, inputElement));
+          const publisher = sinon.spy(new TextPublisher(new ROSLIB.Ros(), 'topic', inputElement));
 
           inputElement.value = 'test text';
 
@@ -228,8 +189,8 @@ describe('Test TextPublisher', function() {
   describe('#stop()', function() {
     it('should unsubscribe onKeyUp callback', function() {
       const inputElement = sinon.spy(document.createElement('input'));
-      const topic = sinon.spy(new ROSLIB.Topic());
-      const publisher = new TextPublisher(topic, inputElement);
+      const publisher = new TextPublisher(new ROSLIB.Ros(), 'topic', inputElement);
+      const topic = sinon.spy(publisher.topic);
 
       publisher.start();
       publisher.stop();

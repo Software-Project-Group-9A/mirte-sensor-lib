@@ -5,4 +5,6 @@
  */
 module.exports = {
   TextSubscriber: require('./TextSubscriber'),
+  ImageSubscriber: require('./ImageSubscriber'),
+  FlashlightSubscriber: require('./FlashlightSubscriber'),
 };

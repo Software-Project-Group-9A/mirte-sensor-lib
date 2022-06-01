@@ -18,12 +18,14 @@ const PermissionDeniedError = require('../error/PermissionDeniedError.js');
 class IMUPublisher extends IntervalPublisher {
   /**
      * Creates a new sensor publisher that publishes to the provided topic.
-     * @param {Topic} topic a Topic from RosLibJS
+     * @param {ROSLIB.Ros} ros a ROS instance to publish to
+     * @param {ROSLIB.Topic} topicName a Topic from RosLibJS
      */
-  constructor(topic) {
+  constructor(ros, topicName) {
     // Frequency 5 used by estimation, could be further researched in the future.
-    super(topic, 5);
-    this.topic = topic;
+    super(ros, topicName, 5);
+
+    this.topic.messageType = 'sensor_msgs/Imu';
 
     // Flags used to detect whether callbacks
     // have been invoked.

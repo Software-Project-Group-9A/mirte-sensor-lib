@@ -1,9 +1,8 @@
 <html>
     <head>
-        <script src="https://github.com/RobotWebTools/roslibjs/blob/develop/build/roslib.min.js"></script>
         <script src="http://static.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
         <script src="http://static.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
-        <script src="../build/RosSensorLib.min.js"></script>
+        <script src="../build/RosSensorLib.js"></script>
         <script>
             var ros = new ROSLIB.Ros();
 
@@ -17,17 +16,15 @@
         </script>
     </head>
     <body>
-        <h1 id='connection_info'></h1>
-        <button id="button" 
-        style="font-size : 20px; width: 100%; height: 100px; 
-        -webkit-user-select: none;
-        -khtml-user-select: none;
-        -moz-user-select: none;
-        -ms-user-select: none;
-        user-select: none;">Press Here!</button>
+        <h1>Connection Info: </h1>
+        <h2 id='connection_info'></h2>
+        <h2>Please open the cameraExample demo</h2>
+        <canvas id='outputCanvas' width="500", height="500">
         <script>
-            var publisher = new SENSORLIB.ButtonPublisher(ros, "/button", document.getElementById("button"));
-            publisher.start();
+            var subscriber = new SENSORLIB.ImageSubscriber(ros, '/camera', document.getElementById("outputCanvas"), true);
+            subscriber.start();
         </script>
+        <button onclick="subscriber.start()">subscribe</button>
+        <button onclick="subscriber.stop()">unsubscribe</button>
     </body>
 </html>

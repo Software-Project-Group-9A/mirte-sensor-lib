@@ -12,14 +12,17 @@ class TextPublisher extends SensorPublisher {
   /**
    * Creates a new TextPublisher.
    *
-   * @param {ROSLIB.Topic} topic topic to which to publish text data
+   * @param {ROSLIB.Ros} ros a ROS instance to publish to
+   * @param {ROSLIB.Topic} topicName topic to which to publish text data
    * @param {HTMLInputElement} inputElement input element from which to publish data.
    * @param {Object} [options] configuration options.
    * @param {boolean} [options.onEnter=true] if true publishes on enter, else publishes every key press.
    * @param {boolean} [options.clearOnPublish=true] if false, does not clear the inputElement after publishing.
    */
-  constructor(topic, inputElement, options) {
-    super(topic);
+  constructor(ros, topicName, inputElement, options) {
+    super(ros, topicName);
+
+    this.topic.messageType = 'std_msgs/String';
 
     // Set default options
     this.options = options === undefined ? {} : options;

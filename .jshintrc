@@ -2,7 +2,8 @@
   "globals": {
     "module": true,
     "EventEmitter2" : true,
-    "ROSLIB" : true
+    "ROSLIB" : true,
+    "ImageCapture" : true
   },
   "curly": true,
   "eqeqeq": true,

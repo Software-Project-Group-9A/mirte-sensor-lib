@@ -7,6 +7,7 @@
 // Dependencies
 const IntervalPublisher = require('./IntervalPublisher.js');
 const PermissionDeniedError = require('../error/PermissionDeniedError.js');
+const NotSupportedError = require('../error/NotSupportedError');
 
 /**
  * GPSDeclinationPublisher publishes the rotation as a compass to
@@ -22,18 +23,23 @@ class GPSDeclinationPublisher extends IntervalPublisher {
    * Creates a new sensor publisher that publishes the angle
    * between the device and the provided Coordinates to the provided topic.
    * Will point to the North Pole (latitude 90, longitude 0) if not coordinates are specified.
-   * @param {Topic} topic a Topic from RosLibJS
+   * @param {ROSLIB.Ros} ros a ROS instance to publish to
+   * @param {ROSLIB.Topic} topicName a Topic from RosLibJS
    * @param {Number} latitude float that gives the latitude of point where to aim for
    * @param {Number} longitude float that gives the longitude of point where to aim for
    */
-  constructor(topic, latitude = 90, longitude = 0) {
-    super(topic);
+  constructor(ros, topicName, latitude = 90, longitude = 0) {
+    super(ros, topicName);
 
     if (!((typeof latitude === 'number') && (typeof longitude === 'number'))) {
       throw new TypeError('Coordinates were not of type Number');
     }
 
-    this.topic = topic;
+    if (latitude > 90 || latitude < -90 || longitude > 180 || longitude < -180) {
+      throw new Error('Range of given coordinates is invalid');
+    }
+
+    this.topic.messageType = 'std_msgs/Int32';
 
     // Sets, fields for compass
     this.compass = 0;
@@ -56,11 +62,43 @@ class GPSDeclinationPublisher extends IntervalPublisher {
       // request permission for sensor use
       this.requestPermission();
     }
-    window.addEventListener('deviceorientation', (event) => {
+
+    // Id of geolocation watch callback
+    this.watchId = -1;
+
+    // check support for API
+    if (!window.navigator.geolocation) {
+      throw new NotSupportedError('Unable to create GPSPublisher, ' +
+        'Geolocation API not supported');
+    }
+  }
+
+  /**
+   * Start the publishing of data to ROS with frequency of <freq> Hz.
+   */
+  start() {
+    super.start();
+
+    // No support for IOS yet
+    window.addEventListener('deviceorientationabsolute', (event) => {
       if (event.isTrusted) {
         this.onReadOrientation(event);
       }
-    });
+    }, true);
+
+    this.watchId = window.navigator.geolocation.watchPosition(
+        this.locationHandler.bind(this),
+        (error) => {
+          throw Error('failed to watch position');
+        });
+  }
+
+  /**
+   * Stops the publishing of data to ROS.
+   */
+  stop() {
+    super.stop();
+    window.navigator.geolocation.clearWatch(this.watchId);
   }
 
   /**
@@ -107,6 +145,8 @@ class GPSDeclinationPublisher extends IntervalPublisher {
     if (latitude === this.lat && longitude === this.lng) {
       return 0;
     }
+
+
     // Copied code to calculate the degree
     // But works in a weird way
     // North = 180, East = -90, South = 0, West = 90
@@ -125,10 +165,11 @@ class GPSDeclinationPublisher extends IntervalPublisher {
     // By this it becomes
     // North = 360, East = 90, South = 180, West = 270
     degree = degree + 180;
-    // Since we work in range [0, 360[
+    // Since we work in range [0, 359]
     if (degree === 360) {
       degree = 0;
     }
+
     return degree;
   }
 
@@ -153,7 +194,7 @@ class GPSDeclinationPublisher extends IntervalPublisher {
      * @param {DeviceOrientationEvent} event object containing sensor data.
      */
   onReadOrientation(event) {
-    this.alpha = Math.abs(event.alpha - 360);
+    this.alpha = Math.round(Math.abs(event.alpha - 360));
     this.orientationReady = true;
   }
 
@@ -178,7 +219,6 @@ class GPSDeclinationPublisher extends IntervalPublisher {
    * in a ROS message and publishes it
    */
   createSnapshot() {
-    window.navigator.geolocation.getCurrentPosition(this.locationHandler);
     if (!(this.orientationReady && this.gpsReady)) {
       throw Error('Orientation is not read yet!');
     }

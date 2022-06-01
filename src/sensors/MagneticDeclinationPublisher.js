@@ -19,18 +19,26 @@ const IntervalPublisher = require('./IntervalPublisher.js');
 class MagneticDeclinationPublisher extends IntervalPublisher {
   /**
    * Creates a new sensor publisher that publishes to the provided topic.
-   * @param {Topic} topic a Topic from RosLibJS
+   * @param {ROSLIB.Ros} ros a ROS instance to publish to
+   * @param {ROSLIB.Topic} topicName a Topic from RosLibJS
    */
-  constructor(topic) {
-    super(topic);
+  constructor(ros, topicName) {
+    super(ros, topicName);
 
-    this.topic = topic;
+    this.topic.messageType = 'std_msgs/Int32';
 
     // First need to detect first device orientation.
     this.orientationReady = false;
 
     // Prevents double message publishing
     this.oldCompass = null;
+  }
+
+  /**
+   * Start the publishing of data to ROS with frequency of <freq> Hz.
+   */
+  start() {
+    super.start();
 
     /*
     * Support for iOS
@@ -42,11 +50,11 @@ class MagneticDeclinationPublisher extends IntervalPublisher {
       this.requestPermission();
     }
     // If user is not on iOS, sensor data can be read as normal.
-    window.addEventListener('deviceorientation', (event) => {
+    window.addEventListener('deviceorientationabsolute', (event) => {
       if (event.isTrusted) {
         this.onReadOrientation(event);
       }
-    });
+    }, true);
   }
 
   /**
@@ -91,7 +99,7 @@ class MagneticDeclinationPublisher extends IntervalPublisher {
      * @param {DeviceOrientationEvent} event object containing sensor data.
      */
   onReadOrientation(event) {
-    this.alpha = Math.abs(event.alpha - 360);
+    this.alpha = Math.round(Math.abs(event.alpha - 360));
     this.orientationReady = true;
   }
 

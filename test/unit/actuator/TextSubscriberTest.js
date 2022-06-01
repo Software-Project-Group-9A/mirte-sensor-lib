@@ -25,12 +25,12 @@ describe('Test TextSubscriber', function() {
     /* test for HTML element verification */
     it('should reject an undefined element', function() {
       assert.throws(() => {
-        new TextSubscriber(new ROSLIB.Topic(), undefined);
+        new TextSubscriber(new ROSLIB.Ros(), 'topic', undefined);
       }, expectInvalidHTMLElement);
     });
     it('should reject any element argument that is not an HTMLElement', function() {
       assert.throws(() => {
-        new TextSubscriber(new ROSLIB.Topic(), 'not an HTML element');
+        new TextSubscriber(new ROSLIB.Ros(), 'topic', 'not an HTML element');
       }, expectInvalidHTMLElement);
     });
 
@@ -40,7 +40,7 @@ describe('Test TextSubscriber', function() {
 
       assert.doesNotThrow(
           () => {
-            subscriber = new TextSubscriber(new ROSLIB.Topic(), div);
+            subscriber = new TextSubscriber(new ROSLIB.Ros(), 'topic', div);
           },
           (error) => {
             return false;
@@ -54,7 +54,7 @@ describe('Test TextSubscriber', function() {
       const div = document.createElement('div');
       div.innerHTML = 'test';
 
-      const subscriber = new TextSubscriber(new ROSLIB.Topic(), div);
+      const subscriber = new TextSubscriber(new ROSLIB.Ros(), 'topic', div);
 
       subscriber.onMessage({data: 'test message'});
 

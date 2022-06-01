@@ -20,9 +20,9 @@ require('../../globalSetup.js');
  * has true flags for indicating it has read some data.
  */
 function createStandardIMU() {
-  const topic = new ROSLIB.Topic('boo!');
+  const ros = new ROSLIB.Ros();
   // Setup IMU object
-  const IMU = new IMUPublisher(topic);
+  const IMU = new IMUPublisher(ros, 'topic');
   IMU.orientationReady = true;
   IMU.motionReady = true;
   return IMU;
@@ -126,12 +126,11 @@ describe('Test IMU Publisher', function() {
     }
 
     it('publishes to the topic.', function() {
-      // Arrange
-      const topic = new ROSLIB.Topic('boo!');
-      // Spy on topic
-      const topicSpy = sinon.spy(topic);
       // Setup IMU object
-      const IMU = new IMUPublisher(topic);
+      const IMU = new IMUPublisher(new ROSLIB.Ros(), 'topic');
+      // Spy on topic
+      const topicSpy = sinon.spy(IMU.topic);
+
       IMU.orientationReady = true;
       IMU.motionReady = true;
 
@@ -143,12 +142,11 @@ describe('Test IMU Publisher', function() {
     });
 
     it('does 0.0 deg quarternions correctly.', function() {
-      // Arrange
-      const topic = new ROSLIB.Topic('boo!');
-      // Spy on topic
-      const topicSpy = sinon.spy(topic);
       // Setup IMU object
-      const imu = new IMUPublisher(topic);
+      const imu = new IMUPublisher(new ROSLIB.Ros(), 'topic');
+      // Spy on topic
+      const topicSpy = sinon.spy(imu.topic);
+
       imu.orientationReady = true;
       imu.motionReady = true;
 
@@ -166,12 +164,11 @@ describe('Test IMU Publisher', function() {
     });
 
     it('does different deg quarternions correctly.', function() {
-      // Arrange
-      const topic = new ROSLIB.Topic('boo!');
-      // Spy on topic
-      const topicSpy = sinon.spy(topic);
       // Setup IMU object
-      const imu = new IMUPublisher(topic);
+      const imu = new IMUPublisher(new ROSLIB.Ros(), 'topic');
+      // Spy on topic
+      const topicSpy = sinon.spy(imu.topic);
+
       imu.orientationReady = true;
       imu.motionReady = true;
       imu.beta = 45.0; // 45 degrees over X-axis (Pitch)
@@ -198,10 +195,11 @@ describe('Test IMU Publisher', function() {
     });
 
     it('has -1 hardcoded in the covar-matrix when phone orientattion has not occured', function() {
-      const topic = new ROSLIB.Topic('boo!');
+      // Setup IMU object
+      const imu = new IMUPublisher(new ROSLIB.Ros(), 'topic');
       // Spy on topic
-      const topicSpy = sinon.spy(topic);
-      const imu = new IMUPublisher(topic);
+      const topicSpy = sinon.spy(imu.topic);
+
       imu.orientationReady = false;
       imu.motionReady = true;
 
@@ -216,10 +214,11 @@ describe('Test IMU Publisher', function() {
     });
 
     it('has -1 hardcoded in the covar-matrix when motion event has not yet occured', function() {
-      const topic = new ROSLIB.Topic('boo!');
+      // Setup IMU object
+      const imu = new IMUPublisher(new ROSLIB.Ros(), 'topic');
       // Spy on topic
-      const topicSpy = sinon.spy(topic);
-      const imu = new IMUPublisher(topic);
+      const topicSpy = sinon.spy(imu.topic);
+
       imu.orientationReady = true;
       imu.motionReady = false;
 
@@ -234,10 +233,11 @@ describe('Test IMU Publisher', function() {
     });
 
     it('has -1 hardcoded in the covar-matrix when neither events have occured', function() {
-      const topic = new ROSLIB.Topic('boo!');
+      // Setup IMU object
+      const imu = new IMUPublisher(new ROSLIB.Ros(), 'topic');
       // Spy on topic
-      const topicSpy = sinon.spy(topic);
-      const imu = new IMUPublisher(topic);
+      const topicSpy = sinon.spy(imu.topic);
+
       imu.orientationReady = false;
       imu.motionReady = false;
 
