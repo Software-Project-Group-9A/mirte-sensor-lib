@@ -7,8 +7,8 @@ const IntervalPublisher = require('../../../src/sensors/IntervalPublisher.js');
  * @return {IntervalPublisher} a publisher object.
  */
 function createIntervalPublisher() {
-  const topic = new ROSLIB.Topic('boo!');
-  const IVPublisher = new IntervalPublisher(topic);
+  const ros = new ROSLIB.Ros();
+  const IVPublisher = new IntervalPublisher(ros, 'topic');
   // Mock createSnapshot out
   IVPublisher.createSnapshot = sinon.spy();
   return IVPublisher;
@@ -31,11 +31,11 @@ describe('Test IntervalPublisher', function() {
     /* tests for topic verification */
     it('should construct with 10Hz when not defined', function() {
       let publisher;
-      const topic = new ROSLIB.Topic();
+      const ros = new ROSLIB.Ros();
 
       assert.doesNotThrow(
           () => {
-            publisher = new IntervalPublisher(topic);
+            publisher = new IntervalPublisher(ros, 'topic');
           },
           (error) => {
             return false;
@@ -46,11 +46,11 @@ describe('Test IntervalPublisher', function() {
     });
     it('should construct with other Hz when defined', function() {
       let publisher;
-      const topic = new ROSLIB.Topic();
+      const ros = new ROSLIB.Ros();
 
       assert.doesNotThrow(
           () => {
-            publisher = new IntervalPublisher(topic, 20);
+            publisher = new IntervalPublisher(ros, 'topic', 20);
           },
           (error) => {
             return false;
@@ -61,10 +61,10 @@ describe('Test IntervalPublisher', function() {
     });
 
     it('should construct with 10Hz when it is invalid', function() {
-      const topic = new ROSLIB.Topic();
+      const ros = new ROSLIB.Ros();
 
       assert.throws(() => {
-        new IntervalPublisher(topic, 0);
+        new IntervalPublisher(ros, 'topic', 0);
       }, expectInvalidFrequency);
     });
   });
@@ -127,9 +127,10 @@ describe('Test IntervalPublisher', function() {
       assert.equal(IVPublisher.createSnapshot.callCount, 110);
     });
 
-    it('Should have the publisher restart at change of frequency', function() {
+    it('Should restart when already started', function() {
       // Arrange
       const IVPublisher = createIntervalPublisher();
+      IVPublisher.start();
       IVPublisher.start = sinon.spy();
       IVPublisher.stop = sinon.spy();
 
@@ -141,6 +142,22 @@ describe('Test IntervalPublisher', function() {
       // Assert
       assert.equal(IVPublisher.stop.callCount, 3);
       assert.equal(IVPublisher.start.callCount, 3);
+    });
+
+    it('Should not restart when not started yet', function() {
+      // Arrange
+      const IVPublisher = createIntervalPublisher();
+      IVPublisher.start = sinon.spy();
+      IVPublisher.stop = sinon.spy();
+
+      // Act
+      IVPublisher.setPublishFrequency(10);
+      IVPublisher.setPublishFrequency(100);
+      IVPublisher.setPublishFrequency(1);
+
+      // Assert
+      assert.equal(IVPublisher.stop.callCount, 0);
+      assert.equal(IVPublisher.start.callCount, 0);
     });
 
     it('Frequency of 0 Hz does not work', function() {

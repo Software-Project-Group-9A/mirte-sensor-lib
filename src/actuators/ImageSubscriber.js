@@ -17,16 +17,19 @@ class ImageSubscriber extends Subscriber {
     * Creates a new ImageSubscriber, which will display the images published
     * to the provided topic on the provided canvas.
     * Both compressed (sensor_msgs/CompressedImage) and non-compressed images (sensor_msgs/Image) are supported.
-    * @param {ROSLIB.Topic} topic topic from which to subscribe to
+    * @param {ROSLIB.Ros} ros ROS instance to publish to
+    * @param {ROSLIB.Topic} topicName topic from which to subscribe to
     * @param {HTMLCanvasElement} canvas canvas to draw published images on
     * @param {boolean} [compressed=true]  whether compressed images are published to the topic. True by default.
     */
-  constructor(topic, canvas, compressed = true) {
-    super(topic);
+  constructor(ros, topicName, canvas, compressed = true) {
+    super(ros, topicName);
 
     if (!(canvas instanceof window.HTMLCanvasElement)) {
       throw new TypeError('canvas argument must be of type HTMLCanvasElement');
     }
+
+    this.topic.messageType = 'sensor_msgs/CompressedImage';
 
     this.canvas = canvas;
     this.compressed = compressed;

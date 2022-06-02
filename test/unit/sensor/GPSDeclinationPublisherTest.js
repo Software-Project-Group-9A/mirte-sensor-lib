@@ -35,7 +35,7 @@ describe('Test GPSDeclinationPublisher', function() {
     it('should accept an undefined latitude', function() {
       assert.doesNotThrow(
           () => {
-            new GPSDeclinationPublisher(new ROSLIB.Topic(), undefined, 1);
+            new GPSDeclinationPublisher(new ROSLIB.Ros(), 'topic', undefined, 1);
           },
           (error) => {
             return false;
@@ -45,7 +45,7 @@ describe('Test GPSDeclinationPublisher', function() {
     it('should accept an undefined longitude', function() {
       assert.doesNotThrow(
           () => {
-            new GPSDeclinationPublisher(new ROSLIB.Topic(), 1, undefined);
+            new GPSDeclinationPublisher(new ROSLIB.Ros(), 'topic', 1, undefined);
           },
           (error) => {
             return false;
@@ -55,19 +55,19 @@ describe('Test GPSDeclinationPublisher', function() {
 
     it('should not accept an out of range latitude', function() {
       assert.throws(() => {
-        new GPSDeclinationPublisher(new ROSLIB.Topic(), -100, 1);
+        new GPSDeclinationPublisher(new ROSLIB.Ros(), 'topic', -100, 1);
       }, expectOutOfRange);
     });
     it('should not accept an out of range undefined longitude', function() {
       assert.throws(() => {
-        new GPSDeclinationPublisher(new ROSLIB.Topic(), 1, 200);
+        new GPSDeclinationPublisher(new ROSLIB.Ros(), 'topic', 1, 200);
       }, expectOutOfRange);
     });
 
     it('should accept a well defined coördinates', function() {
       assert.doesNotThrow(
           () => {
-            new GPSDeclinationPublisher(new ROSLIB.Topic(), 1, 1);
+            new GPSDeclinationPublisher(new ROSLIB.Ros(), 'topic', 1, 1);
           },
           (error) => {
             return false;
@@ -79,8 +79,7 @@ describe('Test GPSDeclinationPublisher', function() {
   describe('#calcDegreeToPoint(latitude, longitude)', function() {
     it('should calculate the degree between point and current location',
         function() {
-          const topic = sinon.spy(new ROSLIB.Topic());
-          const publisher = sinon.spy(new GPSDeclinationPublisher(topic, 1, 1));
+          const publisher = sinon.spy(new GPSDeclinationPublisher(new ROSLIB.Ros(), 'topic', 1, 1));
 
           assert.equal(publisher.calcDegreeToPoint(1, 1), 0);
         });
@@ -89,8 +88,7 @@ describe('Test GPSDeclinationPublisher', function() {
   describe('#locationHandler(position)', function() {
     it('should handle the location',
         function() {
-          const topic = sinon.spy(new ROSLIB.Topic());
-          const publisher = sinon.spy(new GPSDeclinationPublisher(topic, 1, 1));
+          const publisher = sinon.spy(new GPSDeclinationPublisher(new ROSLIB.Ros(), 'topic', 1, 1));
 
           global.position = {
             'coords': {
@@ -106,8 +104,8 @@ describe('Test GPSDeclinationPublisher', function() {
 
   describe('#createSnapshot()', function() {
     it('should create snapshot', function() {
-      const topic = sinon.spy(new ROSLIB.Topic());
-      const publisher = sinon.spy(new GPSDeclinationPublisher(topic, 1, 1));
+      const publisher = sinon.spy(new GPSDeclinationPublisher(new ROSLIB.Ros(), 'topic', 1, 1));
+      const topic = sinon.spy(publisher.topic);
 
       global.geoPos = {
         'coords': {
@@ -143,8 +141,8 @@ describe('Test GPSDeclinationPublisher', function() {
       assert.deepEqual(topic.publish.getCall(0).args[0], expectedMessage);
     });
     it('should not create double snapshot', function() {
-      const topic = sinon.spy(new ROSLIB.Topic());
-      const publisher = sinon.spy(new GPSDeclinationPublisher(topic, 1, 1));
+      const publisher = sinon.spy(new GPSDeclinationPublisher(new ROSLIB.Ros(), 'topic', 1, 1));
+      const topic = sinon.spy(publisher.topic);
 
       global.geoPos = {
         'coords': {
@@ -185,8 +183,7 @@ describe('Test GPSDeclinationPublisher', function() {
 
   describe('#accountForRotation()', function() {
     it('Difference is 0 when same orientation', function() {
-      const topic = sinon.spy(new ROSLIB.Topic());
-      const publisher = sinon.spy(new GPSDeclinationPublisher(topic, 1, 1));
+      const publisher = sinon.spy(new GPSDeclinationPublisher(new ROSLIB.Ros(), 'topic', 1, 1));
 
       publisher.alpha = 0;
       publisher.compass = 0;
@@ -205,8 +202,7 @@ describe('Test GPSDeclinationPublisher', function() {
     });
 
     it('Small difference', function() {
-      const topic = sinon.spy(new ROSLIB.Topic());
-      const publisher = sinon.spy(new GPSDeclinationPublisher(topic, 1, 1));
+      const publisher = sinon.spy(new GPSDeclinationPublisher(new ROSLIB.Ros(), 'topic', 1, 1));
 
       publisher.alpha = 359;
       publisher.compass = 0;
@@ -225,8 +221,7 @@ describe('Test GPSDeclinationPublisher', function() {
     });
 
     it('180 difference', function() {
-      const topic = sinon.spy(new ROSLIB.Topic());
-      const publisher = sinon.spy(new GPSDeclinationPublisher(topic, 1, 1));
+      const publisher = sinon.spy(new GPSDeclinationPublisher(new ROSLIB.Ros(), 'topic', 1, 1));
 
       publisher.alpha = 280;
       publisher.compass = 100;
@@ -240,8 +235,7 @@ describe('Test GPSDeclinationPublisher', function() {
     });
 
     it('big difference', function() {
-      const topic = sinon.spy(new ROSLIB.Topic());
-      const publisher = sinon.spy(new GPSDeclinationPublisher(topic, 1, 1));
+      const publisher = sinon.spy(new GPSDeclinationPublisher(new ROSLIB.Ros(), 'topic', 1, 1));
 
       publisher.alpha = 5;
       publisher.compass = 355;
