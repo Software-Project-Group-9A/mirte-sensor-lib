@@ -138,7 +138,8 @@ class IMUPublisher extends IntervalPublisher {
     );
 
     // Publish message on designated topic.
-    super.createSnapshot(imuMessage);
+    this.msg = imuMessage;
+    super.createSnapshot();
   }
 }
 

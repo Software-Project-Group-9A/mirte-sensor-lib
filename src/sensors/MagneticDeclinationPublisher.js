@@ -66,7 +66,8 @@ class MagneticDeclinationPublisher extends IntervalPublisher {
       data: this.alpha,
     });
 
-    super.createSnapshot(MagneticDeclinationMessage);
+    this.msg = MagneticDeclinationMessage;
+    super.createSnapshot();
   }
 }
 

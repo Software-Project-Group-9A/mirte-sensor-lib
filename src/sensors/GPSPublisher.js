@@ -110,7 +110,9 @@ class GPSPublisher extends IntervalPublisher {
     // create and publish message
     const coordinates = this.position.coords;
     const message = GPSPublisher.createNavSatMessage(coordinates);
-    super.createSnapshot(message);
+
+    this.msg = message;
+    super.createSnapshot();
   }
 }
 

@@ -53,7 +53,8 @@ class SliderPublisher extends IntervalPublisher {
     const sliderValue = parseInt(this.slider.value);
 
     const msg = this.createInt32Msg(sliderValue);
-    super.createSnapshot(msg);
+    this.msg = msg;
+    super.createSnapshot();
   }
 }
 

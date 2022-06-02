@@ -179,7 +179,8 @@ class GPSDeclinationPublisher extends IntervalPublisher {
       data: this.compass,
     });
 
-    super.createSnapshot(GPSDeclinationMessage);
+    this.msg = GPSDeclinationMessage;
+    super.createSnapshot();
   }
 }
 

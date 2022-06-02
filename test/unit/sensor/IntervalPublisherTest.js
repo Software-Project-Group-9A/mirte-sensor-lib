@@ -232,12 +232,12 @@ describe('Test IntervalPublisher', function() {
       // Arrange
       const publisher = new IntervalPublisher(new ROSLIB.Ros(), 'topic');
       const topic = sinon.spy(publisher.topic);
-      const msg = new ROSLIB.Message({
+      publisher.msg = new ROSLIB.Message({
         data: true,
       });
 
       // Act
-      publisher.createSnapshot(msg);
+      publisher.createSnapshot();
 
       // Assert
       assert.equal(topic.publish.callCount, 1);
@@ -247,13 +247,13 @@ describe('Test IntervalPublisher', function() {
       // Arrange
       const publisher = new IntervalPublisher(new ROSLIB.Ros(), 'topic');
       const topic = sinon.spy(publisher.topic);
-      const msg = new ROSLIB.Message({
+      publisher.msg = new ROSLIB.Message({
         data: true,
       });
 
       // Act
-      publisher.createSnapshot(msg);
-      publisher.createSnapshot(msg);
+      publisher.createSnapshot();
+      publisher.createSnapshot();
 
       // Assert
       assert.equal(topic.publish.callCount, 1);
@@ -263,16 +263,17 @@ describe('Test IntervalPublisher', function() {
       // Arrange
       const publisher = new IntervalPublisher(new ROSLIB.Ros(), 'topic');
       const topic = sinon.spy(publisher.topic);
-      const msg1 = new ROSLIB.Message({
-        data: true,
-      });
-      const msg2 = new ROSLIB.Message({
-        data: false,
-      });
 
       // Act
-      publisher.createSnapshot(msg1);
-      publisher.createSnapshot(msg2);
+      publisher.msg = new ROSLIB.Message({
+        data: true,
+      });
+      publisher.createSnapshot();
+
+      publisher.msg = new ROSLIB.Message({
+        data: false,
+      });
+      publisher.createSnapshot();
 
       // Assert
       assert.equal(topic.publish.callCount, 2);

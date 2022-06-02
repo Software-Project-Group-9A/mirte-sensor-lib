@@ -44,7 +44,8 @@ class CameraPublisher extends IntervalPublisher {
       data: data.replace('data:image/jpeg;base64,', ''),
     });
 
-    super.createSnapshot(imageMessage);
+    this.msg = imageMessage;
+    super.createSnapshot();
   }
 
   /**

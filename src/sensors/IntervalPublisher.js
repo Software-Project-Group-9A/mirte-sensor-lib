@@ -28,25 +28,22 @@ class IntervalPublisher extends SensorPublisher {
 
     this.freq = hz;
 
-    this.publish = null;
-
-    this.alReadypublished = null;
+    this.msg = null;
+    this.alReadyPublishedMsg = null;
   }
 
   /**
      * Captures sensor-data at current timeframe and
      * publishes this to the topic instantly.
-     * @param {ROSLIB.Message} msg Message to publish to topic
      */
-  createSnapshot(msg) {
-    this.publish = msg;
-    if (lodash.isEqual(this.publish, this.alReadypublished)) {
+  createSnapshot() {
+    if (lodash.isEqual(this.msg, this.alReadyPublishedMsg)) {
       return;
     }
 
-    this.topic.publish(msg);
+    this.topic.publish(this.msg);
 
-    this.alReadypublished = this.publish;
+    this.alReadyPublishedMsg = this.msg;
   }
 
   /**
