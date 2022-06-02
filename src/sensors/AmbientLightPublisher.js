@@ -22,21 +22,18 @@ class AmbientLightPublisher extends IntervalPublisher {
   /**
    * Creates a new sensor publisher that publishes the amount of lux
    * the camera receives
-   * @param {Topic} topic a Topic from RosLibJS
+   * @param {ROSLIB.Ros} ros a ROS instance to publish to
+   * @param {ROSLIB.Topic} topicName a Topic from RosLibJS
    * @param {Number} hz a frequency to be called
    */
-  constructor(topic, hz = 1) {
+  constructor(ros, topicName, hz = 1) {
     // check support for API
-    if (!('AmbientLightSensor' in window)) {
+    if (!(window.AmbientLightSensor)) {
       throw new NotSupportedError('Unable to create AmbientLightSensor, ' +
           'AmbientLight API not supported');
     }
-    super(topic, hz);
-
-    this.topic = topic;
-
-    this.oldLight = -1;
-    this.light = -1;
+    super(ros, topicName, hz);
+    this.topic.messageType = 'std_msgs/Int32';
 
     this.sensor = new AmbientLightSensor();
   }
@@ -65,30 +62,16 @@ class AmbientLightPublisher extends IntervalPublisher {
   }
 
   /**
-   * Callback for when error occurs while reading sensor data.
-   * @param {Error} event containing error info.
-   */
-  onError(event) {
-    console.log('Error: ' + event);
-    throw Error('ERROR!');
-  }
-
-  /**
    * Puts the declination
    * in a ROS message and publishes it
    */
   createSnapshot() {
-    if (this.oldLight === this.light) {
-      return;
-    }
-
-    this.oldLight = this.light;
-
     const AmbientLightMessage = new ROSLIB.Message({
       data: this.light,
     });
 
-    this.topic.publish(AmbientLightMessage);
+    this.msg = AmbientLightMessage;
+    super.createSnapshot();
   }
 }
 
