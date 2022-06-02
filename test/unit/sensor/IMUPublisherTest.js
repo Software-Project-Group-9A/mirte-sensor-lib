@@ -212,4 +212,23 @@ describe('Test IMU Publisher', function() {
       assert.equal(msg[0].linear_acceleration_covariance[0], -1);
     });
   });
+  // readFromConfig tests
+  describe('#readFromConfig(ros, config)', function() {
+    it('should return a started instance of IMUPublisher', function() {
+      const topicName = 'imu';
+      const frequency = 1.0;
+      const ros = new ROSLIB.Ros();
+      const config = {
+        name: topicName,
+        frequency: frequency,
+      };
+
+      const publisher = IMUPublisher.readFromConfig(ros, config);
+
+      assert(publisher instanceof IMUPublisher);
+      assert(publisher.started);
+      assert.equal(publisher.topic.name, topicName);
+      assert.equal(publisher.freq, frequency);
+    });
+  });
 });

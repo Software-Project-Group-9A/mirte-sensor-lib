@@ -1,23 +1,33 @@
 const assert = require('assert');
 
+require('../../globalSetup.js');
+
 // Sinon library for mocking
 // Allows for fake timers, which might be useful in future testing
 const sinon = require('sinon');
-
-// JSDOM for simulating browser environment
-const {JSDOM} = require('jsdom');
-const {window} = new JSDOM(``, {});
 
 // Module to test
 const GPSDeclinationPublisher =
     require('../../../src/sensors/GPSDeclinationPublisher.js');
 
-// define JSDOM window in global scope
-global.window = global.window || window;
 
-global.window.navigator.geolocation = true;
+/**
+ * Utility function for creating geolocation mock
+ * @return {Sinon.spy} geolocation spy
+ */
+function createGeolocationSpy() {
+  const geolocation = {
+    watchPosition: function(success, error, options) {
+      this.onSuccess = success;
+      return 1;
+    },
+    clearWatch: function(watchId) {},
+  };
 
-require('../../globalSetup.js');
+  return sinon.spy(geolocation);
+}
+// stub for geolocation api
+global.window.navigator.geolocation = {};
 
 describe('Test GPSDeclinationPublisher', function() {
   describe('#constructor(topic, latitude, longitude)', function() {
@@ -251,6 +261,27 @@ describe('Test GPSDeclinationPublisher', function() {
       publisher.compass = 270;
 
       assert.equal(publisher.accountForRotation(), 350);
+    });
+  });
+
+  describe('#readFromConfig(ros, config)', function() {
+    it('should return a started instance of GPSDeclinationPublisher', function() {
+      global.window.navigator.geolocation = createGeolocationSpy();
+
+      const topicName = 'compass';
+      const frequency = 1.0;
+      const ros = new ROSLIB.Ros();
+      const config = {
+        name: topicName,
+        frequency: frequency,
+      };
+
+      const publisher = GPSDeclinationPublisher.readFromConfig(ros, config);
+
+      assert(publisher instanceof GPSDeclinationPublisher);
+      assert(publisher.started);
+      assert.equal(publisher.topic.name, topicName);
+      assert.equal(publisher.freq, frequency);
     });
   });
 });

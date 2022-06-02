@@ -208,6 +208,28 @@ describe('GPSPublisher', function() {
     });
   });
 
+  describe('#readFromConfig(ros, config)', function() {
+    it('should return a started instance of GPSPublisher', function() {
+      const geolocation = createGeolocationSpy();
+      global.window.navigator.geolocation = geolocation;
+
+      const topicName = 'gps';
+      const frequency = 1.0;
+      const ros = new ROSLIB.Ros();
+      const config = {
+        name: topicName,
+        frequency: frequency,
+      };
+
+      const publisher = GPSPublisher.readFromConfig(ros, config);
+
+      assert(publisher instanceof GPSPublisher);
+      assert(publisher.started);
+      assert.equal(publisher.topic.name, topicName);
+      assert.equal(publisher.freq, frequency);
+    });
+  });
+
   afterEach(function() {
     // make sure geolocation is reset to undefined
     global.window.navigator.geolocation = undefined;

@@ -72,13 +72,9 @@ class CameraPublisher extends IntervalPublisher {
    */
   static readFromConfig(ros, properties) {
     const camera = document.getElementById(properties.cameraId);
-    const topic = new ROSLIB.Topic({
-      ros: ros,
-      name: properties.name,
-      messageType: 'sensor_msgs/CompressedImage',
-    });
+    const canvas = document.createElement('canvas');
 
-    const publisher = new CameraPublisher(topic, camera, new HTMLCanvasElement());
+    const publisher = new CameraPublisher(ros, properties.name, camera, canvas);
     publisher.start();
     publisher.setPublishFrequency(properties.frequency);
 

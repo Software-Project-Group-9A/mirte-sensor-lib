@@ -162,4 +162,23 @@ describe('Test MagneticDeclinationPublisher', function() {
       );
     });
   });
+
+  describe('#readFromConfig(ros, config)', function() {
+    it('should return a started instance of MagneticDeclinationPublisher', function() {
+      const topicName = 'compass';
+      const frequency = 1.0;
+      const ros = new ROSLIB.Ros();
+      const config = {
+        name: topicName,
+        frequency: frequency,
+      };
+
+      const publisher = MagneticDeclinationPublisher.readFromConfig(ros, config);
+
+      assert(publisher instanceof MagneticDeclinationPublisher);
+      assert(publisher.started);
+      assert.equal(publisher.topic.name, topicName);
+      assert.equal(publisher.freq, frequency);
+    });
+  });
 });
