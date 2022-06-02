@@ -87,6 +87,24 @@ class MagneticDeclinationPublisher extends IntervalPublisher {
 
     this.topic.publish(MagneticDeclinationMessage);
   }
+
+  /**
+   * Deserializes a MagneticDeclinationPublisher stored in a config object,
+   * and returns the resulting publisher instance.
+   * The returned instance is already started.
+   * @param {ROSLIB.Ros} ros ros instance to which to resulting publisher will publish
+   * @param {Object} properties object with the following keys:
+   *  * name - name of the publisher to create
+   *  * frequency - frequency at which to publish sensor data
+   * @return {MagneticDeclinationPublisher} MagneticDeclinationPublisher described in the provided properties parameter
+   */
+  static readFromConfig(ros, properties) {
+    const publisher = new MagneticDeclinationPublisher(ros, properties.name);
+    publisher.start();
+    publisher.setPublishFrequency(properties.frequency);
+
+    return publisher;
+  }
 }
 
 module.exports = MagneticDeclinationPublisher;

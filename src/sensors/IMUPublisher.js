@@ -140,6 +140,23 @@ class IMUPublisher extends IntervalPublisher {
     // Publish message on designated topic.
     this.topic.publish(imuMessage);
   }
+
+  /**
+   * Deserializes a IMUPublisher stored in a config object, and returns the resulting publisher instance.
+   * The returned instance is already started.
+   * @param {ROSLIB.Ros} ros ros instance to which to resulting publisher will publish
+   * @param {Object} properties object with the following keys:
+   *  * name - name of the publisher to create
+   *  * frequency - frequency at which to publish sensor data
+   * @return {IMUPublisher} IMUPublisher described in the provided properties parameter
+   */
+  static readFromConfig(ros, properties) {
+    const publisher = new IMUPublisher(ros, properties.name);
+    publisher.start();
+    publisher.setPublishFrequency(properties.frequency);
+
+    return publisher;
+  }
 }
 
 module.exports = IMUPublisher;

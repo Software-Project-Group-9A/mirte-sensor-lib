@@ -200,6 +200,23 @@ class GPSDeclinationPublisher extends IntervalPublisher {
 
     this.topic.publish(GPSDeclinationMessage);
   }
+
+  /**
+   * Deserializes a GPSDeclinationPublisher stored in a config object, and returns the resulting publisher instance.
+   * The returned instance is already started.
+   * @param {ROSLIB.Ros} ros ros instance to which to resulting publisher will publish
+   * @param {Object} properties object with the following keys:
+   *  * name - name of the publisher to create
+   *  * frequency - frequency at which to publish sensor data
+   * @return {GPSDeclinationPublisher} GPSDeclinationPublisher described in the provided properties parameter
+   */
+  static readFromConfig(ros, properties) {
+    const publisher = new GPSDeclinationPublisher(ros, properties.name);
+    publisher.start();
+    publisher.setPublishFrequency(properties.frequency);
+
+    return publisher;
+  }
 }
 
 module.exports = GPSDeclinationPublisher;

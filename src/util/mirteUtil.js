@@ -4,20 +4,17 @@ const MagneticDeclinationPublisher = require('../sensors/MagneticDeclinationPubl
 const GPSDeclinationPublisher = require('../sensors/GPSDeclinationPublisher');
 const CameraPublisher = require('../sensors/CameraPublisher');
 
-const sensorTypes = ['remote_imu', 'remote_magnetic_declination'];
 /**
  * Array containing initializers for every type of sensor.
- * An initializer is a function that takes a properties object and ros instance,
+ * An initializer is a function that takes a ros instance and a properties object,
  * and returns the corresponding SensorPublisher.
  */
 const sensorInitializers = {
-  'remote_imu': (properties, ros) => initializeIntervalPublisher(properties, IMUPublisher, ros),
-  'remote_magnetic_declination': (properties, ros) =>
-    initializeIntervalPublisher(properties, MagneticDeclinationPublisher, ros),
-  'remote_gps': (properties, ros) => initializeIntervalPublisher(properties, GPSPublisher, ros),
-  'remote_gps_declination': (properties, ros) =>
-    initializeIntervalPublisher(properties, GPSDeclinationPublisher, ros),
-  'remote_camera': (properties, ros) => initializeIntervalPublisher(properties, CameraPublisher, ros),
+  'remote_imu': IMUPublisher.readFromConfig,
+  'remote_magnetic_declination': MagneticDeclinationPublisher.readFromConfig,
+  'remote_gps': GPSPublisher.readFromConfig,
+  'remote_gps_declination': GPSDeclinationPublisher.readFromConfig,
+  'remote_camera': CameraPublisher.readFromConfig,
 };
 
 /**
@@ -47,7 +44,7 @@ function readSensorsFromConfig(params, ros) {
 
   // loop through all publishable sensor types, e.g. imu or magnetic_declination
   // (see sensorTypes array)
-  for (const sensorType of sensorTypes) {
+  for (const sensorType of Object.keys(sensorInitializers)) {
     const sensorInstances = params[sensorType];
 
     // check if no instances of the sensor type present in config
@@ -58,7 +55,7 @@ function readSensorsFromConfig(params, ros) {
     // loop through all instances, and publish them
     for (const [instanceName, instanceProperties] of Object.entries(sensorInstances)) {
       const sensorInitializer = sensorInitializers[sensorType];
-      const sensorPublisher = sensorInitializer(instanceProperties, ros);
+      const sensorPublisher = sensorInitializer(ros, instanceProperties);
       sensorMap.set(instanceName, sensorPublisher);
     }
   }

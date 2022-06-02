@@ -61,6 +61,8 @@ class CameraPublisher extends IntervalPublisher {
   }
 
   /**
+   * Deserializes a CameraPublisher stored in a config object, and returns the resulting publisher instance.
+   * The returned instance is already started.
    * @param {ROSLIB.Ros} ros ros instance to which to resulting publisher will publish
    * @param {Object} properties object with the following keys:
    *  * name - name of the publisher to create
