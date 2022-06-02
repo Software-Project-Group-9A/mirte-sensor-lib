@@ -7,8 +7,8 @@ const IntervalPublisher = require('../../../src/sensors/IntervalPublisher.js');
  * @return {IntervalPublisher} a publisher object.
  */
 function createIntervalPublisher() {
-  const topic = new ROSLIB.Topic('boo!');
-  const IVPublisher = new IntervalPublisher(topic);
+  const ros = new ROSLIB.Ros();
+  const IVPublisher = new IntervalPublisher(ros, 'topic');
   // Mock createSnapshot out
   IVPublisher.createSnapshot = sinon.spy();
   return IVPublisher;
@@ -31,11 +31,11 @@ describe('Test IntervalPublisher', function() {
     /* tests for topic verification */
     it('should construct with 10Hz when not defined', function() {
       let publisher;
-      const topic = new ROSLIB.Topic();
+      const ros = new ROSLIB.Ros();
 
       assert.doesNotThrow(
           () => {
-            publisher = new IntervalPublisher(topic);
+            publisher = new IntervalPublisher(ros, 'topic');
           },
           (error) => {
             return false;
@@ -46,11 +46,11 @@ describe('Test IntervalPublisher', function() {
     });
     it('should construct with other Hz when defined', function() {
       let publisher;
-      const topic = new ROSLIB.Topic();
+      const ros = new ROSLIB.Ros();
 
       assert.doesNotThrow(
           () => {
-            publisher = new IntervalPublisher(topic, 20);
+            publisher = new IntervalPublisher(ros, 'topic', 20);
           },
           (error) => {
             return false;
@@ -61,10 +61,10 @@ describe('Test IntervalPublisher', function() {
     });
 
     it('should construct with 10Hz when it is invalid', function() {
-      const topic = new ROSLIB.Topic();
+      const ros = new ROSLIB.Ros();
 
       assert.throws(() => {
-        new IntervalPublisher(topic, 0);
+        new IntervalPublisher(ros, 'topic', 0);
       }, expectInvalidFrequency);
     });
   });
@@ -223,6 +223,60 @@ describe('Test IntervalPublisher', function() {
 
       // Assert
       assert.equal(global.clearInterval.callCount, 1);
+    });
+  });
+
+  // create snapshot tests
+  describe('#createSnapshot(msg)', function() {
+    it('should publish', function() {
+      // Arrange
+      const publisher = new IntervalPublisher(new ROSLIB.Ros(), 'topic');
+      const topic = sinon.spy(publisher.topic);
+      publisher.msg = new ROSLIB.Message({
+        data: true,
+      });
+
+      // Act
+      publisher.createSnapshot();
+
+      // Assert
+      assert.equal(topic.publish.callCount, 1);
+    });
+
+    it('should not publish double', function() {
+      // Arrange
+      const publisher = new IntervalPublisher(new ROSLIB.Ros(), 'topic');
+      const topic = sinon.spy(publisher.topic);
+      publisher.msg = new ROSLIB.Message({
+        data: true,
+      });
+
+      // Act
+      publisher.createSnapshot();
+      publisher.createSnapshot();
+
+      // Assert
+      assert.equal(topic.publish.callCount, 1);
+    });
+
+    it('should publish new', function() {
+      // Arrange
+      const publisher = new IntervalPublisher(new ROSLIB.Ros(), 'topic');
+      const topic = sinon.spy(publisher.topic);
+
+      // Act
+      publisher.msg = new ROSLIB.Message({
+        data: true,
+      });
+      publisher.createSnapshot();
+
+      publisher.msg = new ROSLIB.Message({
+        data: false,
+      });
+      publisher.createSnapshot();
+
+      // Assert
+      assert.equal(topic.publish.callCount, 2);
     });
   });
 });
