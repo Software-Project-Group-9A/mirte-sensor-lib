@@ -11,13 +11,13 @@ const sensorTypes = ['remote_imu', 'remote_magnetic_declination'];
  * and returns the corresponding SensorPublisher.
  */
 const sensorInitializers = {
-  'remote_imu': (properties, ros) => initializeIntervalPublisher(properties, (topic) => new IMUPublisher(topic), ros),
+  'remote_imu': (properties, ros) => initializeIntervalPublisher(properties, IMUPublisher, ros),
   'remote_magnetic_declination': (properties, ros) =>
-    initializeIntervalPublisher(properties, (topic) => new MagneticDeclinationPublisher(topic), ros),
-  'remote_gps': (properties, ros) => initializeIntervalPublisher(properties, (topic) => new GPSPublisher(topic), ros),
+    initializeIntervalPublisher(properties, MagneticDeclinationPublisher, ros),
+  'remote_gps': (properties, ros) => initializeIntervalPublisher(properties, GPSPublisher, ros),
   'remote_gps_declination': (properties, ros) =>
-    initializeIntervalPublisher(properties, (topic) => new GPSDeclinationPublisher(topic), ros),
-  'remote_camera': (properties, ros) => initializeIntervalPublisher(properties, (topic) => new CameraPublisher(topic), ros),
+    initializeIntervalPublisher(properties, GPSDeclinationPublisher, ros),
+  'remote_camera': (properties, ros) => initializeIntervalPublisher(properties, CameraPublisher, ros),
 };
 
 /**
@@ -28,13 +28,7 @@ const sensorInitializers = {
  * @return {SensorPublisher}
  */
 function initializeIntervalPublisher(properties, constructor, ros) {
-  const topic = new ROSLIB.Topic({
-    ros: ros,
-    name: properties.name,
-    messageType: 'sensor_msgs/IMU',
-  });
-
-  const publisher = constructor(topic);
+  const publisher = new constructor(ros, properties.name);
   publisher.start();
   publisher.setPublishFrequency(properties.frequency);
 

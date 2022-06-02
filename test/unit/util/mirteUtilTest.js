@@ -30,6 +30,7 @@ describe('mirteUtils', function() {
       assert.equal(sensorMap.size, 0);
     });
     it('should return IMUPublishers as specified in the config', function() {
+      const ros = new ROSLIB.Ros();
       const imuFrequency = 3.7;
       const imuName = 'imu';
       const config = {
@@ -41,7 +42,7 @@ describe('mirteUtils', function() {
         },
       };
 
-      const sensorMap = readSensorsFromConfig(config);
+      const sensorMap = readSensorsFromConfig(config, ros);
 
       assert.equal(sensorMap.size, 1);
       assert(sensorMap.has(imuName));
@@ -52,6 +53,7 @@ describe('mirteUtils', function() {
     });
     it('should return MagneticDeclinationPublishers as specified in the config', function() {
       const magneticDeclinationName = 'compass';
+      const ros = new ROSLIB.Ros();
       const config = {
         remote_magnetic_declination: {
           compass: {
@@ -60,7 +62,7 @@ describe('mirteUtils', function() {
         },
       };
 
-      const sensorMap = readSensorsFromConfig(config);
+      const sensorMap = readSensorsFromConfig(config, ros);
 
       assert.equal(sensorMap.size, 1);
       assert(sensorMap.has(magneticDeclinationName));
