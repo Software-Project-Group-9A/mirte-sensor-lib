@@ -2,6 +2,7 @@ const GPSPublisher = require('../sensors/GPSPublisher');
 const IMUPublisher = require('../sensors/IMUPublisher');
 const MagneticDeclinationPublisher = require('../sensors/MagneticDeclinationPublisher');
 const GPSDeclinationPublisher = require('../sensors/GPSDeclinationPublisher');
+const CameraPublisher = require('../sensors/CameraPublisher');
 
 const sensorTypes = ['remote_imu', 'remote_magnetic_declination'];
 /**

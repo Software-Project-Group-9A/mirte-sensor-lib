@@ -56,6 +56,29 @@ class CameraPublisher extends IntervalPublisher {
     }
     super.start();
   }
+
+  /**
+   * @param {ROSLIB.Ros} ros ros instance to which to resulting publisher will publish
+   * @param {Object} properties object with the following keys:
+   *  * name - name of the publisher to create
+   *  * frequency - frequency at which to publish sensor data
+   *  * cameraId - id of HTMLVideoElement with camera data
+   * @return {CameraPublisher} CameraPublisher described in the provided properties parameter
+   */
+  static readFromConfig(ros, properties) {
+    const camera = document.getElementById(properties.cameraId);
+    const topic = new ROSLIB.Topic({
+      ros: ros,
+      name: properties.name,
+      messageType: 'sensor_msgs/CompressedImage',
+    });
+
+    const publisher = new CameraPublisher(topic, camera, new HTMLCanvasElement());
+    publisher.start();
+    publisher.setPublishFrequency(properties.frequency);
+
+    return publisher;
+  }
 }
 
 
