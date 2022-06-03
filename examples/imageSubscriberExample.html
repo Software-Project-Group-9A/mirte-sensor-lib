@@ -12,12 +12,6 @@
 
             ros.on('close', function() { document.getElementById("connection_info").innerHTML = 'Connection to websocket server closed.'; });
 
-            var imageTopic = new ROSLIB.Topic({
-                ros : ros,
-                name : '/camera',
-                messageType: 'std_msgs/CompressedImage'
-            });
-
             ros.connect('ws://localhost:9090');
         </script>
     </head>
@@ -27,7 +21,7 @@
         <h2>Please open the cameraExample demo</h2>
         <canvas id='outputCanvas' width="500", height="500">
         <script>
-            var subscriber = new SENSORLIB.ImageSubscriber(imageTopic, document.getElementById("outputCanvas"), true);
+            var subscriber = new SENSORLIB.ImageSubscriber(ros, '/camera', document.getElementById("outputCanvas"), true);
             subscriber.start();
         </script>
         <button onclick="subscriber.start()">subscribe</button>

@@ -11,11 +11,12 @@ const IntervalPublisher = require('./IntervalPublisher.js');
 class SliderPublisher extends IntervalPublisher {
   /**
    * Creates a new ButtonPublisher.
-   * @param {ROSLIB.Topic} topic topic to which to publish slider data
+   * @param {ROSLIB.Ros} ros a ROS instance to publish to
+   * @param {ROSLIB.Topic} topicName topic to which to publish slider data
    * @param {HTMLInputElement} slider slider of which to publish data, must have type 'range'
    */
-  constructor(topic, slider) {
-    super(topic);
+  constructor(ros, topicName, slider) {
+    super(ros, topicName);
 
     if (!(slider instanceof window.HTMLInputElement)) {
       throw new TypeError('slider argument was not of type HTMLInputElement');
@@ -24,6 +25,8 @@ class SliderPublisher extends IntervalPublisher {
     if (slider.type !== 'range') {
       throw new TypeError('slider argument does not have type range');
     }
+
+    this.topic.messageType = 'std_msgs/Int32';
 
     /**
      * slider of which to publish data
