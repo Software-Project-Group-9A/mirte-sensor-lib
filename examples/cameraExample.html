@@ -43,7 +43,11 @@
               console.error("Error: ", error);
             }
 
-            let cameraPublisher = new SENSORLIB.CameraPublisher(ros, "/camera", video, canvas);
+            // Note: This topic should publish to '/{name}/compressed', since the message contains compressed data
+            // To view on rviz, run the following command:
+            // rosrun image_transport republish compressed in:=/camera raw out:=/camera/raw
+            // then data can be read through /camera/raw
+            let cameraPublisher = new SENSORLIB.CameraPublisher(ros, "/camera/compressed", video, canvas);
             let bool = true;
             button.addEventListener('click', () => {
                 cameraPublisher.start()
