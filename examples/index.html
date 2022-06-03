@@ -3,8 +3,9 @@
         <script src="https://github.com/RobotWebTools/roslibjs/blob/develop/build/roslib.min.js"></script>
         <script src="http://static.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
         <script src="http://static.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
-        <script src="../build/RosSensorLib.min.js"></script>
+        <script src="RosSensorLib.min.js"></script>
         <script>
+
             var ros = new ROSLIB.Ros();
 
             ros.on('connection', function() {document.getElementById("connection_info").innerHTML = "Connected to webserver."});
@@ -24,10 +25,31 @@
     </head>
     <body>
         <h1 id='connection_info'></h1>
+		<p id='test'></p>
+		<div id="log"></div>
         <script>
-            var publisher = new SENSORLIB.MagneticDeclinationPublisher(ros, '/magneticDeclination');
-            publisher.start();
-
+				(function () {
+    var old = console.log;
+    var logger = document.getElementById('log');
+    console.log = function (message) {
+        if (typeof message == 'object') {
+            logger.innerHTML += (JSON && JSON.stringify ? JSON.stringify(message) : message) + '<br />';
+        } else {
+            logger.innerHTML += message + '<br />';
+        }
+    }
+})();
+            var md = new SENSORLIB.MagneticDeclinationPublisher(ros, '/magneticDeclination');
+            md.start();
+			var imu = new SENSORLIB.IMUPublisher(ros, '/gyro');
+			imu.start();
+			
+			console.log('boi')
+			window.addEventListener('deviceorientation', (event) => {
+			  if (event.isTrusted) {
+				document.getElementById('test').innerHTML = `IS WORKING LOOK: ${event.alpha}`
+			  }
+			});
         </script>
     </body>
 </html>
