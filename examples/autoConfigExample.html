@@ -15,20 +15,65 @@
     </script>
 </head>
 <body>
+    <video id="camera" crossorigin="anonymous" autoplay></video>
+    <canvas id="canvas" width="640" height="480"></canvas>
     <h1 id='connection_info'></h1>
     <button id="button">Press Here!</button>
     <script>
+        const constraints = {
+            video: true
+        };
+        
+        function gotStream(stream) {
+            window.stream = stream; // make stream available to console
+            document.getElementById('camera').srcObject = stream;
+        }
+        function handleError(error) {
+            console.error("Error: ", error);
+        }
+
+        navigator.mediaDevices
+            .getUserMedia(constraints)
+            .then(gotStream)
+            .catch(handleError);
+
         const config = {
-            remote_imu: {
+            phone_imu: {
                 imu: {
                     name: 'imu',
                     frequency: 1.0,
                 },
             },
+            phone_magnetic_declination: {
+                imu: {
+                    name: 'magneticCompass',
+                    frequency: 1.0,
+                },
+            },
+            phone_gps_declination: {
+                imu: {
+                    name: 'gpsCompass',
+                    frequency: 1.0,
+                },
+            },
+            // phone_camera: {
+            //     imu: {
+            //         name: 'camera',
+            //         cameraId: 'camera',
+            //         canvasId: 'canvas',
+            //         frequency: 1.0,
+            //     },
+            // },
+            phone_gps: {
+                imu: {
+                    name: 'gps',
+                    frequency: 1.0,
+                },
+            },
         };
 
-        var sensorMap = SENSORLIB.readSensorsFromConfig(config, ros);
+        //var sensorMap = SENSORLIB.readSensorsFromConfig(config, ros);
         
-        console.dir(sensorMap);
+        //console.dir(sensorMap);
     </script>
 </body>

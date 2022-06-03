@@ -11,10 +11,10 @@ const CameraPublisher = require('../sensors/CameraPublisher');
  */
 const sensorDeserializers = {
   'phone_imu': IMUPublisher.readFromConfig,
-  'remote_magnetic_declination': MagneticDeclinationPublisher.readFromConfig,
-  'remote_gps': GPSPublisher.readFromConfig,
-  'remote_gps_declination': GPSDeclinationPublisher.readFromConfig,
-  'remote_camera': CameraPublisher.readFromConfig,
+  'phone_magnetic_declination': MagneticDeclinationPublisher.readFromConfig,
+  'phone_gps': GPSPublisher.readFromConfig,
+  'phone_gps_declination': GPSDeclinationPublisher.readFromConfig,
+  'phone_camera': CameraPublisher.readFromConfig,
 };
 
 /**
