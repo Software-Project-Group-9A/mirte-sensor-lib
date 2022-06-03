@@ -6,7 +6,7 @@ const ButtonPublisher = require('../../../src/sensors/ButtonPublisher');
 const SliderPublisher = require('../../../src/sensors/SliderPublisher');
 const TextPublisher = require('../../../src/sensors/TextPublisher');
 // Module to test
-const {tryPublishElement, publishChildElements} = require('../../../src/util/DocumentUtils');
+const {tryPublishElement, publishChildElements} = require('../../../src/util/documentUtils');
 
 const {document} = global.window;
 
