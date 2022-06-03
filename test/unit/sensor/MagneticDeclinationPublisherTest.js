@@ -165,16 +165,17 @@ describe('Test MagneticDeclinationPublisher', function() {
 
   describe('#readFromConfig(ros, config)', function() {
     it('should return a started instance of MagneticDeclinationPublisher', function() {
-      const topicName = 'compass';
+      const compassName = 'compass';
       const frequency = 1.0;
       const ros = new ROSLIB.Ros();
       const config = {
-        name: topicName,
+        name: compassName,
         frequency: frequency,
       };
 
       const publisher = MagneticDeclinationPublisher.readFromConfig(ros, config);
 
+      const topicName = 'mirte/phone_magnetic_declination/' + compassName;
       assert(publisher instanceof MagneticDeclinationPublisher);
       assert(publisher.started);
       assert.equal(publisher.topic.name, topicName);

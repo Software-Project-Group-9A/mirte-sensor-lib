@@ -72,9 +72,10 @@ class CameraPublisher extends IntervalPublisher {
    */
   static readFromConfig(ros, properties) {
     const camera = document.getElementById(properties.cameraId);
-    const canvas = document.createElement('canvas');
+    const canvas = document.getElementById(properties.canvasId);
 
-    const publisher = new CameraPublisher(ros, properties.name, camera, canvas);
+    const topicName = 'mirte/phone_camera/' + properties.name;
+    const publisher = new CameraPublisher(ros, topicName, camera, canvas);
     publisher.start();
     publisher.setPublishFrequency(properties.frequency);
 

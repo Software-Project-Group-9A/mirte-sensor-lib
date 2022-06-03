@@ -95,24 +95,30 @@ describe('Test CamerPublisher', function() {
 
   describe('#readFromConfig(ros, config)', function() {
     it('should return a started instance of CameraPublisher', function() {
-      const topicName = 'camera';
+      const cameraName = 'camera';
       const frequency = 8.0;
       const videoId = 'camA';
+      const canvasId = 'canvasA';
       const ros = new ROSLIB.Ros();
       const config = {
-        name: topicName,
+        name: cameraName,
         frequency: frequency,
         cameraId: videoId,
+        canvasId: canvasId,
       };
 
       const video = document.createElement('video');
+      const canvas = document.createElement('canvas');
       video.id = videoId;
+      canvas.id = canvasId;
       // stub for src object
       video.srcObject = {};
       document.documentElement.appendChild(video);
+      document.documentElement.appendChild(canvas);
 
       const publisher = CameraPublisher.readFromConfig(ros, config);
 
+      const topicName = 'mirte/phone_camera/' + cameraName;
       assert(publisher instanceof CameraPublisher);
       assert(publisher.started);
       assert.equal(publisher.topic.name, topicName);

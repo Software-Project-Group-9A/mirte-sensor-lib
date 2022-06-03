@@ -215,16 +215,17 @@ describe('Test IMU Publisher', function() {
   // readFromConfig tests
   describe('#readFromConfig(ros, config)', function() {
     it('should return a started instance of IMUPublisher', function() {
-      const topicName = 'imu';
+      const imuName = 'imu';
       const frequency = 1.0;
       const ros = new ROSLIB.Ros();
       const config = {
-        name: topicName,
+        name: imuName,
         frequency: frequency,
       };
 
       const publisher = IMUPublisher.readFromConfig(ros, config);
 
+      const topicName = 'mirte/phone_imu/' + imuName;
       assert(publisher instanceof IMUPublisher);
       assert(publisher.started);
       assert.equal(publisher.topic.name, topicName);

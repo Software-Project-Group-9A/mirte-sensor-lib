@@ -268,16 +268,17 @@ describe('Test GPSDeclinationPublisher', function() {
     it('should return a started instance of GPSDeclinationPublisher', function() {
       global.window.navigator.geolocation = createGeolocationSpy();
 
-      const topicName = 'compass';
+      const compassName = 'compass';
       const frequency = 1.0;
       const ros = new ROSLIB.Ros();
       const config = {
-        name: topicName,
+        name: compassName,
         frequency: frequency,
       };
 
       const publisher = GPSDeclinationPublisher.readFromConfig(ros, config);
 
+      const topicName = 'mirte/phone_gps_declination/' + compassName;
       assert(publisher instanceof GPSDeclinationPublisher);
       assert(publisher.started);
       assert.equal(publisher.topic.name, topicName);

@@ -143,7 +143,8 @@ class GPSPublisher extends IntervalPublisher {
    * @return {GPSPublisher} GPSPublisher described in the provided properties parameter
    */
   static readFromConfig(ros, config) {
-    const publisher = new GPSPublisher(ros, config.name);
+    const topicName = 'mirte/phone_gps/' + config.name;
+    const publisher = new GPSPublisher(ros, topicName);
     publisher.start();
     publisher.setPublishFrequency(config.frequency);
 

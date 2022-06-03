@@ -211,7 +211,9 @@ class GPSDeclinationPublisher extends IntervalPublisher {
    * @return {GPSDeclinationPublisher} GPSDeclinationPublisher described in the provided properties parameter
    */
   static readFromConfig(ros, properties) {
-    const publisher = new GPSDeclinationPublisher(ros, properties.name);
+    const topicName = 'mirte/phone_gps_declination/' + properties.name;
+    const publisher = new GPSDeclinationPublisher(ros, topicName);
+
     publisher.start();
     publisher.setPublishFrequency(properties.frequency);
 

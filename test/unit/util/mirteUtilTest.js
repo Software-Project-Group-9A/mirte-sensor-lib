@@ -34,7 +34,7 @@ describe('mirteUtils', function() {
       const imuFrequency = 3.7;
       const imuName = 'imu';
       const config = {
-        remote_imu: {
+        phone_imu: {
           imu: {
             name: imuName,
             frequency: imuFrequency,
@@ -44,11 +44,12 @@ describe('mirteUtils', function() {
 
       const sensorMap = readSensorsFromConfig(config, ros);
 
+      const topicName = 'mirte/phone_imu/' + imuName;
       assert.equal(sensorMap.size, 1);
-      assert(sensorMap.has(imuName));
-      const imuPublisher = sensorMap.get(imuName);
+      assert(sensorMap.has(topicName));
+      const imuPublisher = sensorMap.get(topicName);
       assert(imuPublisher instanceof IMUPublisher);
-      assert.equal(imuPublisher.topic.name, imuName);
+      assert.equal(imuPublisher.topic.name, topicName);
       assert.equal(imuPublisher.freq, imuFrequency);
     });
     it('should return MagneticDeclinationPublishers as specified in the config', function() {
@@ -64,11 +65,12 @@ describe('mirteUtils', function() {
 
       const sensorMap = readSensorsFromConfig(config, ros);
 
+      const topicName = 'mirte/phone_magnetic_declination/' + magneticDeclinationName;
       assert.equal(sensorMap.size, 1);
-      assert(sensorMap.has(magneticDeclinationName));
-      const imuPublisher = sensorMap.get(magneticDeclinationName);
+      assert(sensorMap.has(topicName));
+      const imuPublisher = sensorMap.get(topicName);
       assert(imuPublisher instanceof MagneticDeclinationPublisher);
-      assert.equal(imuPublisher.topic.name, magneticDeclinationName);
+      assert.equal(imuPublisher.topic.name, topicName);
     });
   });
 });

@@ -10,7 +10,7 @@ const CameraPublisher = require('../sensors/CameraPublisher');
  * and returns the corresponding SensorPublisher.
  */
 const sensorDeserializers = {
-  'remote_imu': IMUPublisher.readFromConfig,
+  'phone_imu': IMUPublisher.readFromConfig,
   'remote_magnetic_declination': MagneticDeclinationPublisher.readFromConfig,
   'remote_gps': GPSPublisher.readFromConfig,
   'remote_gps_declination': GPSDeclinationPublisher.readFromConfig,
@@ -38,10 +38,10 @@ function readSensorsFromConfig(params, ros) {
     }
 
     // loop through all instances, and publish them
-    for (const [instanceName, instanceProperties] of Object.entries(sensorInstances)) {
+    for (const instanceProperties of Object.values(sensorInstances)) {
       const sensorInitializer = sensorDeserializers[sensorType];
       const sensorPublisher = sensorInitializer(ros, instanceProperties);
-      sensorMap.set(instanceName, sensorPublisher);
+      sensorMap.set(sensorPublisher.topic.name, sensorPublisher);
     }
   }
   return sensorMap;

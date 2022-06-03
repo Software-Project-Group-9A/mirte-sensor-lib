@@ -213,16 +213,17 @@ describe('GPSPublisher', function() {
       const geolocation = createGeolocationSpy();
       global.window.navigator.geolocation = geolocation;
 
-      const topicName = 'gps';
+      const gpsName = 'gps';
       const frequency = 1.0;
       const ros = new ROSLIB.Ros();
       const config = {
-        name: topicName,
+        name: gpsName,
         frequency: frequency,
       };
 
       const publisher = GPSPublisher.readFromConfig(ros, config);
 
+      const topicName = 'mirte/phone_gps/' + gpsName;
       assert(publisher instanceof GPSPublisher);
       assert(publisher.started);
       assert.equal(publisher.topic.name, topicName);
