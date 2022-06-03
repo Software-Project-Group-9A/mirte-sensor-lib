@@ -20,23 +20,6 @@
     <h1 id='connection_info'></h1>
     <button id="button">Press Here!</button>
     <script>
-        const constraints = {
-            video: true
-        };
-        
-        function gotStream(stream) {
-            window.stream = stream; // make stream available to console
-            document.getElementById('camera').srcObject = stream;
-        }
-        function handleError(error) {
-            console.error("Error: ", error);
-        }
-
-        navigator.mediaDevices
-            .getUserMedia(constraints)
-            .then(gotStream)
-            .catch(handleError);
-
         const config = {
             phone_imu: {
                 imu: {
@@ -56,14 +39,14 @@
                     frequency: 1.0,
                 },
             },
-            // phone_camera: {
-            //     imu: {
-            //         name: 'camera',
-            //         cameraId: 'camera',
-            //         canvasId: 'canvas',
-            //         frequency: 1.0,
-            //     },
-            // },
+            phone_camera: {
+                imu: {
+                    name: 'camera',
+                    cameraId: 'camera',
+                    canvasId: 'canvas',
+                    frequency: 1.0,
+                },
+            },
             phone_gps: {
                 imu: {
                     name: 'gps',
@@ -72,8 +55,24 @@
             },
         };
 
-        //var sensorMap = SENSORLIB.readSensorsFromConfig(config, ros);
+        const constraints = {
+            video: true
+        };
         
-        //console.dir(sensorMap);
+        function gotStream(stream) {
+            window.stream = stream; // make stream available to console
+            document.getElementById('camera').srcObject = stream;
+            var sensorMap = SENSORLIB.readSensorsFromConfig(config, ros);
+        
+            console.dir(sensorMap);
+        }
+        function handleError(error) {
+            console.error("Error: ", error);
+        }
+
+        navigator.mediaDevices
+            .getUserMedia(constraints)
+            .then(gotStream)
+            .catch(handleError);
     </script>
 </body>
