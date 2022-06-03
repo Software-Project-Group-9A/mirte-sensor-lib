@@ -55,8 +55,9 @@ class GPSDeclinationPublisher extends IntervalPublisher {
 
     /*
     * Support for iOS
-    * For DeviceOrientationEvent to work on Safari on iOS 13 and up, the user has to give permission
-    * through a user activation event, such as a button press.
+    * For DeviceOrientationEvent and DeviceMotionEvent to work on Safari on iOS 13 and up,
+    * the user has to give permission through a user activation event.
+    * Note: This will only work through either localhost or a secure connection (https).
     */
     if (!window.MSStream && /iPad|iPhone|iPod|Macintosh/.test(window.navigator.userAgent)) {
       // request permission for sensor use
