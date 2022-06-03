@@ -12,7 +12,7 @@ const {document} = global.window;
 
 describe('documentUtils', function() {
   describe('#tryPublishElement(element, ros, map)', function() {
-    it('should be able properly publish a HTMLButtonElement', function() {
+    it('should be able to properly publish a HTMLButtonElement', function() {
       const button = document.createElement('button');
       const buttonId = 'buttonA';
       button.id = buttonId;
@@ -22,13 +22,14 @@ describe('documentUtils', function() {
 
       tryPublishElement(button, ros, map);
 
-      assert(map.has(buttonId));
-      const buttonPublisher = map.get(buttonId);
+      const topicName = 'mirte/phone_button/' + buttonId;
+      assert(map.has(topicName));
+      const buttonPublisher = map.get(topicName);
       assert(buttonPublisher instanceof ButtonPublisher);
       assert.equal(buttonPublisher.button, button);
-      assert.equal(buttonPublisher.topic.name, buttonId);
+      assert.equal(buttonPublisher.topic.name, topicName);
     });
-    it('should be able properly publish a slider', function() {
+    it('should be able to properly publish a slider', function() {
       const slider = document.createElement('input');
       const sliderId = 'sliderA';
       slider.id = sliderId;
@@ -39,13 +40,14 @@ describe('documentUtils', function() {
 
       tryPublishElement(slider, ros, map);
 
-      assert(map.has(sliderId));
-      const sliderPublisher = map.get(sliderId);
+      const topicName = 'mirte/phone_slider/' + sliderId;
+      assert(map.has(topicName));
+      const sliderPublisher = map.get(topicName);
       assert(sliderPublisher instanceof SliderPublisher);
       assert.equal(sliderPublisher.slider, slider);
-      assert.equal(sliderPublisher.topic.name, sliderId);
+      assert.equal(sliderPublisher.topic.name, topicName);
     });
-    it('should be able properly publish a text input', function() {
+    it('should be able to properly publish a text input', function() {
       const textInput = document.createElement('input');
       const textInputId = 'textInputA';
       textInput.id = textInputId;
@@ -56,13 +58,14 @@ describe('documentUtils', function() {
 
       tryPublishElement(textInput, ros, map);
 
-      assert(map.has(textInputId));
-      const textPublisher = map.get(textInputId);
+      const topicName = 'mirte/phone_text_input/' + textInputId;
+      assert(map.has(topicName));
+      const textPublisher = map.get(topicName);
       assert(textPublisher instanceof TextPublisher);
       assert.equal(textPublisher.inputElement, textInput);
-      assert.equal(textPublisher.topic.name, textInputId);
+      assert.equal(textPublisher.topic.name, topicName);
     });
-    it('should be able properly publish a text output', function() {
+    it('should be able to properly publish a text output', function() {
       const textOutput = document.createElement('p');
       const textOutputId = 'textInputA';
       textOutput.id = textOutputId;
@@ -72,13 +75,14 @@ describe('documentUtils', function() {
 
       tryPublishElement(textOutput, ros, map);
 
-      assert(map.has(textOutputId));
-      const textSubscriber = map.get(textOutputId);
+      const topicName = 'mirte/phone_text_output/' + textOutputId;
+      assert(map.has(topicName));
+      const textSubscriber = map.get(topicName);
       assert(textSubscriber instanceof TextSubscriber);
       assert.equal(textSubscriber.HTMLElement, textOutput);
-      assert.equal(textSubscriber.topic.name, textOutputId);
+      assert.equal(textSubscriber.topic.name, topicName);
     });
-    it('should be able properly publish a canvas for image publishing', function() {
+    it('should be able to properly publish a canvas for image publishing', function() {
       const imageOutput = document.createElement('canvas');
       const imageOutputId = 'imageA';
       imageOutput.id = imageOutputId;
@@ -88,11 +92,12 @@ describe('documentUtils', function() {
 
       tryPublishElement(imageOutput, ros, map);
 
-      assert(map.has(imageOutputId));
-      const imageSubscriber = map.get(imageOutputId);
+      const topicName = 'mirte/phone_image_output/' + imageOutputId;
+      assert(map.has(topicName));
+      const imageSubscriber = map.get(topicName);
       assert(imageSubscriber instanceof ImageSubscriber);
       assert.equal(imageSubscriber.canvas, imageOutput);
-      assert.equal(imageSubscriber.topic.name, imageOutputId);
+      assert.equal(imageSubscriber.topic.name, topicName);
     });
     it('should ignore elements without an id', function() {
       const textOutput = document.createElement('p');
@@ -166,8 +171,8 @@ describe('documentUtils', function() {
       const publisherMap = publishChildElements(div, ros);
 
       assert.equal(publisherMap.size, 2);
-      assert(publisherMap.has(buttonAId));
-      assert(publisherMap.has(buttonBId));
+      assert(publisherMap.has('mirte/phone_button/' + buttonAId));
+      assert(publisherMap.has('mirte/phone_button/' + buttonBId));
     });
     it('should recursively publish children\'s children', function() {
       const buttonA = document.createElement('button');
@@ -180,17 +185,17 @@ describe('documentUtils', function() {
 
       const childDiv = document.createElement('div');
       childDiv.appendChild(buttonA);
-      childDiv.appendChild(buttonB);
       const parentDiv = document.createElement('div');
       parentDiv.appendChild(childDiv);
+      parentDiv.appendChild(buttonB);
 
       const ros = new ROSLIB.Ros();
 
       const publisherMap = publishChildElements(parentDiv, ros);
 
       assert.equal(publisherMap.size, 2);
-      assert(publisherMap.has(buttonAId));
-      assert(publisherMap.has(buttonBId));
+      assert(publisherMap.has('mirte/phone_button/' + buttonAId));
+      assert(publisherMap.has('mirte/phone_button/' + buttonBId));
     });
   });
 });
