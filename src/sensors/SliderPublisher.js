@@ -16,7 +16,7 @@ class SliderPublisher extends IntervalPublisher {
    * @param {HTMLInputElement} slider slider of which to publish data, must have type 'range'
    * @param {Number} hz a standard frequency for this type of object.
    */
-  constructor(ros, topicName, slider, hz = 10) {
+  constructor(ros, topicName, slider, hz = 8) {
     super(ros, topicName, hz);
 
     if (!(slider instanceof window.HTMLInputElement)) {
