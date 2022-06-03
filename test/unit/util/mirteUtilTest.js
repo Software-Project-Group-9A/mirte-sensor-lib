@@ -56,7 +56,7 @@ describe('mirteUtils', function() {
       const magneticDeclinationName = 'compass';
       const ros = new ROSLIB.Ros();
       const config = {
-        remote_magnetic_declination: {
+        phone_magnetic_declination: {
           compass: {
             name: magneticDeclinationName,
           },
