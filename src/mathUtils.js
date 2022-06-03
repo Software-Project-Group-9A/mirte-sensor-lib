@@ -33,22 +33,6 @@ function quatFromEuler(x, y, z) {
   return {'x': _x, 'y': _y, 'z': _z, 'w': _w};
 }
 
-/**
- * info
- * @param {*} x info
- * @param {*} y info
- * @param {*} z info
- * @param {*} w info
- * @return {*} aaa
- */
-function eulerFromQuat(x, y, z, w) {
-  // This code was copied and modified from Three.js/src/math/Euler.js
-  // The modification of this code is allowed by the MIT license claimed by the Three.js project.
-
-
-  return x;
-}
-
 module.exports = {
   quatFromEuler: quatFromEuler,
 };
