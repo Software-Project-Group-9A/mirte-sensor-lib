@@ -33,34 +33,24 @@ function tryPublishElement(element, ros, map) {
     throw new TypeError('element was not instance of HTMLElement');
   }
 
-  const topic = new ROSLIB.Topic({
-    name: topicName,
-    ros: ros,
-  });
-
   // choose how to publish or subscribe element
   let mapEntry;
   switch (element.constructor.name) {
     case 'HTMLButtonElement':
-      topic.messageType = 'std_msgs/Bool';
-      mapEntry = new ButtonPublisher(topic, element);
+      mapEntry = new ButtonPublisher(ros, topicName, element);
       break;
     case 'HTMLInputElement':
       if (element.type === 'range') {
-        topic.messageType = 'std_msgs/Int32';
-        mapEntry = new SliderPublisher(topic, element);
+        mapEntry = new SliderPublisher(ros, topicName, element);
       } else if (element.type === 'text') {
-        topic.messageType = 'std_msgs/String';
-        mapEntry = new TextPublisher(topic, element);
+        mapEntry = new TextPublisher(ros, topicName, element);
       }
       break;
     case 'HTMLCanvasElement':
-      topic.messageType = 'std_msgs/CompressedImage';
-      mapEntry = new ImageSubscriber(topic, element);
+      mapEntry = new ImageSubscriber(ros, topicName, element);
       break;
     default:
-      topic.messageType = 'std_msgs/String';
-      mapEntry = new TextSubscriber(topic, element);
+      mapEntry = new TextSubscriber(ros, topicName, element);
   }
 
   mapEntry.start();
