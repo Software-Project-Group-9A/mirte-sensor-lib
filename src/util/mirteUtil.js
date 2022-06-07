@@ -20,17 +20,17 @@ const sensorDeserializers = {
 /**
  * Reads the mirte ROS parameters and publishes sensors as indicated
  * in the mirte parameters.
- * @param {*} params
- * @param {ROSLIB.Ros} ros
+ * @param {Object} config object containing sensor configuration
+ * @param {ROSLIB.Ros} ros ros instance to publish to
  * @return {Map} map containing all sensors with their respective publisher
  */
-function readSensorsFromConfig(params, ros) {
+function readSensorsFromConfig(config, ros) {
   const sensorMap = new Map();
 
   // loop through all publishable sensor types, e.g. imu or magnetic_declination
   // (see sensorDeserializers array)
   for (const sensorType of Object.keys(sensorDeserializers)) {
-    const sensorInstances = params[sensorType];
+    const sensorInstances = config[sensorType];
 
     // check if no instances of the sensor type present in config
     if (!sensorInstances) {
