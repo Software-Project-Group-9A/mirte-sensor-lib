@@ -3,7 +3,7 @@
 
 const SensorPublisher = require('./SensorPublisher');
 
-const lodash = require('lodash');
+const isEqual = require('lodash.isequal');
 
 /**
  * Interface-like class that can be extended by sensors that need
@@ -37,7 +37,7 @@ class IntervalPublisher extends SensorPublisher {
      * publishes this to the topic instantly.
      */
   createSnapshot() {
-    if (lodash.isEqual(this.msg, this.alReadyPublishedMsg)) {
+    if (isEqual(this.msg, this.alReadyPublishedMsg)) {
       return;
     }
 
