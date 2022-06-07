@@ -80,7 +80,6 @@ class GPSDeclinationPublisher extends IntervalPublisher {
   start() {
     super.start();
 
-    // No support for IOS yet
     window.addEventListener('deviceorientationabsolute', (event) => {
       if (event.isTrusted) {
         this.onReadOrientation(event);
@@ -107,7 +106,7 @@ class GPSDeclinationPublisher extends IntervalPublisher {
    */
   requestPermission() {
     const permbutton = window.document.createElement('button');
-    permbutton.innerHTML = 'requestPermission';
+    permbutton.innerHTML = 'Request Motion Sensor Permission';
     permbutton.addEventListener('click', () => {
       if (typeof(window.DeviceOrientationEvent.requestPermission()) === 'function' ||
       typeof(window.DeviceMotionEvent.requestPermission()) === 'function') {

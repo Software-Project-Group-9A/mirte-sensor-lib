@@ -71,7 +71,7 @@ class IMUPublisher extends IntervalPublisher {
    */
   requestPermission() {
     const permbutton = window.document.createElement('button');
-    permbutton.innerHTML = 'requestPermission';
+    permbutton.innerHTML = 'Request Motion Sensor Permission';
     permbutton.addEventListener('click', () => {
       if (typeof(window.DeviceOrientationEvent.requestPermission()) === 'function' ||
       typeof(window.DeviceMotionEvent.requestPermission()) === 'function') {
