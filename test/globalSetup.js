@@ -15,8 +15,8 @@ if (!global.window) {
   global.window = window;
 }
 
-// define dummy ROSLIB in global scope
-global.ROSLIB = {
+// define dummy ROSLIB in global scope, if not already defined
+global.ROSLIB = global.ROSLIB || {
   Topic: function(options) {
     // provide empty object if no options given
     options = options || {};
@@ -29,6 +29,7 @@ global.ROSLIB = {
     this.subscribe = function(callback) {};
     this.unsubscribe = function(callback) {};
   },
+  Ros: function() {},
   Message: function(msg) {
     Object.assign(this, msg);
   },
