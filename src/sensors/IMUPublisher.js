@@ -1,13 +1,12 @@
 // Assumptions:
 // A non-set timer is no problem.
-// A covariance matrix can be set to all zeroes.
 
 // To check:
 // Use on IOS with requesting permission
 
 // Dependencies
-const THREE = require('three');
 const IntervalPublisher = require('./IntervalPublisher.js');
+const MathUtils = require('../util/MathUtils.js');
 
 /**
  * Object that publishes IMU sensor data to the provided ROS topic.
@@ -99,11 +98,9 @@ class IMUPublisher extends IntervalPublisher {
     const alphaRad = ((this.alpha + 360) / 360 * 2 * Math.PI) % (2 * Math.PI);
     const betaRad = ((this.beta + 360) / 360 * 2 * Math.PI) % (2 * Math.PI);
     const gammaRad = ((this.gamma + 360) / 360 * 2 * Math.PI) % (2 * Math.PI);
-    const eurlerpose = new THREE.Euler(betaRad, gammaRad, alphaRad);
 
     // Create Quaternion based on device orientation
-    const q = new THREE.Quaternion();
-    q.setFromEuler(eurlerpose);
+    const q = MathUtils.quatFromEuler(betaRad, gammaRad, alphaRad);
 
     // Create imuMessage in ROS's IMU-message format.
     // For definition of message type see following source:
