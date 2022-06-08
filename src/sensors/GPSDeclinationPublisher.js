@@ -27,9 +27,10 @@ class GPSDeclinationPublisher extends IntervalPublisher {
    * @param {ROSLIB.Topic} topicName a Topic from RosLibJS
    * @param {Number} latitude float that gives the latitude of point where to aim for
    * @param {Number} longitude float that gives the longitude of point where to aim for
+     * @param {Number} hz a standard frequency for this type of object.
    */
-  constructor(ros, topicName, latitude = 90, longitude = 0) {
-    super(ros, topicName);
+  constructor(ros, topicName, latitude = 90, longitude = 0, hz = 10) {
+    super(ros, topicName, hz);
 
     if (!((typeof latitude === 'number') && (typeof longitude === 'number'))) {
       throw new TypeError('Coordinates were not of type Number');
@@ -49,20 +50,6 @@ class GPSDeclinationPublisher extends IntervalPublisher {
     // First need to detect first device orientation.
     this.orientationReady = false;
     this.gpsReady = false;
-
-    // Prevents double message publishing
-    this.oldCompass = null;
-
-    /*
-    * Support for iOS
-    * For DeviceOrientationEvent and DeviceMotionEvent to work on Safari on iOS 13 and up,
-    * the user has to give permission through a user activation event.
-    * Note: This will only work through either localhost or a secure connection (https).
-    */
-    if (!window.MSStream && /iPad|iPhone|iPod|Macintosh/.test(window.navigator.userAgent)) {
-      // request permission for sensor use
-      this.requestPermission();
-    }
 
     // Id of geolocation watch callback
     this.watchId = -1;
@@ -225,18 +212,12 @@ class GPSDeclinationPublisher extends IntervalPublisher {
 
     this.compass = this.accountForRotation();
 
-    // Check if compass changed
-    if (this.compass === this.oldCompass) {
-      return;
-    }
-
-    this.oldCompass = this.compass;
-
     const GPSDeclinationMessage = new ROSLIB.Message({
       data: this.compass,
     });
 
-    this.topic.publish(GPSDeclinationMessage);
+    this.msg = GPSDeclinationMessage;
+    super.createSnapshot();
   }
 }
 

@@ -191,44 +191,6 @@ describe('Test GPSDeclinationPublisher', function() {
       assert.equal(topic.publish.callCount, 1);
       assert.deepEqual(topic.publish.getCall(0).args[0], expectedMessage);
     });
-    it('should not create double snapshot', function() {
-      const publisher = sinon.spy(new GPSDeclinationPublisher(new ROSLIB.Ros(), 'topic', 1, 1));
-      const topic = sinon.spy(publisher.topic);
-
-      global.geoPos = {
-        'coords': {
-          'latitude': -10,
-          'longitude': 1,
-        },
-      };
-
-      global.eventParam = {
-        'alpha': 0,
-        'beta': 1,
-        'gamma': 1,
-      };
-
-      const mockGeolocation = {
-        getCurrentPosition: function() {
-          publisher.locationHandler(geoPos);
-        },
-      };
-
-      global.window.navigator.geolocation = mockGeolocation;
-
-      publisher.locationHandler(geoPos);
-      publisher.onReadOrientation(eventParam);
-      publisher.createSnapshot();
-      publisher.createSnapshot();
-
-      assert.equal(publisher.calcDegreeToPoint.callCount, 1);
-      assert.equal(publisher.locationHandler.callCount, 1);
-      assert.equal(publisher.createSnapshot.callCount, 2);
-
-      const expectedMessage = new ROSLIB.Message({data: 180});
-      assert.equal(topic.publish.callCount, 1);
-      assert.deepEqual(topic.publish.getCall(0).args[0], expectedMessage);
-    });
   });
 
 

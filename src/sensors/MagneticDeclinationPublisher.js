@@ -21,17 +21,15 @@ class MagneticDeclinationPublisher extends IntervalPublisher {
    * Creates a new sensor publisher that publishes to the provided topic.
    * @param {ROSLIB.Ros} ros a ROS instance to publish to
    * @param {ROSLIB.Topic} topicName a Topic from RosLibJS
+   * @param {Number} hz a standard frequency for this type of object.
    */
-  constructor(ros, topicName) {
-    super(ros, topicName);
+  constructor(ros, topicName, hz = 10) {
+    super(ros, topicName, hz);
 
     this.topic.messageType = 'std_msgs/Int32';
 
     // First need to detect first device orientation.
     this.orientationReady = false;
-
-    // Prevents double message publishing
-    this.oldCompass = null;
   }
 
   /**
@@ -112,19 +110,13 @@ class MagneticDeclinationPublisher extends IntervalPublisher {
     if (!this.orientationReady) {
       throw Error('Orientation is not read yet!');
     }
-    const compass = this.alpha;
-    // Check if compass changed
-    if (compass === this.oldCompass) {
-      return;
-    }
-
-    this.oldCompass = compass;
 
     const MagneticDeclinationMessage = new ROSLIB.Message({
-      data: compass,
+      data: this.alpha,
     });
 
-    this.topic.publish(MagneticDeclinationMessage);
+    this.msg = MagneticDeclinationMessage;
+    super.createSnapshot();
   }
 }
 

@@ -19,10 +19,11 @@ class IMUPublisher extends IntervalPublisher {
      * Creates a new sensor publisher that publishes to the provided topic.
      * @param {ROSLIB.Ros} ros a ROS instance to publish to
      * @param {ROSLIB.Topic} topicName a Topic from RosLibJS
+     * @param {Number} hz a standard frequency for this type of object.
      */
-  constructor(ros, topicName) {
+  constructor(ros, topicName, hz = 5) {
     // Frequency 5 used by estimation, could be further researched in the future.
-    super(ros, topicName, 5);
+    super(ros, topicName, hz);
 
     this.topic.messageType = 'sensor_msgs/Imu';
 
@@ -173,7 +174,8 @@ class IMUPublisher extends IntervalPublisher {
     );
 
     // Publish message on designated topic.
-    this.topic.publish(imuMessage);
+    this.msg = imuMessage;
+    super.createSnapshot();
   }
 }
 

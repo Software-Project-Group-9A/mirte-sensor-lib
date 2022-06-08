@@ -225,5 +225,59 @@ describe('Test IntervalPublisher', function() {
       assert.equal(global.clearInterval.callCount, 1);
     });
   });
+
+  // create snapshot tests
+  describe('#createSnapshot(msg)', function() {
+    it('should publish', function() {
+      // Arrange
+      const publisher = new IntervalPublisher(new ROSLIB.Ros(), 'topic');
+      const topic = sinon.spy(publisher.topic);
+      publisher.msg = new ROSLIB.Message({
+        data: true,
+      });
+
+      // Act
+      publisher.createSnapshot();
+
+      // Assert
+      assert.equal(topic.publish.callCount, 1);
+    });
+
+    it('should not publish double', function() {
+      // Arrange
+      const publisher = new IntervalPublisher(new ROSLIB.Ros(), 'topic');
+      const topic = sinon.spy(publisher.topic);
+      publisher.msg = new ROSLIB.Message({
+        data: true,
+      });
+
+      // Act
+      publisher.createSnapshot();
+      publisher.createSnapshot();
+
+      // Assert
+      assert.equal(topic.publish.callCount, 1);
+    });
+
+    it('should publish new', function() {
+      // Arrange
+      const publisher = new IntervalPublisher(new ROSLIB.Ros(), 'topic');
+      const topic = sinon.spy(publisher.topic);
+
+      // Act
+      publisher.msg = new ROSLIB.Message({
+        data: true,
+      });
+      publisher.createSnapshot();
+
+      publisher.msg = new ROSLIB.Message({
+        data: false,
+      });
+      publisher.createSnapshot();
+
+      // Assert
+      assert.equal(topic.publish.callCount, 2);
+    });
+  });
 });
 
