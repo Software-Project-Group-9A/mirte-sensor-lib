@@ -5,6 +5,7 @@
  */
 module.exports = {
   ButtonPublisher: require('./ButtonPublisher'),
+  CheckboxPublisher: require('./CheckboxPublisher'),
   IMUPublisher: require('./IMUPublisher'),
   SliderPublisher: require('./SliderPublisher'),
   CameraPublisher: require('./CameraPublisher'),
