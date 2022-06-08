@@ -26,9 +26,10 @@ class GPSDeclinationPublisher extends IntervalPublisher {
    * @param {ROSLIB.Topic} topicName a Topic from RosLibJS
    * @param {Number} latitude float that gives the latitude of point where to aim for
    * @param {Number} longitude float that gives the longitude of point where to aim for
+     * @param {Number} hz a standard frequency for this type of object.
    */
-  constructor(ros, topicName, latitude = 90, longitude = 0) {
-    super(ros, topicName);
+  constructor(ros, topicName, latitude = 90, longitude = 0, hz = 10) {
+    super(ros, topicName, hz);
 
     if (!((typeof latitude === 'number') && (typeof longitude === 'number'))) {
       throw new TypeError('Coordinates were not of type Number');
