@@ -21,23 +21,4 @@ describe('Test AmbientLightPublisher', function() {
       );
     });
   });
-
-
-  describe('#start()', function() {
-    it('should attach a callback', function() {
-
-    });
-  });
-
-  describe('#stop()', function() {
-    it('should dettach a callback', function() {
-
-    });
-  });
-
-  describe('#createSnapshot()', function() {
-    it('should create snapshot', function() {
-
-    });
-  });
 });
