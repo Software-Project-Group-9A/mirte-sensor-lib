@@ -3,6 +3,8 @@
 
 const SensorPublisher = require('./SensorPublisher');
 
+const isEqual = require('lodash.isequal');
+
 /**
  * Interface-like class that can be extended by sensors that need
  * their messages to be published at regular intervals.
@@ -21,10 +23,13 @@ class IntervalPublisher extends SensorPublisher {
     super(ros, topicName);
 
     if (hz <= 0) {
-      throw new Error('Cannot construct with frequency ' + hz);
-    } else {
-      this.freq = hz;
+      throw new Error('Cannot construct with frequency: ' + hz);
     }
+
+    this.freq = hz;
+
+    this.msg = null;
+    this.alReadyPublishedMsg = null;
   }
 
   /**
@@ -32,7 +37,13 @@ class IntervalPublisher extends SensorPublisher {
      * publishes this to the topic instantly.
      */
   createSnapshot() {
-    throw Error('create snapshot is yet to be implemented!');
+    if (isEqual(this.msg, this.alReadyPublishedMsg)) {
+      return;
+    }
+
+    this.topic.publish(this.msg);
+
+    this.alReadyPublishedMsg = this.msg;
   }
 
   /**

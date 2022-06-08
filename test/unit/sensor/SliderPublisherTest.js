@@ -105,17 +105,5 @@ describe('SliderPublisher', function() {
       assert.deepEqual(topic.publish.getCall(0).args[0], expectedFirstMessage);
       assert.deepEqual(topic.publish.getCall(1).args[0], expectedSecondMessage);
     });
-    it('should not publish double messages', function() {
-      const slider = createSlider();
-      const publisher = sinon.spy(new SliderPublisher(new ROSLIB.Ros(), 'topic', slider));
-      const topic = sinon.spy(publisher.topic);
-
-      publisher.createSnapshot();
-      publisher.createSnapshot();
-
-      const expectedFirstMessage = new ROSLIB.Message({data: 50});
-      assert.equal(topic.publish.callCount, 1);
-      assert.deepEqual(topic.publish.getCall(0).args[0], expectedFirstMessage);
-    });
   });
 });
