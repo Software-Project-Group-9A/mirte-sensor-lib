@@ -27,7 +27,7 @@ class GPSDeclinationPublisher extends IntervalPublisher {
    * @param {ROSLIB.Topic} topicName a Topic from RosLibJS
    * @param {Number} latitude float that gives the latitude of point where to aim for
    * @param {Number} longitude float that gives the longitude of point where to aim for
-     * @param {Number} hz a standard frequency for this type of object.
+   * @param {Number} hz a standard frequency for this type of object.
    */
   constructor(ros, topicName, latitude = 90, longitude = 0, hz = 10) {
     super(ros, topicName, hz);
@@ -53,6 +53,16 @@ class GPSDeclinationPublisher extends IntervalPublisher {
 
     // Id of geolocation watch callback
     this.watchId = -1;
+
+    /*
+    * Support for iOS
+    * For DeviceOrientationEvent and DeviceMotionEvent to work on Safari on iOS 13 and up,
+    * the user has to give permission through a user activation event.
+    * Note: This will only work through either localhost or a secure connection (https).
+    */
+    if (!window.MSStream && /iPad|iPhone|iPod|Macintosh/.test(window.navigator.userAgent)) {
+      this.requestPermission();
+    }
 
     // check support for API
     if (!window.navigator.geolocation) {
