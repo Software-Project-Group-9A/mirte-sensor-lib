@@ -41,39 +41,39 @@ describe('GPSPublisher', function() {
     it('should create a new instance if the geolocation API is supported', function() {
       // mock navigator instance
       global.window.navigator.geolocation = createGeolocationSpy();
-      const topic = new ROSLIB.Topic();
+      const ros = new ROSLIB.Ros();
       const frequency = 10;
 
-      const publisher = new GPSPublisher(topic, frequency);
+      const publisher = new GPSPublisher(ros, 'topic', frequency);
 
-      assert.equal(publisher.topic, topic);
+      assert.equal(publisher.ros, ros);
+      assert.equal(publisher.topic.name, 'topic');
       assert.equal(publisher.freq, frequency);
     });
     it('should set the correct message type for the topic', function() {
       // mock navigator instance
       global.window.navigator.geolocation = true;
-      const topic = new ROSLIB.Topic();
+      const ros = new ROSLIB.Ros();
       const frequency = 10;
 
-      const publisher = new GPSPublisher(topic, frequency);
+      const publisher = new GPSPublisher(ros, 'topic', frequency);
 
       assert.equal(publisher.topic.messageType, 'sensor_msgs/NavSatFix');
     });
     it('should throw an error if the geolocation API is not suppported', function() {
-      const topic = new ROSLIB.Topic();
       const frequency = 10;
 
-      assert.throws(() => new GPSPublisher(topic, frequency), NotSupportedError);
+      assert.throws(() => new GPSPublisher(new ROSLIB.Ros(), 'topic', frequency), NotSupportedError);
     });
   });
   describe('#start()', function() {
     it('should add the correct callbacks to geolocation', function() {
       const geolocation = createGeolocationSpy();
       global.window.navigator.geolocation = geolocation;
-      const topic = new ROSLIB.Topic();
+      const ros = new ROSLIB.Ros();
       const frequency = 10;
 
-      const publisher = new GPSPublisher(topic, frequency);
+      const publisher = new GPSPublisher(ros, 'topic', frequency);
       publisher.start();
 
       assert.equal(geolocation.watchPosition.callCount, 1);
@@ -83,10 +83,10 @@ describe('GPSPublisher', function() {
     it('should add remove the correct callbacks from geolocation', function() {
       const geolocation = createGeolocationSpy();
       global.window.navigator.geolocation = geolocation;
-      const topic = new ROSLIB.Topic();
+      const ros = new ROSLIB.Ros();
       const frequency = 10;
 
-      const publisher = new GPSPublisher(topic, frequency);
+      const publisher = new GPSPublisher(ros, 'topic', frequency);
       publisher.start();
       publisher.stop();
 
@@ -117,35 +117,15 @@ describe('GPSPublisher', function() {
     });
   });
 
-  describe('#isSamePosition(position1, position2)', function() {
-    it('should return false for positions with a different latitude', function() {
-      const position1 = createGeolocationPosition(1.034, 4.2391);
-      const position2 = createGeolocationPosition(33.35, 4.2391);
-
-      assert(!GPSPublisher.isSamePosition(position1, position2));
-    });
-    it('should return false for positions with a different longitude', function() {
-      const position1 = createGeolocationPosition(1.034, 4.2391);
-      const position2 = createGeolocationPosition(1.034, 55.1002);
-
-      assert(!GPSPublisher.isSamePosition(position1, position2));
-    });
-    it('should return true for positions with the same latitude and longitude', function() {
-      const position1 = createGeolocationPosition(1.034, 4.2391);
-      const position2 = createGeolocationPosition(1.034, 4.2391);
-
-      assert(GPSPublisher.isSamePosition(position1, position2));
-    });
-  });
-
   describe('#createSnapshot()', function() {
     it('should publish no message if there is not yet any location data', function() {
       const geolocation = createGeolocationSpy();
       global.window.navigator.geolocation = geolocation;
-      const topic = sinon.spy(new ROSLIB.Topic());
       const frequency = 10;
 
-      const publisher = new GPSPublisher(topic, frequency);
+      const publisher = new GPSPublisher(new ROSLIB.Ros(), 'topic', frequency);
+      const topic = sinon.spy(publisher.topic);
+
       publisher.start();
       publisher.createSnapshot();
 
@@ -155,45 +135,25 @@ describe('GPSPublisher', function() {
       const geolocation = createGeolocationSpy();
       const location = createGeolocationPosition(1.034, 4.2391);
       global.window.navigator.geolocation = geolocation;
-      const topic = sinon.spy(new ROSLIB.Topic());
       const frequency = 10;
 
-      const publisher = new GPSPublisher(topic, frequency);
+      const publisher = new GPSPublisher(new ROSLIB.Ros(), 'topic', frequency);
+      const topic = sinon.spy(publisher.topic);
       publisher.start();
       geolocation.onSuccess(location);
       publisher.createSnapshot();
 
       assert.equal(topic.publish.callCount, 1);
     });
-    it('should not publish a message if the location remains unchanged', function() {
-      const geolocation = createGeolocationSpy();
-      const location1 = createGeolocationPosition(1.034, 4.2391);
-      const location2 = createGeolocationPosition(1.034, 4.2391);
-      global.window.navigator.geolocation = geolocation;
-      const topic = sinon.spy(new ROSLIB.Topic());
-      const frequency = 10;
-
-      const publisher = new GPSPublisher(topic, frequency);
-      publisher.start();
-      geolocation.onSuccess(location1);
-      clock.tick(101);
-      geolocation.onSuccess(location2);
-      clock.tick(101);
-
-      assert.equal(topic.publish.callCount, 1);
-      const message = topic.publish.firstCall.firstArg;
-      assert.equal(message.latitude, location1.coords.latitude);
-      assert.equal(message.longitude, location1.coords.longitude);
-    });
     it('should publish the current location data', function() {
       const geolocation = createGeolocationSpy();
       const location1 = createGeolocationPosition(1.034, 4.2391);
       const location2 = createGeolocationPosition(2.333, 52.99);
       global.window.navigator.geolocation = geolocation;
-      const topic = sinon.spy(new ROSLIB.Topic());
       const frequency = 10;
 
-      const publisher = new GPSPublisher(topic, frequency);
+      const publisher = new GPSPublisher(new ROSLIB.Ros(), 'topic', frequency);
+      const topic = sinon.spy(publisher.topic);
       publisher.start();
       geolocation.onSuccess(location1);
       geolocation.onSuccess(location2);

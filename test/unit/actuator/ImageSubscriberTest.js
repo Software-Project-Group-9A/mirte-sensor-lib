@@ -28,28 +28,29 @@ describe('ImageSubscriber', function() {
     it('should not accept an undefined canvas argument', function() {
       assert.throws(
           () => {
-            new ImageSubscriber(new ROSLIB.Topic(), undefined);
+            new ImageSubscriber(new ROSLIB.Ros(), 'topic', undefined);
           },
           TypeError
       );
     });
     it('should accept an HTMLCanvasElement as canvas argument', function() {
       const canvas = document.createElement('canvas');
-      const topic = new ROSLIB.Topic();
-      const subscriber = new ImageSubscriber(topic, canvas);
+      const ros = new ROSLIB.Ros();
+      const subscriber = new ImageSubscriber(ros, 'topic', canvas);
 
       assert.equal(subscriber.canvas, canvas);
-      assert.equal(subscriber.topic, topic);
+      assert.equal(subscriber.ros, ros);
+      assert.equal(subscriber.topic.name, 'topic');
     });
     it('should correctly set its topic\'s messageType when compressed images are used', function() {
       const canvas = document.createElement('canvas');
-      const subscriber = new ImageSubscriber(new ROSLIB.Topic(), canvas, true);
+      const subscriber = new ImageSubscriber(new ROSLIB.Ros(), 'topic', canvas, true);
 
       assert.equal(subscriber.topic.messageType, 'sensor_msgs/CompressedImage');
     });
     it('should correctly set its topic\'s messageType when uncompressed images are used', function() {
       const canvas = document.createElement('canvas');
-      const subscriber = new ImageSubscriber(new ROSLIB.Topic(), canvas, false);
+      const subscriber = new ImageSubscriber(new ROSLIB.Ros(), 'topic', canvas, false);
 
       assert.equal(subscriber.topic.messageType, 'sensor_msgs/Image');
     });
@@ -68,7 +69,7 @@ describe('ImageSubscriber', function() {
   describe('#onMessage(msg)', function() {
     it('calls drawImage with correct URL for compressed image', function() {
       const canvas = document.createElement('canvas', {width: 5, height: 5});
-      const subscriber = new ImageSubscriber(new ROSLIB.Topic(), canvas, true);
+      const subscriber = new ImageSubscriber(new ROSLIB.Ros(), 'topic', canvas, true);
 
       subscriber.drawImage = sinon.spy(function(src) {
         const canvas = this.canvas;
@@ -85,7 +86,7 @@ describe('ImageSubscriber', function() {
     });
     it('calls drawImage with correct URL for uncompressed image in rgb8 encoding', function() {
       const canvas = document.createElement('canvas', {width: 2, height: 2});
-      const subscriber = new ImageSubscriber(new ROSLIB.Topic(), canvas, false);
+      const subscriber = new ImageSubscriber(new ROSLIB.Ros(), 'topic', canvas, false);
 
       subscriber.drawImage = sinon.spy(function(src) {
         const canvas = this.canvas;

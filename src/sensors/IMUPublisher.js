@@ -1,13 +1,13 @@
 // Assumptions:
 // A non-set timer is no problem.
-// A covariance matrix can be set to all zeroes.
 
 // To check:
 // Use on IOS with requesting permission
 
 // Dependencies
-const THREE = require('three');
 const IntervalPublisher = require('./IntervalPublisher.js');
+const PermissionDeniedError = require('../error/PermissionDeniedError.js');
+const MathUtils = require('../util/MathUtils.js');
 
 /**
  * Object that publishes IMU sensor data to the provided ROS topic.
@@ -17,12 +17,15 @@ const IntervalPublisher = require('./IntervalPublisher.js');
 class IMUPublisher extends IntervalPublisher {
   /**
      * Creates a new sensor publisher that publishes to the provided topic.
-     * @param {Topic} topic a Topic from RosLibJS
+     * @param {ROSLIB.Ros} ros a ROS instance to publish to
+     * @param {ROSLIB.Topic} topicName a Topic from RosLibJS
+     * @param {Number} hz a standard frequency for this type of object.
      */
-  constructor(topic) {
+  constructor(ros, topicName, hz = 5) {
     // Frequency 5 used by estimation, could be further researched in the future.
-    super(topic, 5);
-    this.topic = topic;
+    super(ros, topicName, hz);
+
+    this.topic.messageType = 'sensor_msgs/Imu';
 
     // Flags used to detect whether callbacks
     // have been invoked.
@@ -38,19 +41,56 @@ class IMUPublisher extends IntervalPublisher {
     this.vbeta = 0;
     this.vgamma = 0;
 
-    // Enable callback for deviceOrientationEvent
+    /*
+    * Support for iOS
+    * For DeviceOrientationEvent and DeviceMotionEvent to work on Safari on iOS 13 and up,
+    * the user has to give permission through a user activation event.
+    * Note: This will only work through either localhost or a secure connection (https).
+    */
+    if (!window.MSStream && /iPad|iPhone|iPod|Macintosh/.test(window.navigator.userAgent)) {
+      this.requestPermission();
+    }
+    // If user is not on iOS, sensor data can be read as normal.
     window.addEventListener('deviceorientation', (event) => {
-      this.onReadOrientation.bind(this)(event);
+      if (event.isTrusted) {
+        this.onReadOrientation.bind(this)(event);
+      }
     });
-
-    // Enable callback for deviceMotionEvent
     if (window.DeviceMotionEvent) {
       window.addEventListener('devicemotion', (event) => {
-        this.onReadMotion.bind(this)(event);
+        if (event.isTrusted) {
+          this.onReadMotion.bind(this)(event);
+        }
       });
     } else {
       window.alert('acceleration not supported!');
     }
+  }
+
+  /**
+   * Adds a button to the document to ask for permission to use IMU sensor on iOS.
+   */
+  requestPermission() {
+    const permbutton = window.document.createElement('button');
+    permbutton.innerHTML = 'Request Motion Sensor Permission';
+    permbutton.addEventListener('click', () => {
+      if (typeof(window.DeviceOrientationEvent.requestPermission()) === 'function' ||
+      typeof(window.DeviceMotionEvent.requestPermission()) === 'function') {
+        throw new Error('requestPermission for device orientation or device motion on iOS is not a function!');
+      }
+
+      // If permission is granted, Enable callback for deviceOrientationEvent and remove permissions button
+      window.DeviceOrientationEvent.requestPermission().then((response) => {
+        if (response==='granted') {
+          permbutton.remove();
+          return true;
+        } else {
+          throw new PermissionDeniedError('No permission granted for Device Orientation');
+        }
+      });
+    });
+
+    window.document.body.appendChild(permbutton);
   }
 
   /**
@@ -96,11 +136,9 @@ class IMUPublisher extends IntervalPublisher {
     const alphaRad = ((this.alpha + 360) / 360 * 2 * Math.PI) % (2 * Math.PI);
     const betaRad = ((this.beta + 360) / 360 * 2 * Math.PI) % (2 * Math.PI);
     const gammaRad = ((this.gamma + 360) / 360 * 2 * Math.PI) % (2 * Math.PI);
-    const eurlerpose = new THREE.Euler(betaRad, gammaRad, alphaRad);
 
     // Create Quaternion based on device orientation
-    const q = new THREE.Quaternion();
-    q.setFromEuler(eurlerpose);
+    const q = MathUtils.quatFromEuler(betaRad, gammaRad, alphaRad);
 
     // Create imuMessage in ROS's IMU-message format.
     // For definition of message type see following source:
@@ -136,7 +174,8 @@ class IMUPublisher extends IntervalPublisher {
     );
 
     // Publish message on designated topic.
-    this.topic.publish(imuMessage);
+    this.msg = imuMessage;
+    super.createSnapshot();
   }
 }
 

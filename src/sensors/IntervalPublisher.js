@@ -3,6 +3,8 @@
 
 const SensorPublisher = require('./SensorPublisher');
 
+const isEqual = require('lodash.isequal');
+
 /**
  * Interface-like class that can be extended by sensors that need
  * their messages to be published at regular intervals.
@@ -13,16 +15,21 @@ class IntervalPublisher extends SensorPublisher {
   /**
      * Creates a new sensor publisher that publishes to
      * the provided topic with a Regular interval.
-     * @param {Topic} topic a Topic from RosLibJS on which to publish.
+     * @param {ROSLIB.Ros} ros a ROS instance to publish to
+     * @param {ROSLIB.Topic} topicName a Topic from RosLibJS on which to publish.
      * @param {Number} hz a standard frequency for this type of object.
      */
-  constructor(topic, hz = 10) {
-    super(topic);
+  constructor(ros, topicName, hz = 10) {
+    super(ros, topicName);
+
     if (hz <= 0) {
-      throw new Error('Cannot construct with frequency ' + hz);
-    } else {
-      this.freq = hz;
+      throw new Error('Cannot construct with frequency: ' + hz);
     }
+
+    this.freq = hz;
+
+    this.msg = null;
+    this.alReadyPublishedMsg = null;
   }
 
   /**
@@ -30,7 +37,13 @@ class IntervalPublisher extends SensorPublisher {
      * publishes this to the topic instantly.
      */
   createSnapshot() {
-    throw Error('create snapshot is yet to be implemented!');
+    if (isEqual(this.msg, this.alReadyPublishedMsg)) {
+      return;
+    }
+
+    this.topic.publish(this.msg);
+
+    this.alReadyPublishedMsg = this.msg;
   }
 
   /**

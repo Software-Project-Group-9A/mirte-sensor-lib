@@ -23,5 +23,8 @@
     "nyc": "~15.1.0",
     "sinon": "^13.0.2",
     "three": "^0.140.2"
+  },
+  "dependencies": {
+    "lodash.isequal": "^4.5.0"
   }
 }

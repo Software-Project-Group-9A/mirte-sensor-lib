@@ -11,10 +11,12 @@ const NotSupportedError = require('../error/NotSupportedError');
 class FlashlightSubscriber extends Subscriber {
   /**
    * Creates a new TextSubscriber.
-   * @param {ROSLIB.Topic} topic topic to which to subscribe to
+    * @param {ROSLIB.Ros} ros ROS instance to publish to
+    * @param {ROSLIB.Topic} topicName topic from which to subscribe to
    */
-  constructor(topic) {
-    super(topic);
+  constructor(ros, topicName) {
+    super(ros, topicName);
+    this.topic.messageType = 'std_msgs/Bool';
 
     // Test browser support
     const SUPPORTS_MEDIA_DEVICES = 'mediaDevices' in navigator;

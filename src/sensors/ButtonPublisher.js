@@ -12,15 +12,18 @@ const SensorPublisher = require('./SensorPublisher.js');
 class ButtonPublisher extends SensorPublisher {
   /**
    * Creates a new ButtonPublisher.
-   * @param {ROSLIB.Topic} topic topic to which to publish button data
+   * @param {ROSLIB.Ros} ros a ROS instance to publish to
+   * @param {ROSLIB.Topic} topicName topic to which to publish button data
    * @param {HTMLButtonElement} button button of which to publish data
    */
-  constructor(topic, button) {
-    super(topic);
+  constructor(ros, topicName, button) {
+    super(ros, topicName);
 
     if (!(button instanceof window.HTMLButtonElement)) {
       throw new TypeError('button argument was not of type HTMLButtonElement');
     }
+
+    this.topic.messageType = 'std_msgs/Bool';
 
     /**
      * button of which to publish data

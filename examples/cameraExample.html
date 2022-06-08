@@ -12,12 +12,6 @@
 
             ros.on('close', function() { document.getElementById("connection_info").innerHTML = 'Connection to websocket server closed.'; });
 
-            var imageTopic = new ROSLIB.Topic({
-                ros : ros,
-                name : '/camera',
-                messageType: 'sensor_msgs/CompressedImage'
-            });
-
             ros.connect('ws://localhost:9090');
         </script>
     </head>
@@ -32,6 +26,7 @@
             const canvas = document.querySelector('canvas')
             const button = document.getElementById('start');
             const button2 = document.getElementById('stop');
+
             const constraints = {
                 video: true
               };
@@ -49,7 +44,7 @@
               console.error("Error: ", error);
             }
 
-            let cameraPublisher = new SENSORLIB.CameraPublisher(imageTopic, video, canvas);
+            let cameraPublisher = new SENSORLIB.CameraPublisher(ros, "/camera/compressed", video, canvas);
             let bool = true;
             button.addEventListener('click', () => {
                 cameraPublisher.start()

@@ -59,7 +59,7 @@ describe('Test FlashlightSubscriber', function() {
 
       assert.doesNotThrow(
           () => {
-            subscriber = new FlashlightSubscriber(new ROSLIB.Topic());
+            subscriber = new FlashlightSubscriber(new ROSLIB.Ros(), 'topic');
           },
           (error) => {
             return false;
@@ -73,7 +73,7 @@ describe('Test FlashlightSubscriber', function() {
       };
 
       assert.throws(() => {
-        new FlashlightSubscriber(new ROSLIB.Topic());
+        new FlashlightSubscriber(new ROSLIB.Ros(), 'topic');
       }, expectUnsuportedBrowser);
     });
 

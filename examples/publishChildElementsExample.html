@@ -13,24 +13,26 @@
             ros.on('close', function() { document.getElementById("connection_info").innerHTML = 'Connection to websocket server closed.'; });
 
             ros.connect('ws://localhost:9090');
-
-            var subscriber = new SENSORLIB.FlashlightSubscriber(ros, '/flashlight');
-            subscriber.start();
         </script>
     </head>
     <body>
-        <script>
-            const msgTrue = new ROSLIB.Message({
-                                    data: true,
-                                });
-
-            const msgFalse = new ROSLIB.Message({
-                                    data: false,
-                                });
-            
-        </script>
         <h1 id='connection_info'></h1>
-        <button onclick="topic.publish(msgTrue)">On</button>
-        <button onclick="topic.publish(msgFalse)">Off</button>
+        <!--All elements in this div will be published-->
+        <div id="to-publish">
+          <!--Button Input-->
+          <button id="button">button</button>
+          <!--Slider Input-->
+          <input id="slider" type="range" min=0 max=200 value=50>
+          <!--Text Input-->
+          <input id="textInput" type="text">
+          <!--Text Output-->
+          <h3 id="textOutput"><h3>
+          <!--Image Output-->
+          <canvas id='outputCanvas' width="500", height="500">
+        </div>
+        <script>
+        // publish all publishable elements in the div with id "to-publish"
+        var map = SENSORLIB.publishChildElements(document.getElementById("to-publish"), ros);
+        </script>
     </body>
 </html>
