@@ -40,6 +40,7 @@ class CameraPublisher extends IntervalPublisher {
 
     // Converts the data to publishable data to ROS
     const data = this.canvas.toDataURL('image/jpeg');
+    // Note: This message should publish to '/{name}/compressed', since the message contains compressed data
     const imageMessage = new ROSLIB.Message({
       format: 'jpeg',
       data: data.replace('data:image/jpeg;base64,', ''),

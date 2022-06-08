@@ -5,6 +5,7 @@
 */
 
 // Dependencies
+const PermissionDeniedError = require('../error/PermissionDeniedError.js');
 const IntervalPublisher = require('./IntervalPublisher.js');
 
 /**
@@ -37,10 +38,57 @@ class MagneticDeclinationPublisher extends IntervalPublisher {
   start() {
     super.start();
 
-    // No support for IOS yet
+    /*
+    * Support for iOS
+    * For DeviceOrientationEvent and DeviceMotionEvent to work on Safari on iOS 13 and up,
+    * the user has to give permission through a user activation event.
+    * Note: This will only work through either localhost or a secure connection (https).
+    */
+    if (!window.MSStream && /iPad|iPhone|iPod|Macintosh/.test(window.navigator.userAgent)) {
+      // request permission for sensor use
+      this.requestPermission();
+    }
+    // If user is not on iOS, sensor data can be read as normal.
     window.addEventListener('deviceorientationabsolute', (event) => {
-      this.onReadOrientation(event);
+      if (event.isTrusted) {
+        this.onReadOrientation(event);
+      }
     }, true);
+  }
+
+  /**
+   * Adds a button to the document to ask for permission to use IMU sensor on iOS.
+   */
+  requestPermission() {
+    const permbutton = window.document.createElement('button');
+    permbutton.innerHTML = 'Request Motion Sensor Permission';
+    permbutton.addEventListener('click', () => {
+      if (typeof(window.DeviceOrientationEvent.requestPermission()) === 'function' ||
+      typeof(window.DeviceMotionEvent.requestPermission()) === 'function') {
+        throw new Error('requestPermission for device orientation or device motion on iOS is not a function!');
+      }
+
+      // If permission is granted, Enable callback for deviceOrientationEvent and remove permissions button
+      window.DeviceOrientationEvent.requestPermission().then((response) => {
+        if (response==='granted') {
+          permbutton.remove();
+          return true;
+        } else {
+          throw new PermissionDeniedError('No permission granted for Device Orientation');
+        }
+      });
+    });
+
+    window.document.body.appendChild(permbutton);
+  }
+
+  /**
+   * Callback for when error occurs while reading sensor data.
+   * @param {Error} event containing error info.
+   */
+  onError(event) {
+    console.log('Error: ' + event);
+    throw Error('ERROR!');
   }
 
   /**

@@ -6,6 +6,7 @@
 
 // Dependencies
 const IntervalPublisher = require('./IntervalPublisher.js');
+const PermissionDeniedError = require('../error/PermissionDeniedError.js');
 const NotSupportedError = require('../error/NotSupportedError');
 
 /**
@@ -26,7 +27,7 @@ class GPSDeclinationPublisher extends IntervalPublisher {
    * @param {ROSLIB.Topic} topicName a Topic from RosLibJS
    * @param {Number} latitude float that gives the latitude of point where to aim for
    * @param {Number} longitude float that gives the longitude of point where to aim for
-     * @param {Number} hz a standard frequency for this type of object.
+   * @param {Number} hz a standard frequency for this type of object.
    */
   constructor(ros, topicName, latitude = 90, longitude = 0, hz = 10) {
     super(ros, topicName, hz);
@@ -53,6 +54,16 @@ class GPSDeclinationPublisher extends IntervalPublisher {
     // Id of geolocation watch callback
     this.watchId = -1;
 
+    /*
+    * Support for iOS
+    * For DeviceOrientationEvent and DeviceMotionEvent to work on Safari on iOS 13 and up,
+    * the user has to give permission through a user activation event.
+    * Note: This will only work through either localhost or a secure connection (https).
+    */
+    if (!window.MSStream && /iPad|iPhone|iPod|Macintosh/.test(window.navigator.userAgent)) {
+      this.requestPermission();
+    }
+
     // check support for API
     if (!window.navigator.geolocation) {
       throw new NotSupportedError('Unable to create GPSPublisher, ' +
@@ -66,9 +77,10 @@ class GPSDeclinationPublisher extends IntervalPublisher {
   start() {
     super.start();
 
-    // No support for IOS yet
     window.addEventListener('deviceorientationabsolute', (event) => {
-      this.onReadOrientation(event);
+      if (event.isTrusted) {
+        this.onReadOrientation(event);
+      }
     }, true);
 
     this.watchId = window.navigator.geolocation.watchPosition(
@@ -84,6 +96,40 @@ class GPSDeclinationPublisher extends IntervalPublisher {
   stop() {
     super.stop();
     window.navigator.geolocation.clearWatch(this.watchId);
+  }
+
+  /**
+   * Adds a button to the document to ask for permission to use IMU sensor on iOS.
+   */
+  requestPermission() {
+    const permbutton = window.document.createElement('button');
+    permbutton.innerHTML = 'Request Motion Sensor Permission';
+    permbutton.addEventListener('click', () => {
+      if (typeof(window.DeviceOrientationEvent.requestPermission()) === 'function' ||
+      typeof(window.DeviceMotionEvent.requestPermission()) === 'function') {
+        throw new Error('requestPermission for device orientation or device motion on iOS is not a function!');
+      }
+
+      // If permission is granted, Enable callback for deviceOrientationEvent and remove permissions button
+      window.DeviceOrientationEvent.requestPermission().then((response) => {
+        if (response==='granted') {
+          permbutton.remove();
+          return true;
+        } else {
+          throw new PermissionDeniedError('No permission granted for Device Orientation');
+        }
+      });
+    });
+
+    window.document.body.appendChild(permbutton);
+  }
+  /**
+   * Callback for when error occurs while reading sensor data.
+   * @param {Error} event containing error info.
+   */
+  onError(event) {
+    console.log('Error: ' + event);
+    throw Error('ERROR!');
   }
 
   /**
