@@ -14,9 +14,10 @@ class CameraPublisher extends IntervalPublisher {
      * @param {ROSLIB.Topic} topicName a Topic from RosLibJS
      * @param {HTMLVideoElement} camera the video element of which to publish the data from.
      * @param {HTMLCanvasElement} canvas a canvas element for making publishing video data possible
+     * @param {Number} hz a standard frequency for this type of object.
      */
-  constructor(ros, topicName, camera, canvas) {
-    super(ros, topicName);
+  constructor(ros, topicName, camera, canvas, hz = 10) {
+    super(ros, topicName, hz);
 
     if (!(camera instanceof window.HTMLVideoElement)) {
       throw new TypeError('camera argument was not of type HTMLVideoElement');
@@ -39,12 +40,14 @@ class CameraPublisher extends IntervalPublisher {
 
     // Converts the data to publishable data to ROS
     const data = this.canvas.toDataURL('image/jpeg');
+    // Note: This message should publish to '/{name}/compressed', since the message contains compressed data
     const imageMessage = new ROSLIB.Message({
       format: 'jpeg',
       data: data.replace('data:image/jpeg;base64,', ''),
     });
 
-    this.topic.publish(imageMessage);
+    this.msg = imageMessage;
+    super.createSnapshot();
   }
 
   /**

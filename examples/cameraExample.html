@@ -26,6 +26,7 @@
             const canvas = document.querySelector('canvas')
             const button = document.getElementById('start');
             const button2 = document.getElementById('stop');
+
             const constraints = {
                 video: true
               };
@@ -43,7 +44,7 @@
               console.error("Error: ", error);
             }
 
-            let cameraPublisher = new SENSORLIB.CameraPublisher(ros, "/camera", video, canvas);
+            let cameraPublisher = new SENSORLIB.CameraPublisher(ros, "/camera/compressed", video, canvas);
             let bool = true;
             button.addEventListener('click', () => {
                 cameraPublisher.start()

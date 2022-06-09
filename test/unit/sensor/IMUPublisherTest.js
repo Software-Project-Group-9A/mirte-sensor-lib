@@ -67,6 +67,45 @@ describe('Test IMU Publisher', function() {
       assert(global.window.addEventListener.calledWith('deviceorientation'));
       assert.equal(global.window.alert.callCount, 1);
     });
+    it('should not start reading orientation user is on iOS', function() {
+      // This is to 'fake' a device running on iOS
+      const original = global.window.navigator.userAgent;
+      global.window.navigator.__defineGetter__('userAgent', () => {
+        return 'Mozilla/5.0 (iPhone; CPU OS 13_1_1 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) Mobile/9B206';
+      });
+      assert.equal(global.window.navigator.userAgent,
+          'Mozilla/5.0 (iPhone; CPU OS 13_1_1 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) Mobile/9B206');
+      const imu = sinon.spy( createStandardIMU());
+      imu.requestPermission = sinon.stub();
+
+      assert.equal(imu.requestPermission.callCount, 0);
+
+      global.window.navigator.__defineGetter__('userAgent', () => {
+        return original;
+      });
+    });
+  });
+
+  // requestPermission tests
+  describe('#requestPermission', function() {
+    it('should create a new button for iOS', function() {
+      const sandbox = sinon.createSandbox();
+      const originalAgent = global.window.navigator.userAgent;
+
+      sandbox.spy(global.window);
+      global.window.navigator.__defineGetter__('userAgent', () => {
+        return 'Mozilla/5.0 (iPhone; CPU OS 13_1_1 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) Mobile/9B206';
+      });
+      const publisher = sinon.spy(createStandardIMU());
+
+      assert.equal(publisher.requestPermission.callCount, 0);
+      assert(global.window.document.querySelector('button') !== null);
+
+      sandbox.restore();
+      global.window.navigator.__defineGetter__('userAgent', () => {
+        return originalAgent;
+      });
+    });
   });
 
   // createSnapshot tests

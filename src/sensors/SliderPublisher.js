@@ -14,9 +14,10 @@ class SliderPublisher extends IntervalPublisher {
    * @param {ROSLIB.Ros} ros a ROS instance to publish to
    * @param {ROSLIB.Topic} topicName topic to which to publish slider data
    * @param {HTMLInputElement} slider slider of which to publish data, must have type 'range'
+   * @param {Number} hz a standard frequency for this type of object.
    */
-  constructor(ros, topicName, slider) {
-    super(ros, topicName);
+  constructor(ros, topicName, slider, hz = 8) {
+    super(ros, topicName, hz);
 
     if (!(slider instanceof window.HTMLInputElement)) {
       throw new TypeError('slider argument was not of type HTMLInputElement');
@@ -32,9 +33,6 @@ class SliderPublisher extends IntervalPublisher {
      * slider of which to publish data
      */
     this.slider = slider;
-
-    // Value to prevent double messages
-    this.oldValue = null;
   }
 
   /**
@@ -55,14 +53,9 @@ class SliderPublisher extends IntervalPublisher {
   createSnapshot() {
     const sliderValue = parseInt(this.slider.value);
 
-    if (sliderValue === this.oldValue) {
-      return;
-    }
-
-    this.oldValue = sliderValue;
-
     const msg = this.createInt32Msg(sliderValue);
-    this.topic.publish(msg);
+    this.msg = msg;
+    super.createSnapshot();
   }
 }
 
