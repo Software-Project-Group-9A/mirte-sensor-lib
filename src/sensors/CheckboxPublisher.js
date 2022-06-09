@@ -5,15 +5,15 @@ const SensorPublisher = require('./SensorPublisher.js');
  * This state is published every time the checkbox changes state,
  * from checked to unchecked, and vice versa.
  *
- * The data resulting from the button interactions is published as a
+ * The data resulting from the checkbox interactions is published as a
  * ROS std_msgs/Bool message. The boolean contained within this message
  * is set to true when the checkbox is checked, and false otherwise.
  */
 class CheckboxPublisher extends SensorPublisher {
   /**
-   * Creates a new ButtonPublisher.
+   * Creates a new checkboxPublisher.
    * @param {ROSLIB.Ros} ros a ROS instance to publish to
-   * @param {ROSLIB.Topic} topicName topic to which to publish button data
+   * @param {ROSLIB.Topic} topicName topic to which to publish checkbox data
    * @param {HTMLElement} checkbox checkbox of which to publish data
    */
   constructor(ros, topicName, checkbox) {
@@ -26,7 +26,7 @@ class CheckboxPublisher extends SensorPublisher {
     this.topic.messageType = 'std_msgs/Bool';
 
     /**
-     * button of which to publish data
+     * checkbox of which to publish data
      */
     this.checkbox = checkbox;
 

@@ -29,7 +29,7 @@ describe('Test CheckboxPublisher', function() {
     });
     it('should reject any checkbox argument that is not an HTML checkbox', function() {
       assert.throws(() => {
-        new CheckboxPublisher(new ROSLIB.Ros(), 'topic', 'not a button');
+        new CheckboxPublisher(new ROSLIB.Ros(), 'topic', 'not a checkbox');
       }, expectInvalidCheckbox);
     });
 
