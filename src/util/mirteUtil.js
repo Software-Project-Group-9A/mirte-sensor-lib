@@ -27,6 +27,7 @@ const sensorDeserializers = {
  * in the mirte parameters.
  * @param {Object} config object containing sensor configuration
  * @param {ROSLIB.Ros} ros ros instance to publish to
+ * @param {HTMLElement} targetElement HTML element in which to generate necessary sensor UI elements
  * @return {Map} map containing all sensors with their respective publisher
  */
 function readSensorsFromConfig(config, ros, targetElement) {

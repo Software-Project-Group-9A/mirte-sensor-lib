@@ -59,11 +59,14 @@ class SliderPublisher extends IntervalPublisher {
   }
 
   /**
-   * 
-   * @param {ROSLIB.Ros} ros 
-   * @param {Object} config 
-   * @param {HTMLElement} targetElement 
-   * @returns 
+   * Deserializes a Slider stored in a config object, and returns the resulting publisher instance.
+   * The returned instance is already started.
+   * @param {ROSLIB.Ros} ros ros instance to which to resulting publisher will publish
+   * @param {Object} config object with the following keys:
+   * @param {string} config.name name of the publisher to create
+   * @param {number} config.frequency name of the publisher to create
+   * @param {HTMLElement} targetElement HTML element in which to generate necessary sensor UI elements
+   * @return {GPSDeclinationPublisher} GPSDeclinationPublisher described in the provided config parameter
    */
   static readFromConfig(ros, config, targetElement) {
     const slider = window.document.createElement('input');

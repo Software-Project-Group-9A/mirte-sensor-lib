@@ -98,6 +98,30 @@ class ButtonPublisher extends SensorPublisher {
     this.button.removeEventListener('touchend', this.onMouseUp);
     this.button.removeEventListener('touchcancel', this.onMouseUp);
   }
+
+  /**
+   * Deserializes a Slider stored in a config object, and returns the resulting publisher instance.
+   * The returned instance is already started.
+   * @param {ROSLIB.Ros} ros ros instance to which to resulting publisher will publish
+   * @param {Object} config object with the following keys:
+   * @param {string} config.name name of the publisher to create
+   * @param {number} config.frequency name of the publisher to create
+   * @param {HTMLElement} targetElement HTML element in which to generate necessary sensor UI elements
+   * @return {GPSDeclinationPublisher} GPSDeclinationPublisher described in the provided config parameter
+   */
+  static readFromConfig(ros, config, targetElement) {
+    const button = window.document.createElement('button');
+
+    // TODO: positioning
+    // button.style = `position: absolute; left: ${config.x}%; top: ${config.y}%;`;
+
+    targetElement.appendChild(button);
+
+    const publisher = new ButtonPublisher(ros, '/mirte/phone_button/' + config.name, button, config.frequency);
+    publisher.start();
+
+    return publisher;
+  }
 }
 
 module.exports = ButtonPublisher;

@@ -248,4 +248,31 @@ describe('Test ButtonPublisher', function() {
       assert.equal(publisher.onMouseUp.callCount, 0);
     });
   });
+
+  describe('readFromConfig(ros, config, targetElement)', function() {
+    it('should append a button to the target element', function() {
+      const ros = new ROSLIB.Ros();
+      const targetDiv = document.createElement('div');
+      const config = {
+        name: 'buttonA',
+      };
+
+      ButtonPublisher.readFromConfig(ros, config, targetDiv);
+
+      assert.equal(targetDiv.childElementCount, 1);
+    });
+    it('should return the correct publisher', function() {
+      const ros = new ROSLIB.Ros();
+      const targetDiv = document.createElement('div');
+      const config = {
+        name: 'buttonA',
+      };
+
+      const publisher = ButtonPublisher.readFromConfig(ros, config, targetDiv);
+
+      assert(publisher instanceof ButtonPublisher);
+      assert(publisher.started);
+      assert.equal(publisher.topic.name, '/mirte/phone_button/buttonA');
+    });
+  });
 });
