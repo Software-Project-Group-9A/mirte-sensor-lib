@@ -20,6 +20,7 @@
     <h1 id='connection_info'></h1>
     <button id="button">Press Here!</button>
     <script>
+        // config object with sensor configuration
         const config = {
             phone_imu: {
                 imu: {
@@ -28,19 +29,19 @@
                 },
             },
             phone_magnetic_declination: {
-                imu: {
-                    name: 'magneticCompass',
+                magnetic_declination: {
+                    name: 'magnetic_declination',
                     frequency: 1.0,
                 },
             },
             phone_gps_declination: {
-                imu: {
-                    name: 'gpsCompass',
+                gps_declination: {
+                    name: 'gps_declination',
                     frequency: 1.0,
                 },
             },
             phone_camera: {
-                imu: {
+                camera: {
                     name: 'camera',
                     cameraId: 'camera',
                     canvasId: 'canvas',
@@ -48,7 +49,7 @@
                 },
             },
             phone_gps: {
-                imu: {
+                gps: {
                     name: 'gps',
                     frequency: 1.0,
                 },
@@ -60,11 +61,10 @@
         };
         
         function gotStream(stream) {
-            window.stream = stream; // make stream available to console
+            // setup video canvas
             document.getElementById('camera').srcObject = stream;
+            // instantiate sensors described in config
             var sensorMap = SENSORLIB.readSensorsFromConfig(config, ros);
-        
-            console.dir(sensorMap);
         }
         function handleError(error) {
             console.error("Error: ", error);

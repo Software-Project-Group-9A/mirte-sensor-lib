@@ -94,8 +94,8 @@ class MagneticDeclinationPublisher extends IntervalPublisher {
    * The returned instance is already started.
    * @param {ROSLIB.Ros} ros ros instance to which to resulting publisher will publish
    * @param {Object} config object with the following keys:
-   *  * name - name of the publisher to create
-   *  * frequency - frequency at which to publish sensor data
+   * @param {string} config.name - name of the publisher to create
+   * @param {number} config.frequency - name of the publisher to create
    * @return {MagneticDeclinationPublisher} MagneticDeclinationPublisher described in the provided properties parameter
    */
   static readFromConfig(ros, config) {
