@@ -260,6 +260,8 @@ describe('Test ButtonPublisher', function() {
       ButtonPublisher.readFromConfig(ros, config, targetDiv);
 
       assert.equal(targetDiv.childElementCount, 1);
+      const child = targetDiv.childNodes.item(0);
+      assert(child instanceof window.HTMLButtonElement);
     });
     it('should return the correct publisher', function() {
       const ros = new ROSLIB.Ros();
