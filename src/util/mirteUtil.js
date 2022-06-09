@@ -3,7 +3,9 @@ const IMUPublisher = require('../sensors/IMUPublisher');
 const MagneticDeclinationPublisher = require('../sensors/MagneticDeclinationPublisher');
 const GPSDeclinationPublisher = require('../sensors/GPSDeclinationPublisher');
 const CameraPublisher = require('../sensors/CameraPublisher');
+// HTML sensor publishers
 const SliderPublisher = require('../sensors/SliderPublisher');
+const ButtonPublisher = require('../sensors/ButtonPublisher');
 
 /**
  * Array containing deserializers for every type of sensor.
@@ -17,6 +19,7 @@ const sensorDeserializers = {
   'phone_gps_declination': GPSDeclinationPublisher.readFromConfig,
   'phone_camera': CameraPublisher.readFromConfig,
   'phone_slider': SliderPublisher.readFromConfig,
+  'phone_button': SliderPublisher.readFromConfig,
 };
 
 /**

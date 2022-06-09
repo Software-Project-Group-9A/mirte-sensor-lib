@@ -71,7 +71,8 @@ class SliderPublisher extends IntervalPublisher {
     slider.min = 0;
     slider.max = 100;
 
-    slider.style = `position: absolute; left: ${config.x}%; top: ${config.y}%;`;
+    // TODO: positioning
+    // slider.style = `position: absolute; left: ${config.x}%; top: ${config.y}%;`;
 
     targetElement.appendChild(slider);
 
