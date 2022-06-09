@@ -118,6 +118,25 @@ class MagneticDeclinationPublisher extends IntervalPublisher {
     this.msg = MagneticDeclinationMessage;
     super.createSnapshot();
   }
+
+  /**
+   * Deserializes a MagneticDeclinationPublisher stored in a config object,
+   * and returns the resulting publisher instance.
+   * The returned instance is already started.
+   * @param {ROSLIB.Ros} ros ros instance to which to resulting publisher will publish
+   * @param {Object} config object with the following keys:
+   * @param {string} config.name - name of the publisher to create
+   * @param {number} config.frequency - name of the publisher to create
+   * @return {MagneticDeclinationPublisher} MagneticDeclinationPublisher described in the provided properties parameter
+   */
+  static readFromConfig(ros, config) {
+    const topicName = 'mirte/phone_magnetic_declination/' + config.name;
+    const publisher = new MagneticDeclinationPublisher(ros, topicName);
+    publisher.start();
+    publisher.setPublishFrequency(config.frequency);
+
+    return publisher;
+  }
 }
 
 module.exports = MagneticDeclinationPublisher;

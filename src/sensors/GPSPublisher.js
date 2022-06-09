@@ -114,6 +114,24 @@ class GPSPublisher extends IntervalPublisher {
     this.msg = message;
     super.createSnapshot();
   }
+
+  /**
+   * Deserializes a GPSPublisher stored in a config object, and returns the resulting publisher instance.
+   * The returned instance is already started.
+   * @param {ROSLIB.Ros} ros ros instance to which to resulting publisher will publish
+   * @param {Object} config object with the following keys:
+   * @param {string} config.name - name of the publisher to create
+   * @param {number} config.frequency - name of the publisher to create
+   * @return {GPSPublisher} GPSPublisher described in the provided properties parameter
+   */
+  static readFromConfig(ros, config) {
+    const topicName = 'mirte/phone_gps/' + config.name;
+    const publisher = new GPSPublisher(ros, topicName);
+    publisher.start();
+    publisher.setPublishFrequency(config.frequency);
+
+    return publisher;
+  }
 }
 
 module.exports = GPSPublisher;

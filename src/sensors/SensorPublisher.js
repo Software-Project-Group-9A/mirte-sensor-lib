@@ -59,6 +59,17 @@ class SensorPublisher {
     }
     this.started = false;
   }
+
+  /**
+   * Should deserialize a SensorPublisher stored in a config object,
+   * and returns the resulting publisher instance.
+   * The returned instance should already started.
+   * @param {ROSLIB.Ros} ros ros instance to which to resulting publisher will publish
+   * @param {Object} config config object describing sensor to deserialize.
+   */
+  static readFromConfig(ros, config) {
+    throw Error('readFromConfig method not defined!');
+  }
 }
 
 module.exports = SensorPublisher;

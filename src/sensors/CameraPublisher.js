@@ -62,6 +62,29 @@ class CameraPublisher extends IntervalPublisher {
     }
     super.start();
   }
+
+  /**
+   * Deserializes a CameraPublisher stored in a config object, and returns the resulting publisher instance.
+   * The returned instance is already started.
+   * @param {ROSLIB.Ros} ros ros instance to which to resulting publisher will publish
+   * @param {Object} config object with the following keys:
+   * @param {string} config.name - name of the publisher to create
+   * @param {number} config.frequency - name of the publisher to create
+   * @param {string} config.cameraId - id of HTMLVideoElement with camera data
+   * @param {string} config.canvasId - id of HTMLCanvasElement to use creating images from video
+   * @return {CameraPublisher} CameraPublisher described in the provided config parameter
+   */
+  static readFromConfig(ros, config) {
+    const camera = document.getElementById(config.cameraId);
+    const canvas = document.getElementById(config.canvasId);
+
+    const topicName = 'mirte/phone_camera/' + config.name;
+    const publisher = new CameraPublisher(ros, topicName, camera, canvas);
+    publisher.start();
+    publisher.setPublishFrequency(config.frequency);
+
+    return publisher;
+  }
 }
 
 

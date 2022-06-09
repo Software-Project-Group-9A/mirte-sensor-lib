@@ -1,0 +1,78 @@
+<head>
+    <script src="http://static.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
+    <script src="http://static.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
+    <script src="../build/RosSensorLib.min.js"></script>
+    <script>
+        var ros = new ROSLIB.Ros();
+
+        ros.on('connection', function() {document.getElementById("connection_info").innerHTML = "Connected to webserver."});
+
+        ros.on('error', function(error) { document.getElementById("connection_info").innerHTML = "Failed to connect to webserver."; });
+
+        ros.on('close', function() { document.getElementById("connection_info").innerHTML = 'Connection to websocket server closed.'; });
+
+        ros.connect('ws://localhost:9090');
+    </script>
+</head>
+<body>
+    <video id="camera" crossorigin="anonymous" autoplay></video>
+    <canvas id="canvas" width="640" height="480"></canvas>
+    <h1 id='connection_info'></h1>
+    <button id="button">Press Here!</button>
+    <script>
+        // config object with sensor configuration
+        const config = {
+            phone_imu: {
+                imu: {
+                    name: 'imu',
+                    frequency: 1.0,
+                },
+            },
+            phone_magnetic_declination: {
+                magnetic_declination: {
+                    name: 'magnetic_declination',
+                    frequency: 1.0,
+                },
+            },
+            phone_gps_declination: {
+                gps_declination: {
+                    name: 'gps_declination',
+                    frequency: 1.0,
+                },
+            },
+            phone_camera: {
+                camera: {
+                    name: 'camera',
+                    cameraId: 'camera',
+                    canvasId: 'canvas',
+                    frequency: 1.0,
+                },
+            },
+            phone_gps: {
+                gps: {
+                    name: 'gps',
+                    frequency: 1.0,
+                },
+            },
+        };
+
+        const constraints = {
+            video: true
+        };
+        
+        function gotStream(stream) {
+            // setup video canvas
+            document.getElementById('camera').srcObject = stream;
+            // instantiate sensors described in config
+            var sensorMap = SENSORLIB.readSensorsFromConfig(config, ros);
+        }
+        function handleError(error) {
+            console.error("Error: ", error);
+        }
+
+        navigator.mediaDevices
+            .getUserMedia(constraints)
+            .then(gotStream)
+            .catch(handleError);
+    </script>
+</body>
