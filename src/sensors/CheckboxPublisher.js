@@ -20,7 +20,7 @@ class CheckboxPublisher extends SensorPublisher {
     super(ros, topicName);
 
     if (!(checkbox instanceof window.HTMLElement && checkbox.type && checkbox.type === 'checkbox')) {
-      throw new TypeError('button argument was not of type HTMLButtonElement');
+      throw new TypeError('checkbox argument was not a HTML checkbox');
     }
 
     this.topic.messageType = 'std_msgs/Bool';
@@ -29,18 +29,18 @@ class CheckboxPublisher extends SensorPublisher {
      * button of which to publish data
      */
     this.checkbox = checkbox;
-  }
 
-  /**
+    /**
      * Callback for when checkbox state changes.
      * @param {Event} event event from callback
      */
-  change(event) {
-    if (event.target.checked) {
-      this.publishBoolMsg(true);
-    } else {
-      this.publishBoolMsg(false);
-    }
+    this.change = function(event) {
+      if (event.target.checked) {
+        this.publishBoolMsg(true);
+      } else {
+        this.publishBoolMsg(false);
+      }
+    }.bind(this);
   }
 
 
@@ -49,7 +49,6 @@ class CheckboxPublisher extends SensorPublisher {
    * @param {boolean} bool boolean to include in message
    */
   publishBoolMsg(bool) {
-    console.log(bool);
     const msg = new ROSLIB.Message({
       data: bool,
     });
@@ -62,9 +61,7 @@ class CheckboxPublisher extends SensorPublisher {
   start() {
     super.start();
 
-    this.checkbox.addEventListener('change', (event) => {
-      this.change(event);
-    });
+    this.checkbox.addEventListener('change', this.change);
   }
 
   /**
@@ -72,9 +69,8 @@ class CheckboxPublisher extends SensorPublisher {
    */
   stop() {
     super.stop();
-    this.checkbox.removeEventListener('change', (event) => {
-      this.change(event);
-    });
+
+    this.checkbox.removeEventListener('change', this.change);
   }
 }
 
