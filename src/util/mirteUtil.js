@@ -3,6 +3,7 @@ const IMUPublisher = require('../sensors/IMUPublisher');
 const MagneticDeclinationPublisher = require('../sensors/MagneticDeclinationPublisher');
 const GPSDeclinationPublisher = require('../sensors/GPSDeclinationPublisher');
 const CameraPublisher = require('../sensors/CameraPublisher');
+const SliderPublisher = require('../sensors/SliderPublisher');
 
 /**
  * Array containing deserializers for every type of sensor.
@@ -15,6 +16,7 @@ const sensorDeserializers = {
   'phone_gps': GPSPublisher.readFromConfig,
   'phone_gps_declination': GPSDeclinationPublisher.readFromConfig,
   'phone_camera': CameraPublisher.readFromConfig,
+  'phone_slider': SliderPublisher.readFromConfig,
 };
 
 /**
@@ -24,7 +26,7 @@ const sensorDeserializers = {
  * @param {ROSLIB.Ros} ros ros instance to publish to
  * @return {Map} map containing all sensors with their respective publisher
  */
-function readSensorsFromConfig(config, ros) {
+function readSensorsFromConfig(config, ros, targetElement) {
   const sensorMap = new Map();
 
   // loop through all publishable sensor types, e.g. imu or magnetic_declination
@@ -40,7 +42,7 @@ function readSensorsFromConfig(config, ros) {
     // loop through all instances, and publish them
     for (const instanceProperties of Object.values(sensorInstances)) {
       const sensorInitializer = sensorDeserializers[sensorType];
-      const sensorPublisher = sensorInitializer(ros, instanceProperties);
+      const sensorPublisher = sensorInitializer(ros, instanceProperties, targetElement);
       sensorMap.set(sensorPublisher.topic.name, sensorPublisher);
     }
   }

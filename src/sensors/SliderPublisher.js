@@ -57,6 +57,29 @@ class SliderPublisher extends IntervalPublisher {
     this.msg = msg;
     super.createSnapshot();
   }
+
+  /**
+   * 
+   * @param {ROSLIB.Ros} ros 
+   * @param {Object} config 
+   * @param {HTMLElement} targetElement 
+   * @returns 
+   */
+  static readFromConfig(ros, config, targetElement) {
+    const slider = window.document.createElement('input');
+    slider.type = 'range';
+    slider.min = 0;
+    slider.max = 100;
+
+    slider.style = `position: absolute; left: ${config.x}%; top: ${config.y}%;`;
+
+    targetElement.appendChild(slider);
+
+    const publisher = new SliderPublisher(ros, '/mirte/phone_slider/' + config.name, slider, config.frequency);
+    publisher.start();
+
+    return publisher;
+  }
 }
 
 module.exports = SliderPublisher;

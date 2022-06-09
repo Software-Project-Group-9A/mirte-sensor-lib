@@ -1,0 +1,40 @@
+<head>
+    <script src="http://static.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
+    <script src="http://static.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
+    <script src="../build/RosSensorLib.js"></script>
+    <script>
+        var ros = new ROSLIB.Ros();
+
+        ros.on('connection', function() {document.getElementById("connection_info").innerHTML = "Connected to webserver."});
+
+        ros.on('error', function(error) { document.getElementById("connection_info").innerHTML = "Failed to connect to webserver."; });
+
+        ros.on('close', function() { document.getElementById("connection_info").innerHTML = 'Connection to websocket server closed.'; });
+
+        ros.connect('ws://localhost:9090');
+    </script>
+</head>
+<body>
+    <h1 id='connection_info'></h1>
+    <div id="target" style="border-style: solid; width: 50%; height: 50%; position: relative;"></div>
+    <script>
+        // config object with sensor configuration
+        const config = {
+            phone_slider: {
+                slider1: {
+                    name: 'slider1',
+                    x: 0,
+                    y: 0,
+                },
+                slider2: {
+                    name: 'slider2',
+                    x: 100,
+                    y: 100,
+                },
+            },
+        };
+
+        const targetElement = document.getElementById('target');
+        var sensorMap = SENSORLIB.readSensorsFromConfig(config, ros, targetElement);
+    </script>
+</body>
