@@ -37,6 +37,9 @@ class IntervalPublisher extends SensorPublisher {
      * publishes this to the topic instantly.
      */
   createSnapshot() {
+    if (!this.msg) {
+      throw Error('createSnapshot has not been implemented correctly');
+    }
     if (isEqual(this.msg, this.alReadyPublishedMsg)) {
       return;
     }
