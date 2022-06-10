@@ -58,7 +58,7 @@ class AmbientLightPublisher extends IntervalPublisher {
 
     this.sensor.stop();
 
-    this.sensor.removeEventListener('reading', (event) => {});
+    this.sensor.removeEventListener('reading');
   }
 
   /**
@@ -69,7 +69,7 @@ class AmbientLightPublisher extends IntervalPublisher {
     const AmbientLightMessage = new ROSLIB.Message({
       data: this.light,
     });
-
+    console.log(this.msg);
     this.msg = AmbientLightMessage;
     super.createSnapshot();
   }
