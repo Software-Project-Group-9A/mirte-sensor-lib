@@ -110,7 +110,9 @@ class ButtonPublisher extends SensorPublisher {
    * @return {GPSDeclinationPublisher} GPSDeclinationPublisher described in the provided config parameter
    */
   static readFromConfig(ros, config, targetElement) {
+    // initialize button
     const button = window.document.createElement('button');
+    button.innerHTML = config.name;
 
     // TODO: positioning
     // button.style = `position: absolute; left: ${config.x}%; top: ${config.y}%;`;

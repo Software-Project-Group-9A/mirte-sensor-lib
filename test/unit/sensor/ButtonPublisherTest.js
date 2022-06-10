@@ -262,6 +262,7 @@ describe('Test ButtonPublisher', function() {
       assert.equal(targetDiv.childElementCount, 1);
       const child = targetDiv.childNodes.item(0);
       assert(child instanceof window.HTMLButtonElement);
+      assert.equal(child.innerHTML, 'buttonA');
     });
     it('should return the correct publisher', function() {
       const ros = new ROSLIB.Ros();
