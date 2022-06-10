@@ -276,6 +276,60 @@ describe('Test IMU Publisher', function() {
     });
   });
 
+  // callback tests
+  describe('#onReadOrientation(event)', function() {
+    it('changes appropriate orientation attributes', function() {
+      // Arrange
+      const imu = createStandardIMU(); // All orientation attributes default to 0.
+
+      const event = {
+        'alpha': 13.234,
+        'beta': 34.342,
+        'gamma': 94.912,
+      };
+
+      // Act
+      imu.onReadOrientation(event);
+
+      // Assert
+      assert.equal(imu.alpha, 13.234);
+      assert.equal(imu.beta, 34.342);
+      assert.equal(imu.gamma, 94.912);
+    });
+  });
+
+  describe('#onReadMotion(event)', function() {
+    it('changes appropriate motion attributes', function() {
+      // Arrange
+      const imu = createStandardIMU(); // All orientation attributes default to 0.
+
+      const event = {
+        'rotationRate': {
+          'alpha': 13.234,
+          'beta': 34.342,
+          'gamma': 94.912,
+        },
+        'acceleration': {
+          'x': 12.3,
+          'y': 45.6,
+          'z': 78.9,
+        },
+      };
+
+      // Act
+      imu.onReadMotion(event);
+
+      // Assert
+      assert.equal(imu.valpha, 13.234);
+      assert.equal(imu.vbeta, 34.342);
+      assert.equal(imu.vgamma, 94.912);
+
+      assert.equal(imu.x, 12.3);
+      assert.equal(imu.y, 45.6);
+      assert.equal(imu.z, 78.9);
+    });
+  });
+
   // readFromConfig tests
   describe('#readFromConfig(ros, config)', function() {
     it('should return a started instance of IMUPublisher', function() {
