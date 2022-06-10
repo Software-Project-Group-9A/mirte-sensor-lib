@@ -62,8 +62,8 @@ class AmbientLightPublisher extends IntervalPublisher {
   }
 
   /**
-   * Puts the declination
-   * in a ROS message and publishes it
+   * Puts the light level detected by the ambient light sensor
+   * in a ROS message and publishes it. The light level is given in lux.
    */
   createSnapshot() {
     const AmbientLightMessage = new ROSLIB.Message({
