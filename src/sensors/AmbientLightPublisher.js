@@ -16,7 +16,7 @@ const NotSupportedError = require('../error/NotSupportedError');
  * from parrent class IntervalPublisher
  *
  * The data resulting from the interactions is published as a
- * ROS std_msgs/float64 message.
+ * ROS std_msgs/Int32 message.
  */
 class AmbientLightPublisher extends IntervalPublisher {
   /**
