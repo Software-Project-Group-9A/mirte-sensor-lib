@@ -106,7 +106,7 @@ describe('SliderPublisher', function() {
       assert.deepEqual(topic.publish.getCall(1).args[0], expectedSecondMessage);
     });
   });
-  describe('readFromConfig(ros, config, targetElement)', function() {
+  describe('#readFromConfig(ros, config, targetElement)', function() {
     it('should append a slider to the target element', function() {
       const ros = new ROSLIB.Ros();
       const targetDiv = document.createElement('div');

@@ -249,7 +249,7 @@ describe('Test ButtonPublisher', function() {
     });
   });
 
-  describe('readFromConfig(ros, config, targetElement)', function() {
+  describe('#readFromConfig(ros, config, targetElement)', function() {
     it('should append a button to the target element', function() {
       const ros = new ROSLIB.Ros();
       const targetDiv = document.createElement('div');

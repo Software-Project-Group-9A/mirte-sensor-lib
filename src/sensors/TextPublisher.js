@@ -105,6 +105,30 @@ class TextPublisher extends SensorPublisher {
       this.inputElement.removeEventListener('input', this.onInput);
     }
   }
+
+  /**
+   * Deserializes a text input publisher stored in a config object, and returns the resulting publisher instance.
+   * The returned instance is already started.
+   * @param {ROSLIB.Ros} ros ros instance to which to resulting publisher will publish
+   * @param {Object} config object with the following keys:
+   * @param {string} config.name name of the publisher to create
+   * @param {HTMLElement} targetElement HTML element in which to generate necessary sensor UI elements
+   * @return {GPSDeclinationPublisher} GPSDeclinationPublisher described in the provided config parameter
+   */
+  static readFromConfig(ros, config, targetElement) {
+    const textInput = window.document.createElement('input');
+    textInput.type = 'text';
+
+    // TODO: positioning
+    // textInput.style = `position: absolute; left: ${config.x}%; top: ${config.y}%;`;
+
+    targetElement.appendChild(textInput);
+
+    const publisher = new TextPublisher(ros, '/mirte/phone_text_input/' + config.name, textInput);
+    publisher.start();
+
+    return publisher;
+  }
 }
 
 module.exports = TextPublisher;

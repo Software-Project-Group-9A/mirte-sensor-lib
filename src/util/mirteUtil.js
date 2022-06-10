@@ -3,10 +3,10 @@ const IMUPublisher = require('../sensors/IMUPublisher');
 const MagneticDeclinationPublisher = require('../sensors/MagneticDeclinationPublisher');
 const GPSDeclinationPublisher = require('../sensors/GPSDeclinationPublisher');
 const CameraPublisher = require('../sensors/CameraPublisher');
-// HTML sensor publishers
+// HTML element publishers
 const SliderPublisher = require('../sensors/SliderPublisher');
 const ButtonPublisher = require('../sensors/ButtonPublisher');
-
+const TextPublisher = require('../sensors/TextPublisher');
 /**
  * Array containing deserializers for every type of sensor.
  * An deserializers is a function that takes a ros instance and a properties object,
@@ -19,7 +19,8 @@ const sensorDeserializers = {
   'phone_gps_declination': GPSDeclinationPublisher.readFromConfig,
   'phone_camera': CameraPublisher.readFromConfig,
   'phone_slider': SliderPublisher.readFromConfig,
-  'phone_button': SliderPublisher.readFromConfig,
+  'phone_button': ButtonPublisher.readFromConfig,
+  'phone_text_input': TextPublisher.readFromConfig,
 };
 
 /**
