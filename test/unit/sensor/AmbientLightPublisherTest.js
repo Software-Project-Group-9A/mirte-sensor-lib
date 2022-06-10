@@ -79,7 +79,7 @@ describe('Test AmbientLightPublisher', function() {
       const ros = new ROSLIB.Ros();
       const publisher = new AmbientLightPublisher(ros, 'topic');
       publisher.sensor = spyOnLightSensor();
-      publisher.light = 10;  
+      publisher.light = 10;
       publisher.topic.publish = sinon.spy();
 
       // Act
