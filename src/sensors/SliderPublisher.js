@@ -71,6 +71,7 @@ class SliderPublisher extends IntervalPublisher {
    */
   static readFromConfig(ros, config, targetElement) {
     const slider = window.document.createElement('input');
+    slider.id = config.name;
     slider.type = 'range';
     slider.min = 0;
     slider.max = 100;

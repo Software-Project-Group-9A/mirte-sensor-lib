@@ -1,3 +1,4 @@
+const { positionElement } = require('../util/styleUtils.js');
 const SensorPublisher = require('./SensorPublisher.js');
 
 /**
@@ -119,10 +120,7 @@ class TextPublisher extends SensorPublisher {
     const textInput = window.document.createElement('input');
     textInput.type = 'text';
 
-    // TODO: positioning
-    // textInput.style = `position: absolute; left: ${config.x}%; top: ${config.y}%;`;
-
-    targetElement.appendChild(textInput);
+    positionElement(textInput, targetElement, config.x, config.y);
 
     const publisher = new TextPublisher(ros, '/mirte/phone_text_input/' + config.name, textInput);
     publisher.start();
