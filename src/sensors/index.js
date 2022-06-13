@@ -13,5 +13,5 @@ module.exports = {
   TextPublisher: require('./TextPublisher'),
   GPSPublisher: require('./GPSPublisher'),
   CompassPublisher: require('./CompassPublisher'),
-  PointToCoordinatePublisher: require('./PointToCoordinatePublisher'),
+  CoordinateCompassPublisher: require('./CoordinateCompassPublisher'),
 };
