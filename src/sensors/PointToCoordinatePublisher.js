@@ -66,7 +66,7 @@ class PointToCoordinatePublisher extends IntervalPublisher {
 
     // check support for API
     if (!window.navigator.geolocation) {
-      throw new NotSupportedError('Unable to create GPSPublisher, ' +
+      throw new NotSupportedError('Unable to create PointToCoordinatePublisher, ' +
         'Geolocation API not supported');
     }
   }

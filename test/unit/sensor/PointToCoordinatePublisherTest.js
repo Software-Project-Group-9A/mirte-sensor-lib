@@ -291,7 +291,7 @@ describe('Test PointToCoordinatePublisher', function() {
 
       const publisher = PointToCoordinatePublisher.readFromConfig(ros, config);
 
-      const topicName = 'mirte/phone_gps_declination/' + compassName;
+      const topicName = 'mirte/phone_point_to_coordinate/' + compassName;
       assert(publisher instanceof PointToCoordinatePublisher);
       assert(publisher.started);
       assert.equal(publisher.topic.name, topicName);
