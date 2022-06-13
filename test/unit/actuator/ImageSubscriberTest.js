@@ -24,7 +24,7 @@ const RED_SQUARE_RGB_DATA = 'iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAAC' +
               'MKELUEEQAM6pAggfw96NAAAAAElFTkSuQmCC';
 
 describe('ImageSubscriber', function() {
-  describe('#constructor(topic, canvas)', function() {
+  describe('#constructor(ros, topicName, canvas)', function() {
     it('should not accept an undefined canvas argument', function() {
       assert.throws(
           () => {
