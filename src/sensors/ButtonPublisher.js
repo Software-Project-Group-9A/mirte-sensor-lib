@@ -1,4 +1,5 @@
 const SensorPublisher = require('./SensorPublisher.js');
+const {positionElement} = require('../util/styleUtils');
 
 /**
  * ButtonPublisher publishes the state of an HTML button element.
@@ -114,10 +115,7 @@ class ButtonPublisher extends SensorPublisher {
     const button = window.document.createElement('button');
     button.innerHTML = config.name;
 
-    // TODO: positioning
-    // button.style = `position: absolute; left: ${config.x}%; top: ${config.y}%;`;
-
-    targetElement.appendChild(button);
+    positionElement(button, targetElement, config.x, config.y);
 
     const publisher = new ButtonPublisher(ros, '/mirte/phone_button/' + config.name, button, config.frequency);
     publisher.start();

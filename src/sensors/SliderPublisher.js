@@ -1,4 +1,5 @@
 const IntervalPublisher = require('./IntervalPublisher.js');
+const {positionElement} = require('../util/styleUtils');
 
 /**
  * SliderPublisher publishes the state of an HTML slider element.
@@ -74,10 +75,7 @@ class SliderPublisher extends IntervalPublisher {
     slider.min = 0;
     slider.max = 100;
 
-    // TODO: positioning
-    // slider.style = `position: absolute; left: ${config.x}%; top: ${config.y}%;`;
-
-    targetElement.appendChild(slider);
+    positionElement(slider, targetElement, config.x, config.y);
 
     const publisher = new SliderPublisher(ros, '/mirte/phone_slider/' + config.name, slider, config.frequency);
     publisher.start();
