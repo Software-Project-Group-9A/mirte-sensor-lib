@@ -4,6 +4,7 @@
  * Any module to be exported to the library should have an entry in the object below.
  */
 module.exports = {
+  AmbientLightPublisher: require('./AmbientLightPublisher'),
   ButtonPublisher: require('./ButtonPublisher'),
   CheckboxPublisher: require('./CheckboxPublisher'),
   IMUPublisher: require('./IMUPublisher'),
