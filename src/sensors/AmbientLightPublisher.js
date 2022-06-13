@@ -69,7 +69,6 @@ class AmbientLightPublisher extends IntervalPublisher {
     const AmbientLightMessage = new ROSLIB.Message({
       data: this.light,
     });
-    console.log(this.msg);
     this.msg = AmbientLightMessage;
     super.createSnapshot();
   }
