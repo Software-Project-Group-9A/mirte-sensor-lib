@@ -1,10 +1,3 @@
-/**
- * VERY IMPORTANT: This feature is not fully suported over all browsers
- * To enable in Chrome, go to: chrome://flags/
- * There enable: "Generic Sensor Extra Classes"
- */
-
-
 // Dependencies
 const IntervalPublisher = require('./IntervalPublisher.js');
 const NotSupportedError = require('../error/NotSupportedError');
@@ -14,6 +7,10 @@ const NotSupportedError = require('../error/NotSupportedError');
  * camera receives
  * By default it publishes data at the interval rate
  * from parrent class IntervalPublisher
+ *
+ * VERY IMPORTANT: This feature is not fully suported over all browsers
+ * To enable in Chrome, go to: chrome://flags/
+ * There enable: "Generic Sensor Extra Classes"
  *
  * The data resulting from the interactions is published as a
  * ROS std_msgs/Int32 message.
