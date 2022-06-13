@@ -7,6 +7,7 @@ const SliderPublisher = require('../../../src/sensors/SliderPublisher');
 const TextPublisher = require('../../../src/sensors/TextPublisher');
 // Module to test
 const {tryPublishElement, publishChildElements} = require('../../../src/util/documentUtils');
+const CheckboxPublisher = require('../../../src/sensors/CheckboxPublisher');
 
 const {document} = global.window;
 
@@ -28,6 +29,24 @@ describe('documentUtils', function() {
       assert(buttonPublisher instanceof ButtonPublisher);
       assert.equal(buttonPublisher.button, button);
       assert.equal(buttonPublisher.topic.name, topicName);
+    });
+    it('should be able to properly publish a checkbox', function() {
+      const checkbox = document.createElement('INPUT');
+      checkbox.setAttribute('type', 'checkbox');
+      const checkboxId = 'checkboxA';
+      checkbox.id = checkboxId;
+
+      const ros = new ROSLIB.Ros();
+      const map = new Map();
+
+      tryPublishElement(checkbox, ros, map);
+
+      const topicName = 'mirte/phone_checkbox/' + checkboxId;
+      assert(map.has(topicName));
+      const checkboxPublisher = map.get(topicName);
+      assert(checkboxPublisher instanceof CheckboxPublisher);
+      assert.equal(checkboxPublisher.checkbox, checkbox);
+      assert.equal(checkboxPublisher.topic.name, topicName);
     });
     it('should be able to properly publish a slider', function() {
       const slider = document.createElement('input');
