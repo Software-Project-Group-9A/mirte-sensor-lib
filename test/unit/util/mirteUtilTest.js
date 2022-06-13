@@ -1,7 +1,7 @@
 require('../../globalSetup.js');
 
 const IMUPublisher = require('../../../src/sensors/IMUPublisher.js');
-const MagneticDeclinationPublisher = require('../../../src/sensors/MagneticDeclinationPublisher.js');
+const CompassPublisher = require('../../../src/sensors/CompassPublisher.js');
 
 // module to test
 const {readSensorsFromConfig} = require('../../../src/util/mirteUtil');

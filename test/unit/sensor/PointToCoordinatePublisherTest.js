@@ -7,8 +7,8 @@ require('../../globalSetup.js');
 const sinon = require('sinon');
 
 // Module to test
-const GPSDeclinationPublisher =
-    require('../../../src/sensors/GPSDeclinationPublisher.js');
+const PointToCoordinatePublisher =
+    require('../../../src/sensors/PointToCoordinatePublisher.js');
 
 
 /**
@@ -29,7 +29,7 @@ function createGeolocationSpy() {
 // stub for geolocation api
 global.window.navigator.geolocation = {};
 
-describe('Test GPSDeclinationPublisher', function() {
+describe('Test PointToCoordinatePublisher', function() {
   describe('#constructor(ros, topicName, latitude, longitude, hz)', function() {
     /**
      * Helper functions for checking whether correct error is raised for
@@ -45,7 +45,7 @@ describe('Test GPSDeclinationPublisher', function() {
     it('should accept an undefined latitude', function() {
       assert.doesNotThrow(
           () => {
-            new GPSDeclinationPublisher(new ROSLIB.Ros(), 'topic', undefined, 1);
+            new PointToCoordinatePublisher(new ROSLIB.Ros(), 'topic', undefined, 1);
           },
           (error) => {
             return false;
@@ -55,7 +55,7 @@ describe('Test GPSDeclinationPublisher', function() {
     it('should accept an undefined longitude', function() {
       assert.doesNotThrow(
           () => {
-            new GPSDeclinationPublisher(new ROSLIB.Ros(), 'topic', 1, undefined);
+            new PointToCoordinatePublisher(new ROSLIB.Ros(), 'topic', 1, undefined);
           },
           (error) => {
             return false;
@@ -65,19 +65,19 @@ describe('Test GPSDeclinationPublisher', function() {
 
     it('should not accept an out of range latitude', function() {
       assert.throws(() => {
-        new GPSDeclinationPublisher(new ROSLIB.Ros(), 'topic', -100, 1);
+        new PointToCoordinatePublisher(new ROSLIB.Ros(), 'topic', -100, 1);
       }, expectOutOfRange);
     });
     it('should not accept an out of range undefined longitude', function() {
       assert.throws(() => {
-        new GPSDeclinationPublisher(new ROSLIB.Ros(), 'topic', 1, 200);
+        new PointToCoordinatePublisher(new ROSLIB.Ros(), 'topic', 1, 200);
       }, expectOutOfRange);
     });
 
     it('should accept a well defined coördinates', function() {
       assert.doesNotThrow(
           () => {
-            new GPSDeclinationPublisher(new ROSLIB.Ros(), 'topic', 1, 1);
+            new PointToCoordinatePublisher(new ROSLIB.Ros(), 'topic', 1, 1);
           },
           (error) => {
             return false;
@@ -97,7 +97,7 @@ describe('Test GPSDeclinationPublisher', function() {
       });
       assert.equal(global.window.navigator.userAgent,
           'Mozilla/5.0 (iPhone; CPU OS 13_1_1 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) Mobile/9B206');
-      new GPSDeclinationPublisher(new ROSLIB.Ros(), 'topic', 1, 1);
+      new PointToCoordinatePublisher(new ROSLIB.Ros(), 'topic', 1, 1);
       assert.equal(global.window.addEventListener.callCount, 0);
 
       global.window.navigator.__defineGetter__('userAgent', () => {
@@ -129,7 +129,7 @@ describe('Test GPSDeclinationPublisher', function() {
     });
 
     it('should create a new button', function() {
-      const publisher = sinon.spy(new GPSDeclinationPublisher(new ROSLIB.Ros(), 'topic', 1, 1));
+      const publisher = sinon.spy(new PointToCoordinatePublisher(new ROSLIB.Ros(), 'topic', 1, 1));
 
       assert.equal(publisher.requestPermission.callCount, 0);
       assert(global.window.document.querySelector('button') !== null);
@@ -140,7 +140,7 @@ describe('Test GPSDeclinationPublisher', function() {
   describe('#calcDegreeToPoint(latitude, longitude)', function() {
     it('should calculate the degree between point and current location',
         function() {
-          const publisher = sinon.spy(new GPSDeclinationPublisher(new ROSLIB.Ros(), 'topic', 1, 1));
+          const publisher = sinon.spy(new PointToCoordinatePublisher(new ROSLIB.Ros(), 'topic', 1, 1));
 
           assert.equal(publisher.calcDegreeToPoint(1, 1), 0);
         });
@@ -149,7 +149,7 @@ describe('Test GPSDeclinationPublisher', function() {
   describe('#locationHandler(position)', function() {
     it('should handle the location',
         function() {
-          const publisher = sinon.spy(new GPSDeclinationPublisher(new ROSLIB.Ros(), 'topic', 1, 1));
+          const publisher = sinon.spy(new PointToCoordinatePublisher(new ROSLIB.Ros(), 'topic', 1, 1));
 
           global.position = {
             'coords': {
@@ -165,7 +165,7 @@ describe('Test GPSDeclinationPublisher', function() {
 
   describe('#createSnapshot()', function() {
     it('should create snapshot', function() {
-      const publisher = sinon.spy(new GPSDeclinationPublisher(new ROSLIB.Ros(), 'topic', 1, 1));
+      const publisher = sinon.spy(new PointToCoordinatePublisher(new ROSLIB.Ros(), 'topic', 1, 1));
       const topic = sinon.spy(publisher.topic);
 
       global.geoPos = {
@@ -206,7 +206,7 @@ describe('Test GPSDeclinationPublisher', function() {
 
   describe('#accountForRotation()', function() {
     it('Difference is 0 when same orientation', function() {
-      const publisher = sinon.spy(new GPSDeclinationPublisher(new ROSLIB.Ros(), 'topic', 1, 1));
+      const publisher = sinon.spy(new PointToCoordinatePublisher(new ROSLIB.Ros(), 'topic', 1, 1));
 
       publisher.alpha = 0;
       publisher.compass = 0;
@@ -225,7 +225,7 @@ describe('Test GPSDeclinationPublisher', function() {
     });
 
     it('Small difference', function() {
-      const publisher = sinon.spy(new GPSDeclinationPublisher(new ROSLIB.Ros(), 'topic', 1, 1));
+      const publisher = sinon.spy(new PointToCoordinatePublisher(new ROSLIB.Ros(), 'topic', 1, 1));
 
       publisher.alpha = 359;
       publisher.compass = 0;
@@ -244,7 +244,7 @@ describe('Test GPSDeclinationPublisher', function() {
     });
 
     it('180 difference', function() {
-      const publisher = sinon.spy(new GPSDeclinationPublisher(new ROSLIB.Ros(), 'topic', 1, 1));
+      const publisher = sinon.spy(new PointToCoordinatePublisher(new ROSLIB.Ros(), 'topic', 1, 1));
 
       publisher.alpha = 280;
       publisher.compass = 100;
@@ -258,7 +258,7 @@ describe('Test GPSDeclinationPublisher', function() {
     });
 
     it('big difference', function() {
-      const publisher = sinon.spy(new GPSDeclinationPublisher(new ROSLIB.Ros(), 'topic', 1, 1));
+      const publisher = sinon.spy(new PointToCoordinatePublisher(new ROSLIB.Ros(), 'topic', 1, 1));
 
       publisher.alpha = 5;
       publisher.compass = 355;
@@ -278,7 +278,7 @@ describe('Test GPSDeclinationPublisher', function() {
   });
 
   describe('#readFromConfig(ros, config)', function() {
-    it('should return a started instance of GPSDeclinationPublisher', function() {
+    it('should return a started instance of PointToCoordinatePublisher', function() {
       global.window.navigator.geolocation = createGeolocationSpy();
 
       const compassName = 'compass';
@@ -289,10 +289,10 @@ describe('Test GPSDeclinationPublisher', function() {
         frequency: frequency,
       };
 
-      const publisher = GPSDeclinationPublisher.readFromConfig(ros, config);
+      const publisher = PointToCoordinatePublisher.readFromConfig(ros, config);
 
       const topicName = 'mirte/phone_gps_declination/' + compassName;
-      assert(publisher instanceof GPSDeclinationPublisher);
+      assert(publisher instanceof PointToCoordinatePublisher);
       assert(publisher.started);
       assert.equal(publisher.topic.name, topicName);
       assert.equal(publisher.freq, frequency);

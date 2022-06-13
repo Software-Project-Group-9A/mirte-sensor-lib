@@ -10,7 +10,7 @@ const PermissionDeniedError = require('../error/PermissionDeniedError.js');
 const NotSupportedError = require('../error/NotSupportedError');
 
 /**
- * GPSDeclinationPublisher publishes the rotation as a compass to
+ * PointToCoordinatePublisher publishes the rotation as a compass to
  * a certain point in the world.
  * By default it publishes data at the interval rate
  * from parrent class IntervalPublisher
@@ -18,7 +18,7 @@ const NotSupportedError = require('../error/NotSupportedError');
  * The data resulting from the interactions is published as a
  * ROS std_msgs/Int32 message.
  */
-class GPSDeclinationPublisher extends IntervalPublisher {
+class PointToCoordinatePublisher extends IntervalPublisher {
   /**
    * Creates a new sensor publisher that publishes the angle
    * between the device and the provided Coordinates to the provided topic.
@@ -231,17 +231,17 @@ class GPSDeclinationPublisher extends IntervalPublisher {
   }
 
   /**
-   * Deserializes a GPSDeclinationPublisher stored in a config object, and returns the resulting publisher instance.
+   * Deserializes a PointToCoordinatePublisher stored in a config object, and returns the resulting publisher instance.
    * The returned instance is already started.
    * @param {ROSLIB.Ros} ros ros instance to which to resulting publisher will publish
    * @param {Object} config object with the following keys:
    * @param {string} config.name - name of the publisher to create
    * @param {number} config.frequency - name of the publisher to create
-   * @return {GPSDeclinationPublisher} GPSDeclinationPublisher described in the provided config parameter
+   * @return {PointToCoordinatePublisher} PointToCoordinatePublisher described in the provided config parameter
    */
   static readFromConfig(ros, config) {
-    const topicName = 'mirte/phone_gps_declination/' + config.name;
-    const publisher = new GPSDeclinationPublisher(ros, topicName);
+    const topicName = 'mirte/phone_point_to_coordinate/' + config.name;
+    const publisher = new PointToCoordinatePublisher(ros, topicName);
 
     publisher.start();
     publisher.setPublishFrequency(config.frequency);
@@ -250,4 +250,4 @@ class GPSDeclinationPublisher extends IntervalPublisher {
   }
 }
 
-module.exports = GPSDeclinationPublisher;
+module.exports = PointToCoordinatePublisher;
