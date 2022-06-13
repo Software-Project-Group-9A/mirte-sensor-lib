@@ -30,7 +30,7 @@ function createStandardIMU() {
 
 describe('Test IMU Publisher', function() {
   // Constructor Tests
-  describe('#constructor(topic)', function() {
+  describe('#constructor(ros, topicName, hz)', function() {
     const sandbox = sinon.createSandbox();
 
     beforeEach(function() {

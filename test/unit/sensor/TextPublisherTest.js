@@ -6,7 +6,7 @@ const TextPublisher = require('../../../src/sensors/TextPublisher.js');
 const {document} = global.window;
 
 describe('Test TextPublisher', function() {
-  describe('#constructor(topic, inputElement)', function() {
+  describe('#constructor(ros, topicName, inputElement, options)', function() {
     /**
      * Helper functions for checking whether correct error is raised for
      * invalid input element.

@@ -9,7 +9,7 @@ const {document} = global.window;
 const CameraPublisher = require('../../../src/sensors/CameraPublisher.js');
 
 describe('Test CamerPublisher', function() {
-  describe('#constructor(topic, camera)', function() {
+  describe('#constructor(ros, topicName, camera, canvas, hz)', function() {
     /**
      * Helper function for checking whether correct error is raised for
      * invalid buttons.

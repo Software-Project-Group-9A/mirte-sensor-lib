@@ -4,7 +4,7 @@ require('../../globalSetup.js');
 const SensorPublisher = require('../../../src/sensors/SensorPublisher.js');
 
 describe('Test SensorPublisher', function() {
-  describe('#constructor(topic)', function() {
+  describe('#constructor(ros, topicName)', function() {
     /**
      * Helper functions for checking whether correct error is raised for
      * invalid topics.
