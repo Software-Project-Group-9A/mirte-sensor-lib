@@ -12,7 +12,7 @@ class SliderPublisher extends IntervalPublisher {
   /**
    * Creates a new ButtonPublisher.
    * @param {ROSLIB.Ros} ros a ROS instance to publish to
-   * @param {String} topicName name for the topic to publish data to
+   * @param {ROSLIB.Topic} topicName name for the topic to publish data to
    * @param {HTMLInputElement} slider slider of which to publish data, must have type 'range'
    * @param {Number} hz a standard frequency for this type of object.
    */

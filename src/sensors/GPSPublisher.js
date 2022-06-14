@@ -13,7 +13,7 @@ class GPSPublisher extends IntervalPublisher {
    * Creates a new GPSPublisher, which will publish the longitude and latitude
    * of the current device in the form of a sensor_msgs/NavSatFix message.
    * @param {ROSLIB.Ros} ros a ROS instance to publish to
-   * @param {String} topicName name for the topic to publish data to
+   * @param {ROSLIB.Topic} topicName name for the topic to publish data to
    * @param {number} hz frequency at which to publish GPS data, in Hertz.
    * If no frequency is specified, this will default to 1 Hz.
    * @throws {NotSupportedError} if the Geolocation API is not supported
