@@ -13,7 +13,7 @@ class TextPublisher extends SensorPublisher {
    * Creates a new TextPublisher.
    *
    * @param {ROSLIB.Ros} ros a ROS instance to publish to
-   * @param {ROSLIB.Topic} topicName name for the topic to publish data to
+   * @param {String} topicName name for the topic to publish data to
    * @param {HTMLInputElement} inputElement input element from which to publish data.
    * @param {Object} [options] configuration options.
    * @param {boolean} [options.onEnter=true] if true publishes on enter, else publishes every key press.

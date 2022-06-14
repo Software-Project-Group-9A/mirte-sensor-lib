@@ -13,7 +13,7 @@ class CheckboxPublisher extends SensorPublisher {
   /**
    * Creates a new checkboxPublisher.
    * @param {ROSLIB.Ros} ros a ROS instance to publish to
-   * @param {ROSLIB.Topic} topicName topic to which to publish checkbox data
+   * @param {String} topicName topic to which to publish checkbox data
    * @param {HTMLElement} checkbox checkbox of which to publish data
    */
   constructor(ros, topicName, checkbox) {

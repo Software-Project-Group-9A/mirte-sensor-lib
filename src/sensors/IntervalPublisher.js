@@ -16,7 +16,7 @@ class IntervalPublisher extends SensorPublisher {
      * Creates a new sensor publisher that publishes to
      * the provided topic with a Regular interval.
      * @param {ROSLIB.Ros} ros a ROS instance to publish to
-     * @param {ROSLIB.Topic} topicName name for the topic from ROS on which to publish data to
+     * @param {String} topicName name for the topic from ROS on which to publish data to
      * @param {Number} hz a standard frequency for this type of object.
      */
   constructor(ros, topicName, hz = 10) {

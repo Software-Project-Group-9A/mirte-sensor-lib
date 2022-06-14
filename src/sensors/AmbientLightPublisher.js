@@ -20,8 +20,8 @@ class AmbientLightPublisher extends IntervalPublisher {
    * Creates a new sensor publisher that publishes the amount of lux
    * the camera receives
    * @param {ROSLIB.Ros} ros a ROS instance to publish to
-   * @param {ROSLIB.Topic} topicName name for the topic to publish data to
-   * @param {Number} hz a frequency to be called
+   * @param {String} topicName name for the topic to publish data to
+   * @param {Number} hz frequency for the publishing interval
    */
   constructor(ros, topicName, hz = 1) {
     // check support for API
