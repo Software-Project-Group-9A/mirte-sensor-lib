@@ -1,7 +1,7 @@
 const GPSPublisher = require('../sensors/GPSPublisher');
 const IMUPublisher = require('../sensors/IMUPublisher');
 const CompassPublisher = require('../sensors/CompassPublisher');
-const PointToCoordinatePublisher = require('../sensors/PointToCoordinatePublisher');
+const CoordinateCompassPublisher = require('../sensors/CoordinateCompassPublisher');
 const CameraPublisher = require('../sensors/CameraPublisher');
 
 /**
@@ -13,7 +13,7 @@ const sensorDeserializers = {
   'phone_imu': IMUPublisher.readFromConfig,
   'phone_compass': CompassPublisher.readFromConfig,
   'phone_gps': GPSPublisher.readFromConfig,
-  'phone_point_to_coordinate': PointToCoordinatePublisher.readFromConfig,
+  'phone_point_to_coordinate': CoordinateCompassPublisher.readFromConfig,
   'phone_camera': CameraPublisher.readFromConfig,
 };
 
