@@ -44,47 +44,10 @@ describe('Test CompassPublisher', function() {
   });
 
   describe('#requestPermission', function() {
-    // Set-up sandbox
-    const sandbox = sinon.createSandbox();
+    it('should create a new button', function() {
+      sinon.spy(new CompassPublisher(new ROSLIB.Ros(), 'topic'));
 
-    beforeEach(function() {
-      // Reset entire global window
-      global.window.alert = function() {};
-      sandbox.spy(global.window.document);
-    });
-
-    afterEach(function() {
-      sandbox.restore();
-    });
-
-
-    it('should create a new button for iOS', function() {
-      // Arrange
-      global.window.navigator.__defineGetter__('userAgent', () => {
-        return 'Mozilla/5.0 (iPhone; CPU OS 13_1_1 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) Mobile/9B206';
-      });
-
-      // Act
-      new CompassPublisher(new ROSLIB.Ros(), 'topic');
-
-      // Assert
-      assert.equal(global.window.navigator.userAgent,
-          'Mozilla/5.0 (iPhone; CPU OS 13_1_1 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) Mobile/9B206');
-      assert(!global.window.document.createElement.called);
-    });
-
-    it('should not create a new button for Android', function() {
-      // Arrange
-      global.window.navigator.__defineGetter__('userAgent', () => {
-        return ' Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1.5) Gecko/20091102 Firefox/3.5.5' +
-         '(.NET CLR 3.5.30729)';
-      });
-
-      // Act
-      new CompassPublisher(new ROSLIB.Ros(), 'topic');
-
-      // Assert
-      assert(!global.window.document.createElement.called);
+      assert(global.window.document.querySelector('button') !== null);
     });
   });
   describe('#onReadOrientation()', function() {
