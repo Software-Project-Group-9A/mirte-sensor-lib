@@ -22,7 +22,7 @@ describe('SliderPublisher', function() {
     return slider;
   }
 
-  describe('#constructor(topic slider)', function() {
+  describe('#constructor(ros, topicName, slider, hz)', function() {
     /**
      * Helper functions for checking whether correct error is raised for
      * invalid topics.

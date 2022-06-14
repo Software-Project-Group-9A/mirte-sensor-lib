@@ -37,7 +37,7 @@ function createGeolocationPosition(longitude, latitude) {
 }
 
 describe('GPSPublisher', function() {
-  describe('#constructor(topic, freq)', function() {
+  describe('#constructor(ros, topicName, hz)', function() {
     it('should create a new instance if the geolocation API is supported', function() {
       // mock navigator instance
       global.window.navigator.geolocation = createGeolocationSpy();

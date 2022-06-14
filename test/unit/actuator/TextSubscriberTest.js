@@ -6,7 +6,7 @@ const TextSubscriber = require('../../../src/actuators/TextSubscriber.js');
 const {document} = global.window;
 
 describe('Test TextSubscriber', function() {
-  describe('#constructor(topic, HTMLElement)', function() {
+  describe('#constructor(ros, topicName, HTMLElement)', function() {
     /**
      * Helper functions for checking whether correct error is raised for
      * invalid HTMLElements.

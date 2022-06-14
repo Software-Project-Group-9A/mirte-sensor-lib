@@ -4,7 +4,7 @@ require('../../globalSetup.js');
 const FlashlightSubscriber = require('../../../src/actuators/FlashlightSubscriber.js');
 
 describe('Test FlashlightSubscriber', function() {
-  describe('#constructor(topic)', function() {
+  describe('#constructor(ros, topicName)', function() {
     // /**
     //  * Helper functions for checking whether correct error is raised for
     //  * invalid HTMLElements.

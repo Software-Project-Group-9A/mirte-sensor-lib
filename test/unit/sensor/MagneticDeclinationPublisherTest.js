@@ -6,7 +6,7 @@ const MagneticDeclinationPublisher =
 
 // define JSDOM window in global scope, if not already defined
 describe('Test MagneticDeclinationPublisher', function() {
-  describe('#constructor(topic)', function() {
+  describe('#constructor(ros, topicName, hz)', function() {
     it('should correctly construct a publisher and not start reading yet', function() {
       let publisher;
       assert.doesNotThrow(
