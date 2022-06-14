@@ -167,6 +167,29 @@ describe('GPSPublisher', function() {
     });
   });
 
+  describe('#readFromConfig(ros, config)', function() {
+    it('should return a started instance of GPSPublisher', function() {
+      const geolocation = createGeolocationSpy();
+      global.window.navigator.geolocation = geolocation;
+
+      const gpsName = 'gps';
+      const frequency = 1.0;
+      const ros = new ROSLIB.Ros();
+      const config = {
+        name: gpsName,
+        frequency: frequency,
+      };
+
+      const publisher = GPSPublisher.readFromConfig(ros, config);
+
+      const topicName = 'mirte/phone_gps/' + gpsName;
+      assert(publisher instanceof GPSPublisher);
+      assert(publisher.started);
+      assert.equal(publisher.topic.name, topicName);
+      assert.equal(publisher.freq, frequency);
+    });
+  });
+
   afterEach(function() {
     // make sure geolocation is reset to undefined
     global.window.navigator.geolocation = undefined;

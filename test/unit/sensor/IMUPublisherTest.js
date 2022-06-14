@@ -31,6 +31,7 @@ function createStandardIMU() {
 describe('Test IMU Publisher', function() {
   // Constructor Tests
   describe('#constructor(topic)', function() {
+    // Set-up sandbox
     const sandbox = sinon.createSandbox();
 
     beforeEach(function() {
@@ -67,6 +68,7 @@ describe('Test IMU Publisher', function() {
       assert(global.window.addEventListener.calledWith('deviceorientation'));
       assert.equal(global.window.alert.callCount, 1);
     });
+
     it('should not start reading orientation user is on iOS', function() {
       // This is to 'fake' a device running on iOS
       const original = global.window.navigator.userAgent;
@@ -88,23 +90,45 @@ describe('Test IMU Publisher', function() {
 
   // requestPermission tests
   describe('#requestPermission', function() {
-    it('should create a new button for iOS', function() {
-      const sandbox = sinon.createSandbox();
-      const originalAgent = global.window.navigator.userAgent;
+    // Set-up sandbox
+    const sandbox = sinon.createSandbox();
 
-      sandbox.spy(global.window);
+    beforeEach(function() {
+      // Reset entire global window
+      global.window.alert = function() {};
+      sandbox.spy(global.window.document);
+    });
+
+    afterEach(function() {
+      sandbox.restore();
+    });
+
+
+    it('should create a new button for iOS', function() {
+      // Arrange
       global.window.navigator.__defineGetter__('userAgent', () => {
         return 'Mozilla/5.0 (iPhone; CPU OS 13_1_1 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) Mobile/9B206';
       });
-      const publisher = sinon.spy(createStandardIMU());
 
-      assert.equal(publisher.requestPermission.callCount, 0);
-      assert(global.window.document.querySelector('button') !== null);
+      // Act
+      createStandardIMU();
 
-      sandbox.restore();
+      // Assert
+      assert(global.window.document.createElement.called);
+    });
+
+    it('should not create a new button for Android', function() {
+      // Arrange
       global.window.navigator.__defineGetter__('userAgent', () => {
-        return originalAgent;
+        return ' Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1.5) Gecko/20091102 Firefox/3.5.5' +
+         '(.NET CLR 3.5.30729)';
       });
+
+      // Act
+      createStandardIMU();
+
+      // Assert
+      assert(!global.window.document.createElement.called);
     });
   });
 
@@ -249,6 +273,84 @@ describe('Test IMU Publisher', function() {
       assert.equal(msg[0].orientation_covariance[0], -1);
       assert.equal(msg[0].angular_velocity_covariance[0], -1);
       assert.equal(msg[0].linear_acceleration_covariance[0], -1);
+    });
+  });
+
+  // callback tests
+  describe('#onReadOrientation(event)', function() {
+    it('changes appropriate orientation attributes', function() {
+      // Arrange
+      const imu = createStandardIMU(); // All orientation attributes default to 0.
+
+      const event = {
+        'alpha': 13.234,
+        'beta': 34.342,
+        'gamma': 94.912,
+      };
+
+      // Act
+      imu.onReadOrientation(event);
+
+      // Assert
+      assert.equal(imu.alpha, 13.234);
+      assert.equal(imu.beta, 34.342);
+      assert.equal(imu.gamma, 94.912);
+    });
+  });
+
+  describe('#onReadMotion(event)', function() {
+    it('changes appropriate motion attributes', function() {
+      // Arrange
+      const imu = createStandardIMU(); // All orientation attributes default to 0.
+
+      const event = {
+        'rotationRate': {
+          'alpha': 13.234,
+          'beta': 34.342,
+          'gamma': 94.912,
+        },
+        'acceleration': {
+          'x': 12.3,
+          'y': 45.6,
+          'z': 78.9,
+        },
+      };
+
+      // Act
+      imu.onReadMotion(event);
+
+      // Assert
+      assert.equal(imu.valpha, 13.234);
+      assert.equal(imu.vbeta, 34.342);
+      assert.equal(imu.vgamma, 94.912);
+
+      assert.equal(imu.x, 12.3);
+      assert.equal(imu.y, 45.6);
+      assert.equal(imu.z, 78.9);
+    });
+  });
+
+  // readFromConfig tests
+  describe('#readFromConfig(ros, config)', function() {
+    it('should return a started instance of IMUPublisher', function() {
+      // Arrange
+      const imuName = 'imu';
+      const frequency = 1.0;
+      const ros = new ROSLIB.Ros();
+      const config = {
+        name: imuName,
+        frequency: frequency,
+      };
+
+      // Act
+      const publisher = IMUPublisher.readFromConfig(ros, config);
+
+      // Assert
+      const topicName = 'mirte/phone_imu/' + imuName;
+      assert(publisher instanceof IMUPublisher);
+      assert(publisher.started);
+      assert.equal(publisher.topic.name, topicName);
+      assert.equal(publisher.freq, frequency);
     });
   });
 });

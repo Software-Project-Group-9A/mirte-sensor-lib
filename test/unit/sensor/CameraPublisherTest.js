@@ -1,19 +1,12 @@
+require('../../globalSetup.js');
 const assert = require('assert');
 // Sinon library for mocking
 const sinon = require('sinon');
 
-// JSDOM for simulating browser environment
-const {JSDOM} = require('jsdom');
-const {window} = new JSDOM(``, {});
+const {document} = global.window;
 
 // Module to test
 const CameraPublisher = require('../../../src/sensors/CameraPublisher.js');
-
-// define JSDOM window in global scope, if not already defined
-global.window = global.window || window;
-const {document} = global.window;
-
-require('../../globalSetup.js');
 
 describe('Test CamerPublisher', function() {
   describe('#constructor(topic, camera)', function() {
@@ -97,6 +90,40 @@ describe('Test CamerPublisher', function() {
       const publisher = sinon.spy(new CameraPublisher(new ROSLIB.Ros(), 'topic', camera, canvas));
 
       assert.throws(() => publisher.start(), expectInvalidSource);
+    });
+  });
+
+  describe('#readFromConfig(ros, config)', function() {
+    it('should return a started instance of CameraPublisher', function() {
+      const cameraName = 'camera';
+      const frequency = 8.0;
+      const videoId = 'camA';
+      const canvasId = 'canvasA';
+      const ros = new ROSLIB.Ros();
+      const config = {
+        name: cameraName,
+        frequency: frequency,
+        cameraId: videoId,
+        canvasId: canvasId,
+      };
+
+      const video = document.createElement('video');
+      const canvas = document.createElement('canvas');
+      video.id = videoId;
+      canvas.id = canvasId;
+      // stub for src object
+      video.srcObject = {};
+      document.documentElement.appendChild(video);
+      document.documentElement.appendChild(canvas);
+
+      const publisher = CameraPublisher.readFromConfig(ros, config);
+
+      const topicName = 'mirte/phone_camera/' + cameraName;
+      assert(publisher instanceof CameraPublisher);
+      assert(publisher.started);
+      assert.equal(publisher.topic.name, topicName);
+      assert.equal(publisher.freq, frequency);
+      assert.equal(publisher.camera, video);
     });
   });
 });
