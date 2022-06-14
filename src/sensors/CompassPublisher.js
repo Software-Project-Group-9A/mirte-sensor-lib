@@ -20,7 +20,7 @@ class CompassPublisher extends IntervalPublisher {
   /**
    * Creates a new sensor publisher that publishes to the provided topic.
    * @param {ROSLIB.Ros} ros a ROS instance to publish to
-   * @param {ROSLIB.Topic} topicName name for the topic to publish data to
+   * @param {String} topicName name for the topic to publish data to
    * @param {Number} hz a standard frequency for this type of object.
    */
   constructor(ros, topicName, hz = 10) {
