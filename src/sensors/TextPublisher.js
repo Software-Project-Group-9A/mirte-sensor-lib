@@ -1,4 +1,4 @@
-const { positionElement } = require('../util/styleUtils.js');
+const {positionElement} = require('../util/styleUtils.js');
 const SensorPublisher = require('./SensorPublisher.js');
 
 /**
