@@ -13,12 +13,6 @@
 
             ros.on('close', function() { document.getElementById("connection_info").innerHTML = 'Connection to websocket server closed.'; });
 
-            var topic = new ROSLIB.Topic({
-                ros : ros,
-                name : '/magneticDeclination',
-                messageType: 'std_msgs/Int32'
-            });
-
             ros.connect('ws://localhost:9090');
         </script>
     </head>

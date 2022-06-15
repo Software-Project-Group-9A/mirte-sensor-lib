@@ -212,8 +212,7 @@ class CoordinateCompassPublisher extends IntervalPublisher {
   }
 
   /**
-   * Puts the declination
-   * in a ROS message and publishes it
+   * Puts the declination in a ROS message and publishes it
    */
   createSnapshot() {
     if (!(this.orientationReady && this.gpsReady)) {

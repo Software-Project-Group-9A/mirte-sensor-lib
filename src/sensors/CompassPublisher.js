@@ -103,19 +103,18 @@ class CompassPublisher extends IntervalPublisher {
   }
 
   /**
-   * Puts the magnetic declination
-   * in a ROS message and publishes it
+   * Puts the magnetic declination in a ROS message and publishes it
    */
   createSnapshot() {
     if (!this.orientationReady) {
       throw Error('Orientation is not read yet!');
     }
 
-    const MagneticDeclinationMessage = new ROSLIB.Message({
+    const Compass = new ROSLIB.Message({
       data: this.alpha,
     });
 
-    this.msg = MagneticDeclinationMessage;
+    this.msg = Compass;
     super.createSnapshot();
   }
 
