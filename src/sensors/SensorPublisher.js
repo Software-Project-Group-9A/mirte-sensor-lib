@@ -5,8 +5,8 @@ class SensorPublisher {
   /**
    * Creates a new sensor publisher that publishes to the provided topic.
    * @param {ROSLIB.Ros} ros a ROS instance to publish to
-   * @param {ROSLIB.Topic} topicName a Topic from RosLibJS
-   * @throws TypeError if topic argument is not of type ROSLIB.Topic
+   * @param {String} topicName name for the topic to publish data to
+   * @throws TypeError if topic argument is not of type String
    */
   constructor(ros, topicName) {
     if (!(ros instanceof ROSLIB.Ros)) {

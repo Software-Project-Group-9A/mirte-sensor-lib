@@ -14,7 +14,7 @@ class ButtonPublisher extends SensorPublisher {
   /**
    * Creates a new ButtonPublisher.
    * @param {ROSLIB.Ros} ros a ROS instance to publish to
-   * @param {ROSLIB.Topic} topicName topic to which to publish button data
+   * @param {String} topicName name for the topic to publish data to
    * @param {HTMLButtonElement} button button of which to publish data
    */
   constructor(ros, topicName, button) {

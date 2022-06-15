@@ -18,7 +18,7 @@ class ImageSubscriber extends Subscriber {
     * to the provided topic on the provided canvas.
     * Both compressed (sensor_msgs/CompressedImage) and non-compressed images (sensor_msgs/Image) are supported.
     * @param {ROSLIB.Ros} ros ROS instance to publish to
-    * @param {ROSLIB.Topic} topicName topic from which to subscribe to
+    * @param {ROSLIB.Topic} topicName name for the topic to subscribe to
     * @param {HTMLCanvasElement} canvas canvas to draw published images on
     * @param {boolean} [compressed=true]  whether compressed images are published to the topic. True by default.
     */

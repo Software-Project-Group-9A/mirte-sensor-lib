@@ -1,4 +1,5 @@
 const ButtonPublisher = require('../sensors/ButtonPublisher');
+const CheckboxPublisher = require('../sensors/CheckboxPublisher');
 const SliderPublisher = require('../sensors/SliderPublisher');
 const TextPublisher = require('../sensors/TextPublisher');
 const ImageSubscriber = require('../actuators/ImageSubscriber');
@@ -42,10 +43,12 @@ function tryPublishElement(element, ros, map) {
       mapEntry = new ButtonPublisher(ros, 'mirte/phone_button/' + instanceName, element);
       break;
     case 'HTMLInputElement':
-      if (element.type === 'range') {
+      if (element.type && element.type === 'range') {
         mapEntry = new SliderPublisher(ros, 'mirte/phone_slider/' + instanceName, element);
-      } else if (element.type === 'text') {
+      } else if (element.type && element.type === 'text') {
         mapEntry = new TextPublisher(ros, 'mirte/phone_text_input/' + instanceName, element);
+      } else if (element.type && element.type === 'checkbox') {
+        mapEntry = new CheckboxPublisher(ros, 'mirte/phone_checkbox/' + instanceName, element);
       }
       break;
     case 'HTMLCanvasElement':

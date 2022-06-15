@@ -11,7 +11,7 @@ class TextSubscriber extends Subscriber {
   /**
    * Creates a new TextSubscriber.
    * @param {ROSLIB.Ros} ros a ROS instance to publish to
-   * @param {ROSLIB.Topic} topicName topic to which to subscribe to
+   * @param {ROSLIB.Topic} topicName name for the topic to subscribe to
    * @param {HTMLElement} HTMLElement HTML element in which the messages will be displayed.
    */
   constructor(ros, topicName, HTMLElement) {

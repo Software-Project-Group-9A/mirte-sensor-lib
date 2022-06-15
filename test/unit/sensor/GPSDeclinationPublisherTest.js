@@ -30,7 +30,7 @@ function createGeolocationSpy() {
 global.window.navigator.geolocation = {};
 
 describe('Test GPSDeclinationPublisher', function() {
-  describe('#constructor(topic, latitude, longitude)', function() {
+  describe('#constructor(ros, topicName, latitude, longitude, hz)', function() {
     /**
      * Helper functions for checking whether correct error is raised for
      * invalid topics.

@@ -6,7 +6,7 @@ const ButtonPublisher = require('../../../src/sensors/ButtonPublisher.js');
 const {document} = global.window;
 
 describe('Test ButtonPublisher', function() {
-  describe('#constructor(topic, button)', function() {
+  describe('#constructor(ros, topicName, button)', function() {
     /**
      * Helper functions for checking whether correct error is raised for
      * invalid topics.
