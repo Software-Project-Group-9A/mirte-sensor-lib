@@ -120,7 +120,7 @@ class TextPublisher extends SensorPublisher {
     const textInput = window.document.createElement('input');
     textInput.type = 'text';
 
-    positionElement(textInput, targetElement, config.x, config.y);
+    positionElement(textInput, targetElement, config.x, config.y, config.name);
 
     const publisher = new TextPublisher(ros, '/mirte/phone_text_input/' + config.name, textInput);
     publisher.start();

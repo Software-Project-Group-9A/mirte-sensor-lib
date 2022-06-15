@@ -73,26 +73,6 @@ describe('Test CamerPublisher', function() {
     });
   });
 
-  describe('#start()', function() {
-    /**
-     * Helper function for checking whether correct error is raised for
-     * invalid buttons.
-     * @param {Error} error The raised error.
-     * @return {boolean} true if valid.
-     */
-    function expectInvalidSource(error) {
-      assert(error.message === 'No video source found.');
-      return true;
-    }
-    it('should throw an error if there is no video source', function() {
-      const camera = document.createElement('video');
-      const canvas = document.createElement('canvas');
-      const publisher = sinon.spy(new CameraPublisher(new ROSLIB.Ros(), 'topic', camera, canvas));
-
-      assert.throws(() => publisher.start(), expectInvalidSource);
-    });
-  });
-
   describe('#readFromConfig(ros, config)', function() {
     it('should return a started instance of CameraPublisher', function() {
       const cameraName = 'camera';

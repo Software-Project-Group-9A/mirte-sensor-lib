@@ -51,19 +51,6 @@ class CameraPublisher extends IntervalPublisher {
   }
 
   /**
-     * Start the publishing of camera data to ROS.
-     *
-     * @throws {Error} if no video source is available.
-     */
-  start() {
-    // If there is no videostream available yet, do not publish data.
-    if (!this.camera.srcObject) {
-      console.warn('No video source found.');
-    }
-    super.start();
-  }
-
-  /**
    * Deserializes a CameraPublisher stored in a config object, and returns the resulting publisher instance.
    * The returned instance is already started.
    * @param {ROSLIB.Ros} ros ros instance to which to resulting publisher will publish

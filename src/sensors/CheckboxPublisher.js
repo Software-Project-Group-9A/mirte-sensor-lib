@@ -1,4 +1,5 @@
 const SensorPublisher = require('./SensorPublisher.js');
+const {positionElement} = require('../util/styleUtils.js');
 
 /**
  * CheckboxPublisher publishes the state of an HTML checkbox.
@@ -71,6 +72,30 @@ class CheckboxPublisher extends SensorPublisher {
     super.stop();
 
     this.checkbox.removeEventListener('change', this.change);
+  }
+
+  /**
+   * Deserializes a Checkbox stored in a config object, and returns the resulting publisher instance.
+   * The returned instance is already started.
+   * @param {ROSLIB.Ros} ros ros instance to which to resulting publisher will publish
+   * @param {Object} config object with the following keys:
+   * @param {string} config.name name of the publisher to create
+   * @param {number} config.x distance from right side of container
+   * @param {number} config.y distance from top side of container
+   * @param {HTMLElement} targetElement HTML element in which to generate necessary sensor UI elements
+   * @return {GPSDeclinationPublisher} GPSDeclinationPublisher described in the provided config parameter
+   */
+  static readFromConfig(ros, config, targetElement) {
+    // initialize checkbox
+    const checkbox = window.document.createElement('input');
+    checkbox.type = 'checkbox';
+
+    positionElement(checkbox, targetElement, config.x, config.y, config.name);
+
+    const publisher = new CheckboxPublisher(ros, '/mirte/phone_checkbox/' + config.name, checkbox);
+    publisher.start();
+
+    return publisher;
   }
 }
 

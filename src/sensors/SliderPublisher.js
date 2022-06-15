@@ -76,7 +76,7 @@ class SliderPublisher extends IntervalPublisher {
     slider.min = 0;
     slider.max = 100;
 
-    positionElement(slider, targetElement, config.x, config.y);
+    positionElement(slider, targetElement, config.x, config.y, config.name);
 
     const publisher = new SliderPublisher(ros, '/mirte/phone_slider/' + config.name, slider, config.frequency);
     publisher.start();
