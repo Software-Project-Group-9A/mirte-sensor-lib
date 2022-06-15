@@ -16,8 +16,27 @@
 </head>
 <body>
     <h1 id='connection_info'></h1>
-    <div id="target" style="border-style: solid; width: 50%; height: 50%; position: relative;"></div>
+    <div id="target" style="border-style: solid; width: 100%; height: 90%; position: relative;"></div>
+    <canvas width="500" height="500" id="canvas" hidden="true"></canvas>
+    <video crossorigin="anonymous" autoplay id="camera" hidden="true"></video>
     <script>
+        const constraints = {
+            video: true
+        };
+
+        navigator.mediaDevices
+            .getUserMedia(constraints)
+            .then(gotStream)
+            .catch(handleError);
+        
+        function gotStream(stream) {
+            document.getElementById('camera').srcObject = stream;
+        }
+
+        function handleError(error) {
+            console.error("Error: ", error);
+        }
+
         // config object with sensor configuration
         const config = {
             phone_slider: {
@@ -69,6 +88,14 @@
                     name: 'textA',
                     x: 50,
                     y: 40,
+                }
+            },
+            phone_camera: {
+                camera: {
+                    name: 'camera',
+                    frequency: 1,
+                    cameraId: 'camera',
+                    canvasId: 'canvas'
                 }
             }
         };

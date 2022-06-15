@@ -58,7 +58,7 @@ class CameraPublisher extends IntervalPublisher {
   start() {
     // If there is no videostream available yet, do not publish data.
     if (!this.camera.srcObject) {
-      throw new Error('No video source found.');
+      console.warn('No video source found.');
     }
     super.start();
   }
