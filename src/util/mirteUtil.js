@@ -7,7 +7,7 @@ const CameraPublisher = require('../sensors/CameraPublisher');
 const SliderPublisher = require('../sensors/SliderPublisher');
 const ButtonPublisher = require('../sensors/ButtonPublisher');
 const TextPublisher = require('../sensors/TextPublisher');
-const CheckboxPublisher = require('../sensors/CheckBoxPublisher');
+const CheckboxPublisher = require('../sensors/CheckboxPublisher');
 /**
  * Array containing deserializers for every type of sensor.
  * An deserializers is a function that takes a ros instance and a properties object,
