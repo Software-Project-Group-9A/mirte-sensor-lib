@@ -1,30 +1,20 @@
 /**
- *
- * @param {HTMLElement} element
- * @param {HTMLElement} parent
- * @param {number} x
- * @param {number} y
- * @param {string} name
+ * Positions an element within its parent.
+ * This position is relative to the width and height of the parent element.
+ * @param {HTMLElement} element element to position inside parent.
+ * @param {HTMLElement} parent parent to place element in.
+ * @param {number} x distance from right side of parent, as a percentage of its total width
+ * @param {number} y distance from top side of parent, as a percentage of its total height
  */
-function positionElement(element, parent, x, y, name) {
-  // create div to hold element
-  const div = window.document.createElement('div');
-  const style = div.style;
+function positionElement(element, parent, x, y) {
+  // set position
+  const style = element.style;
   style.setProperty('position', 'absolute');
   style.setProperty('left', x + '%');
   style.setProperty('top', y + '%');
 
-  // insert label and element into div
-  const label = window.document.createElement('label');
-  label.innerHTML = name;
-
-  const br = window.document.createElement('br');
-
-  div.appendChild(label);
-  div.appendChild(br);
-  div.appendChild(element);
-
-  parent.appendChild(div);
+  // add to parent
+  parent.appendChild(element);
 }
 
 module.exports = {

@@ -1,7 +1,5 @@
 require('../../globalSetup.js');
 const assert = require('assert');
-// Sinon library for mocking
-const sinon = require('sinon');
 
 const {document} = global.window;
 
