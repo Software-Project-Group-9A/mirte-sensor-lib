@@ -207,6 +207,7 @@ describe('Test TextPublisher', function() {
       const targetDiv = document.createElement('div');
       const config = {
         name: 'textInputA',
+        topicPath: '/mirte/phone_text_intput',
       };
 
       TextPublisher.readFromConfig(ros, config, targetDiv);
@@ -221,6 +222,7 @@ describe('Test TextPublisher', function() {
       const targetDiv = document.createElement('div');
       const config = {
         name: 'textInputA',
+        topicPath: '/mirte/phone_text_input',
       };
 
       const publisher = TextPublisher.readFromConfig(ros, config, targetDiv);

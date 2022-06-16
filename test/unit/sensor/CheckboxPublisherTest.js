@@ -175,6 +175,7 @@ describe('Test CheckboxPublisher', function() {
       const targetDiv = document.createElement('div');
       const config = {
         name: 'checkbox',
+        topicPath: '/mirte/phone_checkbox',
         x: 30,
         y: 20,
       };

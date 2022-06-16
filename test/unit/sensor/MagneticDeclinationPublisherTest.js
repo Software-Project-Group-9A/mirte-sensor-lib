@@ -167,12 +167,13 @@ describe('Test MagneticDeclinationPublisher', function() {
       const ros = new ROSLIB.Ros();
       const config = {
         name: compassName,
+        topicPath: 'mirte/phone_magnetic_declination',
         frequency: frequency,
       };
 
       const publisher = MagneticDeclinationPublisher.readFromConfig(ros, config);
 
-      const topicName = 'mirte/phone_magnetic_declination/' + compassName;
+      const topicName = config.topicPath + '/' + compassName;
       assert(publisher instanceof MagneticDeclinationPublisher);
       assert(publisher.started);
       assert.equal(publisher.topic.name, topicName);

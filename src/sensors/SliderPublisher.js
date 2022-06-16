@@ -65,6 +65,8 @@ class SliderPublisher extends IntervalPublisher {
    * @param {ROSLIB.Ros} ros ros instance to which to resulting publisher will publish
    * @param {Object} config object with the following keys:
    * @param {string} config.name name of the publisher to create
+   * @param {string} config.topicPath - path to location of topic of publisher.
+   *  Publisher will publish to the topic topicPath/name
    * @param {number} config.frequency name of the publisher to create
    * @param {HTMLElement} targetElement HTML element in which to generate necessary sensor UI elements
    * @return {GPSDeclinationPublisher} GPSDeclinationPublisher described in the provided config parameter
@@ -78,7 +80,8 @@ class SliderPublisher extends IntervalPublisher {
 
     positionElement(slider, targetElement, config.x, config.y, config.name);
 
-    const publisher = new SliderPublisher(ros, '/mirte/phone_slider/' + config.name, slider, config.frequency);
+    const topicName = config.topicPath + '/' + config.name;
+    const publisher = new SliderPublisher(ros, topicName, slider, config.frequency);
     publisher.start();
 
     return publisher;

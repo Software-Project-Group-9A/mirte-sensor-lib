@@ -288,6 +288,7 @@ describe('Test ButtonPublisher', function() {
       const targetDiv = document.createElement('div');
       const config = {
         name: 'buttonA',
+        topicPath: '/mirte/phone_button',
         x: 30,
         y: 20,
       };

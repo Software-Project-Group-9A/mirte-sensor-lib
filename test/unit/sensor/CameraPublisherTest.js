@@ -81,6 +81,7 @@ describe('Test CamerPublisher', function() {
       const config = {
         name: cameraName,
         frequency: frequency,
+        topicPath: '/mirte/phone_camera',
         cameraId: videoId,
         canvasId: canvasId,
       };
@@ -96,7 +97,7 @@ describe('Test CamerPublisher', function() {
 
       const publisher = CameraPublisher.readFromConfig(ros, config);
 
-      const topicName = 'mirte/phone_camera/' + cameraName;
+      const topicName = config.topicPath + '/' + cameraName;
       assert(publisher instanceof CameraPublisher);
       assert(publisher.started);
       assert.equal(publisher.topic.name, topicName);

@@ -286,12 +286,13 @@ describe('Test GPSDeclinationPublisher', function() {
       const ros = new ROSLIB.Ros();
       const config = {
         name: compassName,
+        topicPath: 'mirte/phone_gps_declination',
         frequency: frequency,
       };
 
       const publisher = GPSDeclinationPublisher.readFromConfig(ros, config);
 
-      const topicName = 'mirte/phone_gps_declination/' + compassName;
+      const topicName = config.topicPath + '/' + compassName;
       assert(publisher instanceof GPSDeclinationPublisher);
       assert(publisher.started);
       assert.equal(publisher.topic.name, topicName);

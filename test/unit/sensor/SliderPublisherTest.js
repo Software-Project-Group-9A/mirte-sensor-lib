@@ -112,6 +112,7 @@ describe('SliderPublisher', function() {
       const targetDiv = document.createElement('div');
       const config = {
         name: 'sliderA',
+        topicPath: '/mirte/phone_slider',
         frequency: 20.0,
       };
 
@@ -127,6 +128,7 @@ describe('SliderPublisher', function() {
       const targetDiv = document.createElement('div');
       const config = {
         name: 'sliderA',
+        topicPath: '/mirte/phone_slider',
       };
 
       const publisher = SliderPublisher.readFromConfig(ros, config, targetDiv);

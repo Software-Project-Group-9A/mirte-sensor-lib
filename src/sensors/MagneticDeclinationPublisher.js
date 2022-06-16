@@ -127,10 +127,12 @@ class MagneticDeclinationPublisher extends IntervalPublisher {
    * @param {Object} config object with the following keys:
    * @param {string} config.name - name of the publisher to create
    * @param {number} config.frequency - name of the publisher to create
+   * @param {string} config.topicPath - path to location of topic of publisher.
+   *  Publisher will publish to the topic topicPath/name
    * @return {MagneticDeclinationPublisher} MagneticDeclinationPublisher described in the provided properties parameter
    */
   static readFromConfig(ros, config) {
-    const topicName = 'mirte/phone_magnetic_declination/' + config.name;
+    const topicName = config.topicPath + '/' + config.name;
     const publisher = new MagneticDeclinationPublisher(ros, topicName);
     publisher.start();
     publisher.setPublishFrequency(config.frequency);

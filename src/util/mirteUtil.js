@@ -48,6 +48,8 @@ function readSensorsFromConfig(config, ros, targetElement) {
 
     // loop through all instances, and publish them
     for (const instanceProperties of Object.values(sensorInstances)) {
+      // tell the sensor initializers at which path the topic for the publisher should be generated
+      instanceProperties.topicPath = '/mirte/' + sensorType;
       const sensorInitializer = sensorDeserializers[sensorType];
       const sensorPublisher = sensorInitializer(ros, instanceProperties, targetElement);
       sensorMap.set(sensorPublisher.topic.name, sensorPublisher);
