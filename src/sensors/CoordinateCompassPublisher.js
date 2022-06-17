@@ -123,14 +123,6 @@ class CoordinateCompassPublisher extends IntervalPublisher {
 
     window.document.body.appendChild(permbutton);
   }
-  /**
-   * Callback for when error occurs while reading sensor data.
-   * @param {Error} event containing error info.
-   */
-  onError(event) {
-    console.log('Error: ' + event);
-    throw Error('ERROR!');
-  }
 
   /**
    * Helper method for angle calculation

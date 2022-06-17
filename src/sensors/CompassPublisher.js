@@ -83,15 +83,6 @@ class CompassPublisher extends IntervalPublisher {
   }
 
   /**
-   * Callback for when error occurs while reading sensor data.
-   * @param {Error} event containing error info.
-   */
-  onError(event) {
-    console.log('Error: ' + event);
-    throw Error('ERROR!');
-  }
-
-  /**
      * Callback for reading orientation data.
      * context of object that called callback.
      *
