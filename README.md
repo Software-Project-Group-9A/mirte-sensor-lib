@@ -21,6 +21,7 @@ Lastly, the library allows a ROS instance to send data to a mobile phone by havi
 - Image: Images sent by a ROS instance can be displayed.
 - Text: Text sent by a ROS instance can be displayed.
 
+A detailed documentation of the library can be found through `/doc/index.html`
 ## Dependencies
 
 This library depends on [roslibjs](https://github.com/RobotWebTools/roslibjs "RosLibJs")
