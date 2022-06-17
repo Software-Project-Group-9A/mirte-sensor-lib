@@ -3,7 +3,7 @@ const IntervalPublisher = require('./IntervalPublisher.js');
 const NotSupportedError = require('../error/NotSupportedError');
 
 /**
- * <p> <b> VERY IMPORTANT: This feature is not fully suported over all browsers
+ * <p> <b> This feature is not fully suported over all browsers
  * To enable in Chrome, go to: chrome://flags/
  * There enable: "Generic Sensor Extra Classes" </b> </p>
  *
