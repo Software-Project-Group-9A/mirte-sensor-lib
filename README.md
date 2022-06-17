@@ -107,7 +107,7 @@ The documentation will be generated in the ```/doc``` folder of the project.
 | Picture | Name | Email |
 |---|---|---|
 | <img src="https://gitlab.ewi.tudelft.nl/uploads/-/system/user/avatar/3539/avatar.png?width=400" width="60"/> | Mike Segers | M.Segers-1@student.tudelft.nl |
-| <img src="https://cdn.discordapp.com/attachments/965893530251845655/968054757249929246/unknown.png" width="60"/> | Tijs Lenssen | T.Lenssen@student.tudelft.nl |
+| <img src="https://gitlab.ewi.tudelft.nl/uploads/-/system/user/avatar/3573/avatar.png?width=400" width="60"/> | Tijs Lenssen | T.Lenssen@student.tudelft.nl |
 | <img src="https://gitlab.ewi.tudelft.nl/uploads/-/system/user/avatar/2546/avatar.png?width=400" width="60"/> | Anish Jaggoe | A.S.H.Jaggoe@student.tudelft.nl |
 | <img src="https://gitlab.ewi.tudelft.nl/uploads/-/system/user/avatar/3729/avatar.png?width=400" width="60"/> | Pieter Carton | P.A.Carton@student.tudelft.nl |
 | <img src="https://gitlab.ewi.tudelft.nl/uploads/-/system/user/avatar/3096/avatar.png?width=400" width="60"/> | Gijs van de Linde | G.vandeLinde@student.tudelft.nl |
