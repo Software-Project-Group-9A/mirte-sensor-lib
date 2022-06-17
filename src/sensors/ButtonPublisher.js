@@ -77,13 +77,14 @@ class ButtonPublisher extends SensorPublisher {
    * Start the publishing of data to ROS.
    */
   start() {
-    super.start();
     this.button.addEventListener('mousedown', this.onMouseDown);
     this.button.addEventListener('touchstart', this.onMouseDown);
     this.button.addEventListener('mouseup', this.onMouseUp);
     this.button.addEventListener('mouseleave', this.onMouseUp);
     this.button.addEventListener('touchend', this.onMouseUp);
     this.button.addEventListener('touchcancel', this.onMouseUp);
+
+    super.start();
   }
 
   /**
@@ -91,6 +92,7 @@ class ButtonPublisher extends SensorPublisher {
    */
   stop() {
     super.stop();
+
     this.button.removeEventListener('mousedown', this.onMouseDown);
     this.button.removeEventListener('touchstart', this.onMouseDown);
     this.button.removeEventListener('mouseup', this.onMouseUp);

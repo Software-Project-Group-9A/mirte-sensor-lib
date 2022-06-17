@@ -86,12 +86,13 @@ class TextPublisher extends SensorPublisher {
    * Start the publishing of data to ROS.
    */
   start() {
-    super.start();
     if (this.options.onEnter) {
       this.inputElement.addEventListener('keyup', this.onKeyUp);
     } else {
       this.inputElement.addEventListener('input', this.onInput);
     }
+
+    super.start();
   }
 
   /**
@@ -99,6 +100,7 @@ class TextPublisher extends SensorPublisher {
    */
   stop() {
     super.stop();
+
     if (this.options.onEnter) {
       this.inputElement.removeEventListener('keyup', this.onKeyUp);
     } else {

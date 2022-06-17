@@ -53,8 +53,6 @@ class GPSPublisher extends IntervalPublisher {
    * Start the publishing of data to ROS with frequency of <freq> Hz.
    */
   start() {
-    super.start();
-
     // Callback for reading position data
     const successCallback = function(pos) {
       this.position = pos;
@@ -68,6 +66,8 @@ class GPSPublisher extends IntervalPublisher {
     this.watchId = window.navigator.geolocation.watchPosition(
         successCallback,
         errorCallback);
+
+    super.start();
   }
 
   /**
@@ -75,6 +75,7 @@ class GPSPublisher extends IntervalPublisher {
    */
   stop() {
     super.stop();
+
     window.navigator.geolocation.clearWatch(this.watchId);
   }
 

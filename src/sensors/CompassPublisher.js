@@ -36,8 +36,6 @@ class CompassPublisher extends IntervalPublisher {
    * Start the publishing of data to ROS with frequency of <freq> Hz.
    */
   start() {
-    super.start();
-
     /*
     * Support for iOS
     * For DeviceOrientationEvent and DeviceMotionEvent to work on Safari on iOS 13 and up,
@@ -54,6 +52,8 @@ class CompassPublisher extends IntervalPublisher {
         this.onReadOrientation(event);
       }
     }, true);
+
+    super.start();
   }
 
   /**

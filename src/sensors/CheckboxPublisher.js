@@ -59,9 +59,9 @@ class CheckboxPublisher extends SensorPublisher {
    * Start the publishing of data to ROS.
    */
   start() {
-    super.start();
-
     this.checkbox.addEventListener('change', this.change);
+
+    super.start();
   }
 
   /**
