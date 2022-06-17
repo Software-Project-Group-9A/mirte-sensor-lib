@@ -33,23 +33,6 @@ class IntervalPublisher extends SensorPublisher {
   }
 
   /**
-     * Captures sensor-data at current timeframe and
-     * publishes this to the topic instantly.
-     */
-  createSnapshot() {
-    if (!this.msg) {
-      throw Error('createSnapshot has not been implemented correctly');
-    }
-    if (isEqual(this.msg, this.alReadyPublishedMsg)) {
-      return;
-    }
-
-    this.topic.publish(this.msg);
-
-    this.alReadyPublishedMsg = this.msg;
-  }
-
-  /**
      * Start the publishing of data to ROS with frequency of <freq> Hz.
      */
   start() {
@@ -67,6 +50,23 @@ class IntervalPublisher extends SensorPublisher {
     super.stop();
 
     clearInterval(this.timer);
+  }
+
+  /**
+     * Captures sensor-data at current timeframe and
+     * publishes this to the topic instantly.
+     */
+  createSnapshot() {
+    if (!this.msg) {
+      throw Error('createSnapshot has not been implemented correctly');
+    }
+    if (isEqual(this.msg, this.alReadyPublishedMsg)) {
+      return;
+    }
+
+    this.topic.publish(this.msg);
+
+    this.alReadyPublishedMsg = this.msg;
   }
 
   /**

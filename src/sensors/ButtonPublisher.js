@@ -43,7 +43,9 @@ class ButtonPublisher extends SensorPublisher {
         return;
       }
       flag = true;
-      const msg = this.createBoolMsg(true);
+      const msg = new ROSLIB.Message({
+        data: true,
+      });
       this.topic.publish(msg);
     }.bind(this);
 
@@ -57,20 +59,11 @@ class ButtonPublisher extends SensorPublisher {
         return;
       }
       flag = false;
-      const msg = this.createBoolMsg(false);
+      const msg = new ROSLIB.Message({
+        data: false,
+      });
       this.topic.publish(msg);
     }.bind(this);
-  }
-
-  /**
-   * Creates a new ROS std_msgs/Bool message, containing the supplied boolean value.
-   * @param {boolean} bool boolean to include in message
-   * @return {ROSLIB.Message} a new std_msgs/Bool message, containing the supplied boolean value.
-   */
-  createBoolMsg(bool) {
-    return new ROSLIB.Message({
-      data: bool,
-    });
   }
 
   /**
