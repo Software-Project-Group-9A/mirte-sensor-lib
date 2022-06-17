@@ -57,6 +57,19 @@ class CompassPublisher extends IntervalPublisher {
   }
 
   /**
+   * Stops the publishing of data to ROS.
+   */
+  stop() {
+    super.stop();
+
+    window.removeEventListener('deviceorientationabsolute', (event) => {
+      if (event.isTrusted) {
+        this.onReadOrientation(event);
+      }
+    }, true);
+  }
+
+  /**
    * Adds a button to the document to ask for permission to use IMU sensor on iOS.
    */
   requestPermission() {
