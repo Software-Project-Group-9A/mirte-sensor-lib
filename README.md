@@ -2,11 +2,19 @@
 
 ## About 
 
-The Mirte Sensor Library is JavaScript library for getting the sensor data of a mobile phone into ROS.
+The Mirte Sensor Library is JavaScript library for getting sensor data of a mobile phone and sending this data to a ROS instance. This is done through a webpage on the mobile phone.
 
-It currently offers support for publishing IMU, GPS, compass and camera sensor data.
+It currently offers support for publishing data from the following sensors:
+- Inertial Measurement Unit(IMU)
+- GPS
+- Compass (to magnetic north or specific coordinate)
+- Camera
+- Flashlight
+- Ambient light sensor 
 
-Additionally, it allows for publishing the state of certain HTML UI elements to ROS.
+Additionally, it allows for publishing the state of certain HTML UI elements, such as a slider or textbox, to ROS.
+
+
 
 ## Dependencies
 

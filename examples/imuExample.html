@@ -1,26 +1,23 @@
-<script src="http://static.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
-<script src="../build/RosSensorLib.min.js"></script>
-<script src="https://threejs.org/build/three.js"></script>
-<h1 id="connection_info"> status </h1>
-<script>
-    /* Connect to ROS*/
-    var ros = new ROSLIB.Ros();
+<html>
+    <head>
+        <script src="http://static.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
+        <script src="../build/RosSensorLib.min.js"></script>
+        <h1 id="connection_info"> status </h1>
+        <script>
+            /* Connect to ROS*/
+            var ros = new ROSLIB.Ros();
 
-    ros.on('connection', function() {document.getElementById("connection_info").innerHTML = "Connected to webserver."});
+            ros.on('connection', function() {document.getElementById("connection_info").innerHTML = "Connected to webserver."});
 
-    ros.on('error', function(error) { document.getElementById("connection_info").innerHTML = "Failed to connect to webserver."; });
+            ros.on('error', function(error) { document.getElementById("connection_info").innerHTML = "Failed to connect to webserver."; });
 
-    ros.on('close', function() { document.getElementById("connection_info").innerHTML = 'Connection to websocket server closed.'; });
+            ros.on('close', function() { document.getElementById("connection_info").innerHTML = 'Connection to websocket server closed.'; });
 
-    /* Set up a topic, any IMU data will be published to /gyro*/
-    var topic = new ROSLIB.Topic({
-        ros : ros,
-        name : '/gyro',
-        messageType: 'sensor_msgs/Imu'
-    });
-
-    ros.connect('ws://localhost:9090');
-
-    var imu = new SENSORLIB.IMUPublisher(ros, '/gyro');
-    imu.start();
-</script>
+            ros.connect('ws://localhost:9090');
+        </script>
+    </head>
+    <script>
+        var imu = new SENSORLIB.IMUPublisher(ros, '/gyro');
+        imu.start();
+    </script>
+</html>
