@@ -1,8 +1,8 @@
-const GPSPublisher = require('../sensors/GPSPublisher');
-const IMUPublisher = require('../sensors/IMUPublisher');
+const CameraPublisher = require('../sensors/CameraPublisher');
 const CompassPublisher = require('../sensors/CompassPublisher');
 const CoordinateCompassPublisher = require('../sensors/CoordinateCompassPublisher');
-const CameraPublisher = require('../sensors/CameraPublisher');
+const GPSPublisher = require('../sensors/GPSPublisher');
+const IMUPublisher = require('../sensors/IMUPublisher');
 
 /**
  * Array containing deserializers for every type of sensor.
