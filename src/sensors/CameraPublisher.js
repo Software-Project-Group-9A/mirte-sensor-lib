@@ -6,6 +6,8 @@ const IntervalPublisher = require('./IntervalPublisher');
  *
  * The data resulting from the button interactions is published as a
  * ROS sensor_msgs/Image Message message.
+ * @see Uses the following example:
+ * {@link http://wiki.ros.org/roslibjs/Tutorials/Publishing%20video%20and%20IMU%20data%20with%20roslibjs}
  */
 class CameraPublisher extends IntervalPublisher {
   /**
