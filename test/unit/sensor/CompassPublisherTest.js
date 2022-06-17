@@ -1,17 +1,17 @@
 require('../../globalSetup.js');
 
 // Module to test
-const MagneticDeclinationPublisher =
-    require('../../../src/sensors/MagneticDeclinationPublisher.js');
+const CompassPublisher =
+    require('../../../src/sensors/CompassPublisher.js');
 
 // define JSDOM window in global scope, if not already defined
-describe('Test MagneticDeclinationPublisher', function() {
+describe('Test CompassPublisher', function() {
   describe('#constructor(ros, topicName, hz)', function() {
     it('should correctly construct a publisher and not start reading yet', function() {
       let publisher;
       assert.doesNotThrow(
           () => {
-            publisher = new MagneticDeclinationPublisher(new ROSLIB.Ros(), 'topic');
+            publisher = new CompassPublisher(new ROSLIB.Ros(), 'topic');
           },
           (error) => {
             return false;
@@ -32,7 +32,7 @@ describe('Test MagneticDeclinationPublisher', function() {
       assert.equal(global.window.navigator.userAgent,
           'Mozilla/5.0 (iPhone; CPU OS 13_1_1 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) Mobile/9B206');
 
-      const publisher = sinon.spy(new MagneticDeclinationPublisher(new ROSLIB.Ros(), 'topic'));
+      const publisher = sinon.spy(new CompassPublisher(new ROSLIB.Ros(), 'topic'));
 
       assert.equal(publisher.requestPermission.callCount, 0);
 
@@ -44,16 +44,53 @@ describe('Test MagneticDeclinationPublisher', function() {
   });
 
   describe('#requestPermission', function() {
-    it('should create a new button', function() {
-      sinon.spy(new MagneticDeclinationPublisher(new ROSLIB.Ros(), 'topic'));
+    // Set-up sandbox
+    const sandbox = sinon.createSandbox();
 
-      assert(global.window.document.querySelector('button') !== null);
+    beforeEach(function() {
+      // Reset entire global window
+      global.window.alert = function() {};
+      sandbox.spy(global.window.document);
+    });
+
+    afterEach(function() {
+      sandbox.restore();
+    });
+
+
+    it('should create a new button for iOS', function() {
+      // Arrange
+      global.window.navigator.__defineGetter__('userAgent', () => {
+        return 'Mozilla/5.0 (iPhone; CPU OS 13_1_1 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) Mobile/9B206';
+      });
+
+      // Act
+      new CompassPublisher(new ROSLIB.Ros(), 'topic');
+
+      // Assert
+      assert.equal(global.window.navigator.userAgent,
+          'Mozilla/5.0 (iPhone; CPU OS 13_1_1 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) Mobile/9B206');
+      assert(!global.window.document.createElement.called);
+    });
+
+    it('should not create a new button for Android', function() {
+      // Arrange
+      global.window.navigator.__defineGetter__('userAgent', () => {
+        return ' Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1.5) Gecko/20091102 Firefox/3.5.5' +
+         '(.NET CLR 3.5.30729)';
+      });
+
+      // Act
+      new CompassPublisher(new ROSLIB.Ros(), 'topic');
+
+      // Assert
+      assert(!global.window.document.createElement.called);
     });
   });
   describe('#onReadOrientation()', function() {
     it('should find the current location',
         function() {
-          const publisher = sinon.spy(new MagneticDeclinationPublisher(new ROSLIB.Ros(), 'topic'));
+          const publisher = sinon.spy(new CompassPublisher(new ROSLIB.Ros(), 'topic'));
 
           publisher.start();
 
@@ -98,7 +135,7 @@ describe('Test MagneticDeclinationPublisher', function() {
     }
 
     it('should create snapshot', function() {
-      const publisher = sinon.spy(new MagneticDeclinationPublisher(new ROSLIB.Ros(), 'topic'));
+      const publisher = sinon.spy(new CompassPublisher(new ROSLIB.Ros(), 'topic'));
       const topic = sinon.spy(publisher.topic);
 
       global.eventParam = {
@@ -129,7 +166,7 @@ describe('Test MagneticDeclinationPublisher', function() {
       assert.deepEqual(topic.publish.getCall(0).args[0], expectedMessage);
     });
     it('should not create snapshot when orientation is not read yet', function() {
-      const publisher = sinon.spy(new MagneticDeclinationPublisher(new ROSLIB.Ros(), 'topic'));
+      const publisher = sinon.spy(new CompassPublisher(new ROSLIB.Ros(), 'topic'));
 
       global.eventParam = {
         'alpha': 0,
@@ -161,7 +198,7 @@ describe('Test MagneticDeclinationPublisher', function() {
   });
 
   describe('#readFromConfig(ros, config)', function() {
-    it('should return a started instance of MagneticDeclinationPublisher', function() {
+    it('should return a started instance of CompassPublisher', function() {
       const compassName = 'compass';
       const frequency = 1.0;
       const ros = new ROSLIB.Ros();
@@ -170,10 +207,10 @@ describe('Test MagneticDeclinationPublisher', function() {
         frequency: frequency,
       };
 
-      const publisher = MagneticDeclinationPublisher.readFromConfig(ros, config);
+      const publisher = CompassPublisher.readFromConfig(ros, config);
 
-      const topicName = 'mirte/phone_magnetic_declination/' + compassName;
-      assert(publisher instanceof MagneticDeclinationPublisher);
+      const topicName = 'mirte/phone_compass/' + compassName;
+      assert(publisher instanceof CompassPublisher);
       assert(publisher.started);
       assert.equal(publisher.topic.name, topicName);
       assert.equal(publisher.freq, frequency);

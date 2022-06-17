@@ -1,7 +1,7 @@
 const GPSPublisher = require('../sensors/GPSPublisher');
 const IMUPublisher = require('../sensors/IMUPublisher');
-const MagneticDeclinationPublisher = require('../sensors/MagneticDeclinationPublisher');
-const GPSDeclinationPublisher = require('../sensors/GPSDeclinationPublisher');
+const CompassPublisher = require('../sensors/CompassPublisher');
+const CoordinateCompassPublisher = require('../sensors/CoordinateCompassPublisher');
 const CameraPublisher = require('../sensors/CameraPublisher');
 
 /**
@@ -11,9 +11,9 @@ const CameraPublisher = require('../sensors/CameraPublisher');
  */
 const sensorDeserializers = {
   'phone_imu': IMUPublisher.readFromConfig,
-  'phone_magnetic_declination': MagneticDeclinationPublisher.readFromConfig,
+  'phone_compass': CompassPublisher.readFromConfig,
   'phone_gps': GPSPublisher.readFromConfig,
-  'phone_gps_declination': GPSDeclinationPublisher.readFromConfig,
+  'phone_point_to_coordinate': CoordinateCompassPublisher.readFromConfig,
   'phone_camera': CameraPublisher.readFromConfig,
 };
 
@@ -27,7 +27,7 @@ const sensorDeserializers = {
 function readSensorsFromConfig(config, ros) {
   const sensorMap = new Map();
 
-  // loop through all publishable sensor types, e.g. imu or magnetic_declination
+  // loop through all publishable sensor types, e.g. imu or compass
   // (see sensorDeserializers array)
   for (const sensorType of Object.keys(sensorDeserializers)) {
     const sensorInstances = config[sensorType];

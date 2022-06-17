@@ -9,14 +9,14 @@ const PermissionDeniedError = require('../error/PermissionDeniedError.js');
 const IntervalPublisher = require('./IntervalPublisher.js');
 
 /**
- * MagneticDeclinationPublisher publishes the rotation as a compass
+ * CompassPublisher publishes the rotation as a compass
  * By default it publishes data at the interval rate
  * from parrent class IntervalPublisher
  *
  * The data resulting from the interactions is published as a
  * ROS std_msgs/Int32 message.
  */
-class MagneticDeclinationPublisher extends IntervalPublisher {
+class CompassPublisher extends IntervalPublisher {
   /**
    * Creates a new sensor publisher that publishes to the provided topic.
    * @param {ROSLIB.Ros} ros a ROS instance to publish to
@@ -103,35 +103,34 @@ class MagneticDeclinationPublisher extends IntervalPublisher {
   }
 
   /**
-   * Puts the magnetic declination
-   * in a ROS message and publishes it
+   * Puts the magnetic declination in a ROS message and publishes it
    */
   createSnapshot() {
     if (!this.orientationReady) {
       throw Error('Orientation is not read yet!');
     }
 
-    const MagneticDeclinationMessage = new ROSLIB.Message({
+    const Compass = new ROSLIB.Message({
       data: this.alpha,
     });
 
-    this.msg = MagneticDeclinationMessage;
+    this.msg = Compass;
     super.createSnapshot();
   }
 
   /**
-   * Deserializes a MagneticDeclinationPublisher stored in a config object,
+   * Deserializes a CompassPublisher stored in a config object,
    * and returns the resulting publisher instance.
    * The returned instance is already started.
    * @param {ROSLIB.Ros} ros ros instance to which to resulting publisher will publish
    * @param {Object} config object with the following keys:
    * @param {string} config.name - name of the publisher to create
    * @param {number} config.frequency - name of the publisher to create
-   * @return {MagneticDeclinationPublisher} MagneticDeclinationPublisher described in the provided properties parameter
+   * @return {CompassPublisher} CompassPublisher described in the provided properties parameter
    */
   static readFromConfig(ros, config) {
-    const topicName = 'mirte/phone_magnetic_declination/' + config.name;
-    const publisher = new MagneticDeclinationPublisher(ros, topicName);
+    const topicName = 'mirte/phone_compass/' + config.name;
+    const publisher = new CompassPublisher(ros, topicName);
     publisher.start();
     publisher.setPublishFrequency(config.frequency);
 
@@ -139,4 +138,4 @@ class MagneticDeclinationPublisher extends IntervalPublisher {
   }
 }
 
-module.exports = MagneticDeclinationPublisher;
+module.exports = CompassPublisher;

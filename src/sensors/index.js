@@ -12,6 +12,6 @@ module.exports = {
   CameraPublisher: require('./CameraPublisher'),
   TextPublisher: require('./TextPublisher'),
   GPSPublisher: require('./GPSPublisher'),
-  MagneticDeclinationPublisher: require('./MagneticDeclinationPublisher'),
-  GPSDeclinationPublisher: require('./GPSDeclinationPublisher'),
+  CompassPublisher: require('./CompassPublisher'),
+  CoordinateCompassPublisher: require('./CoordinateCompassPublisher'),
 };
