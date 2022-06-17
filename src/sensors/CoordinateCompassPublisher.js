@@ -1,9 +1,3 @@
-/*
- Used sources:
-    https://dev.to/orkhanjafarovr/real-compass-on-mobile-browsers-with-javascript-3emi
-    https://answers.ros.org/question/65971/how-can-i-publish-an-integer-and-string-int16-string-using-roslibjs/
-*/
-
 // Dependencies
 const IntervalPublisher = require('./IntervalPublisher.js');
 const PermissionDeniedError = require('../error/PermissionDeniedError.js');
@@ -17,6 +11,10 @@ const NotSupportedError = require('../error/NotSupportedError');
  *
  * The data resulting from the interactions is published as a
  * ROS std_msgs/Int32 message.
+ *
+ * @see Uses the following examples:
+ * {@link https://dev.to/orkhanjafarovr/real-compass-on-mobile-browsers-with-javascript-3emi}
+ * {@link https://answers.ros.org/question/65971/how-can-i-publish-an-integer-and-string-int16-string-using-roslibjs/}
  */
 class CoordinateCompassPublisher extends IntervalPublisher {
   /**
