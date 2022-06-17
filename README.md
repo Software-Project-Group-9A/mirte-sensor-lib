@@ -7,14 +7,19 @@ The Mirte Sensor Library is JavaScript library for getting sensor data of a mobi
 It currently offers support for publishing data from the following sensors:
 - Inertial Measurement Unit(IMU)
 - GPS
-- Compass (to magnetic north or specific coordinate)
+- Compass (to magnetic north or to a specific coordinate)
 - Camera
-- Flashlight
 - Ambient light sensor 
 
-Additionally, it allows for publishing the state of certain HTML UI elements, such as a slider or textbox, to ROS.
+Additionally, it allows for publishing the state of certain HTML UI elements to ROS. These elements include but are not limited to:
+- Text input box
+- Slider
+- Checkbox
 
-
+Lastly, the library allows a ROS instance to send data to a mobile phone by having a webpage subscribe to a ROS topic. This currently supports the following:
+- Flashlight: The flashlight of a phone can be turned on or off.
+- Image: Images sent by a ROS instance can be displayed.
+- Text: Text sent by a ROS instance can be displayed.
 
 ## Dependencies
 
