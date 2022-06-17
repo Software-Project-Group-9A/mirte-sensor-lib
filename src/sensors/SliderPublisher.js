@@ -36,24 +36,15 @@ class SliderPublisher extends IntervalPublisher {
   }
 
   /**
-   * Creates a new ROS std_msgs/Int32 message, containing the supplied integer value.
-   * @param {Number} num to include in message
-   * @return {ROSLIB.Message} a new ROS std_msgs/Int32 message, containing the supplied boolean value.
-   */
-  createInt32Msg(num) {
-    return new ROSLIB.Message({
-      data: num,
-    });
-  }
-
-  /**
      * Captures sensor-data at current timeframe and
      * publishes this to the topic instantly.
      */
   createSnapshot() {
     const sliderValue = parseInt(this.slider.value);
 
-    const msg = this.createInt32Msg(sliderValue);
+    const msg = new ROSLIB.Message({
+      data: sliderValue,
+    });
     this.msg = msg;
     super.createSnapshot();
   }

@@ -75,8 +75,6 @@ class CoordinateCompassPublisher extends IntervalPublisher {
    * Start the publishing of data to ROS with frequency of <freq> Hz.
    */
   start() {
-    super.start();
-
     window.addEventListener('deviceorientationabsolute', (event) => {
       if (event.isTrusted) {
         this.onReadOrientation(event);
@@ -88,6 +86,8 @@ class CoordinateCompassPublisher extends IntervalPublisher {
         (error) => {
           throw Error('failed to watch position');
         });
+
+    super.start();
   }
 
   /**
@@ -95,6 +95,7 @@ class CoordinateCompassPublisher extends IntervalPublisher {
    */
   stop() {
     super.stop();
+
     window.navigator.geolocation.clearWatch(this.watchId);
   }
 

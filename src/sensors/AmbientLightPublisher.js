@@ -39,12 +39,12 @@ class AmbientLightPublisher extends IntervalPublisher {
    * Start the publishing of data to ROS with frequency of <freq> Hz.
    */
   start() {
-    super.start();
-
     this.sensor.addEventListener('reading', (event) => {
       this.light = this.sensor.illuminance;
     });
     this.sensor.start();
+
+    super.start();
   }
 
   /**
@@ -55,7 +55,9 @@ class AmbientLightPublisher extends IntervalPublisher {
 
     this.sensor.stop();
 
-    this.sensor.removeEventListener('reading');
+    this.sensor.removeEventListener('reading', (event) => {
+      this.light = this.sensor.illuminance;
+    });
   }
 
   /**

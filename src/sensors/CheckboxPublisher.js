@@ -43,6 +43,23 @@ class CheckboxPublisher extends SensorPublisher {
     }.bind(this);
   }
 
+  /**
+   * Start the publishing of data to ROS.
+   */
+  start() {
+    this.checkbox.addEventListener('change', this.change);
+
+    super.start();
+  }
+
+  /**
+   * Stop the publishing of data to ROS.
+   */
+  stop() {
+    super.stop();
+
+    this.checkbox.removeEventListener('change', this.change);
+  }
 
   /**
    * Creates and publishes a new ROS std_msgs/Bool message, containing the supplied boolean value.
@@ -53,24 +70,6 @@ class CheckboxPublisher extends SensorPublisher {
       data: bool,
     });
     this.topic.publish(msg);
-  }
-
-  /**
-   * Start the publishing of data to ROS.
-   */
-  start() {
-    super.start();
-
-    this.checkbox.addEventListener('change', this.change);
-  }
-
-  /**
-   * Stop the publishing of data to ROS.
-   */
-  stop() {
-    super.stop();
-
-    this.checkbox.removeEventListener('change', this.change);
   }
 }
 

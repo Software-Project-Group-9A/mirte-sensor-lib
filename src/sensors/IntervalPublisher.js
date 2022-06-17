@@ -33,6 +33,26 @@ class IntervalPublisher extends SensorPublisher {
   }
 
   /**
+     * Start the publishing of data to ROS with frequency of <freq> Hz.
+     */
+  start() {
+    const delay = 1000/this.freq;
+    const snapshotCallback = this.createSnapshot.bind(this);
+    this.timer = setInterval(snapshotCallback, delay);
+
+    super.start();
+  }
+
+  /**
+     * Stops the publishing of data to ROS.
+     */
+  stop() {
+    super.stop();
+
+    clearInterval(this.timer);
+  }
+
+  /**
      * Captures sensor-data at current timeframe and
      * publishes this to the topic instantly.
      */
@@ -47,24 +67,6 @@ class IntervalPublisher extends SensorPublisher {
     this.topic.publish(this.msg);
 
     this.alReadyPublishedMsg = this.msg;
-  }
-
-  /**
-     * Start the publishing of data to ROS with frequency of <freq> Hz.
-     */
-  start() {
-    super.start();
-    const delay = 1000/this.freq;
-    const snapshotCallback = this.createSnapshot.bind(this);
-    this.timer = setInterval(snapshotCallback, delay);
-  }
-
-  /**
-     * Stops the publishing of data to ROS.
-     */
-  stop() {
-    super.stop();
-    clearInterval(this.timer);
   }
 
   /**

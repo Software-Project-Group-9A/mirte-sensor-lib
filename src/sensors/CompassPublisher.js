@@ -36,8 +36,6 @@ class CompassPublisher extends IntervalPublisher {
    * Start the publishing of data to ROS with frequency of <freq> Hz.
    */
   start() {
-    super.start();
-
     /*
     * Support for iOS
     * For DeviceOrientationEvent and DeviceMotionEvent to work on Safari on iOS 13 and up,
@@ -50,6 +48,21 @@ class CompassPublisher extends IntervalPublisher {
     }
     // If user is not on iOS, sensor data can be read as normal.
     window.addEventListener('deviceorientationabsolute', (event) => {
+      if (event.isTrusted) {
+        this.onReadOrientation(event);
+      }
+    }, true);
+
+    super.start();
+  }
+
+  /**
+   * Stops the publishing of data to ROS.
+   */
+  stop() {
+    super.stop();
+
+    window.removeEventListener('deviceorientationabsolute', (event) => {
       if (event.isTrusted) {
         this.onReadOrientation(event);
       }

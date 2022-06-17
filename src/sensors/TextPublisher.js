@@ -55,18 +55,6 @@ class TextPublisher extends SensorPublisher {
   }
 
   /**
-   * Reads text from inputElement and publishes it.
-   */
-  publishMessage() {
-    const msg = this.createStrMsg(this.inputElement.value);
-    this.topic.publish(msg);
-
-    if (this.options.clearOnPublish) {
-      this.inputElement.value = '';
-    }
-  }
-
-  /**
    * TODO: should perhaps be it's own module, allong with other message objects
    * we might need in this project
    *
@@ -86,12 +74,13 @@ class TextPublisher extends SensorPublisher {
    * Start the publishing of data to ROS.
    */
   start() {
-    super.start();
     if (this.options.onEnter) {
       this.inputElement.addEventListener('keyup', this.onKeyUp);
     } else {
       this.inputElement.addEventListener('input', this.onInput);
     }
+
+    super.start();
   }
 
   /**
@@ -99,10 +88,26 @@ class TextPublisher extends SensorPublisher {
    */
   stop() {
     super.stop();
+
     if (this.options.onEnter) {
       this.inputElement.removeEventListener('keyup', this.onKeyUp);
     } else {
       this.inputElement.removeEventListener('input', this.onInput);
+    }
+  }
+
+  /**
+   * Reads text from inputElement and publishes it.
+   */
+  publishMessage() {
+    const msg = new ROSLIB.Message({
+      data: this.inputElement.value,
+    });
+
+    this.topic.publish(msg);
+
+    if (this.options.clearOnPublish) {
+      this.inputElement.value = '';
     }
   }
 }

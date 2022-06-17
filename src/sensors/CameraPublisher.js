@@ -32,6 +32,19 @@ class CameraPublisher extends IntervalPublisher {
   }
 
   /**
+     * Start the publishing of camera data to ROS.
+     *
+     * @throws {Error} if no video source is available.
+     */
+  start() {
+    // If there is no videostream available yet, do not publish data.
+    if (!this.camera.srcObject) {
+      throw new Error('No video source found.');
+    }
+    super.start();
+  }
+
+  /**
      * Create a snapshot of the current videostream.
      */
   createSnapshot() {
@@ -48,19 +61,6 @@ class CameraPublisher extends IntervalPublisher {
 
     this.msg = imageMessage;
     super.createSnapshot();
-  }
-
-  /**
-     * Start the publishing of camera data to ROS.
-     *
-     * @throws {Error} if no video source is available.
-     */
-  start() {
-    // If there is no videostream available yet, do not publish data.
-    if (!this.camera.srcObject) {
-      throw new Error('No video source found.');
-    }
-    super.start();
   }
 
   /**

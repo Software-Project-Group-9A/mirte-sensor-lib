@@ -1,8 +1,8 @@
 const ButtonPublisher = require('../sensors/ButtonPublisher');
 const CheckboxPublisher = require('../sensors/CheckboxPublisher');
+const ImageSubscriber = require('../actuators/ImageSubscriber');
 const SliderPublisher = require('../sensors/SliderPublisher');
 const TextPublisher = require('../sensors/TextPublisher');
-const ImageSubscriber = require('../actuators/ImageSubscriber');
 const TextSubscriber = require('../actuators/TextSubscriber');
 
 /**
