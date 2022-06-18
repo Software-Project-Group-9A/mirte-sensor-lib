@@ -1,4 +1,3 @@
-// Formula for conversion used from https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
 /**
  * Convert Euler angle notation rotation to Quaternion notation.
  * @param {number} x the x degree
@@ -7,6 +6,7 @@
  * @return {*} object containing Quaternian coordinates.
  */
 function quatFromEuler(x, y, z) {
+  // Formula for conversion used from https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
   const cos = Math.cos;
   const sin = Math.sin;
 
