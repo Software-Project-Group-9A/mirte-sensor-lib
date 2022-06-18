@@ -1,5 +1,6 @@
 const Subscriber = require('./Subscriber');
 const NotSupportedError = require('../error/NotSupportedError');
+const {positionElement} = require('../util/styleUtils');
 
 /**
  * ImageSubscriber subscribes to a ROS topic and displays any images published to that topic on a canvas.

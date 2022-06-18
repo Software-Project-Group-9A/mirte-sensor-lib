@@ -168,7 +168,7 @@ describe('ImageSubscriber', function() {
   });
   describe('#readFromConfig(ros, config, targetElement)', function() {
     it('should return the correct subscriber instance', function() {
-      const div = document.createElement('div');
+      const targetElement = document.createElement('div');
 
       const config = {
         'name': 'imageA',
@@ -177,9 +177,9 @@ describe('ImageSubscriber', function() {
         'y': 20,
       };
 
-      const subscriber = ImageSubscriber.readFromConfig(new ROSLIB.Ros(), config, div);
+      const subscriber = ImageSubscriber.readFromConfig(new ROSLIB.Ros(), config, targetElement);
 
-      assert.equal(subscriber.topic.name, '/mirte/phone_image_output/textA');
+      assert.equal(subscriber.topic.name, '/mirte/phone_image_output/imageA');
       assert.equal(targetElement.childElementCount, 1);
       const child = targetElement.firstChild;
       assert(child instanceof window.HTMLCanvasElement);

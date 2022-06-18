@@ -11,6 +11,7 @@ const SliderPublisher = require('../sensors/SliderPublisher');
 const TextPublisher = require('../sensors/TextPublisher');
 // Subscribers
 const FlashLightSubscriber = require('../actuators/FlashlightSubscriber');
+const ImageSubscriber = require('../actuators/ImageSubscriber');
 const TextSubscriber = require('../actuators/TextSubscriber');
 /**
  * Array containing deserializers for every type of sensor.
@@ -29,6 +30,7 @@ const sensorDeserializers = {
   'phone_slider': SliderPublisher.readFromConfig,
   'phone_text_input': TextPublisher.readFromConfig,
   'phone_text_output': TextSubscriber.readFromConfig,
+  'phone_image_output': ImageSubscriber.readFromConfig,
 };
 
 /**
