@@ -6,7 +6,7 @@ const SensorPublisher = require('./SensorPublisher');
 const isEqual = require('lodash.isequal');
 
 /**
- * Interface-like class that can be extended by sensors that need
+ * Parent class that can be extended by sensors that need
  * their messages to be published at regular intervals.
  * Usage requires provision of standard frequency for class in constructor
  * and implementation of createSnapshot function.
