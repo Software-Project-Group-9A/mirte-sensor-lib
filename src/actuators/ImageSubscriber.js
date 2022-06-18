@@ -47,6 +47,36 @@ class ImageSubscriber extends Subscriber {
   }
 
   /**
+   * Callback for handling incomming published message.
+   * @param {ROSLIB.Message} msg message of type sensor_msgs/Image or sensor_msgs/CompressedImage,
+   * depending on whether this subscribed is using compressed images.
+   */
+  onMessage(msg) {
+    let imageDataUrl;
+
+    if (this.compressed) {
+      imageDataUrl = ImageSubscriber.createImageDataUrl(msg.format, msg.data);
+    } else {
+      // setup canvas
+      const imageCanvas = document.createElement('canvas');
+      imageCanvas.width = msg.width;
+      imageCanvas.height = msg.height;
+      const ctx = imageCanvas.getContext('2d');
+
+      // create RGBA image data from raw pixel data in msg
+      const convertedData = ImageSubscriber.convertImageData(msg.data, msg.encoding, msg.width * msg.height);
+      const imageData = new window.ImageData(convertedData, msg.width, msg.height);
+      ctx.putImageData(imageData, 0, 0);
+
+      // create new dataURL from canvas contents
+      imageDataUrl = imageCanvas.toDataURL();
+    }
+
+    // draw image contained in dataURL to canvas
+    this.drawImage(imageDataUrl);
+  }
+
+  /**
    * Creates a data URL encoding an image in the given format with the given image data.
    * @param {String} format format of the image (e.g. png, jpeg, etc)
    * @param {String} data data of the image, in base64 format
@@ -110,36 +140,6 @@ class ImageSubscriber extends Subscriber {
     }
 
     return imageData;
-  }
-
-  /**
-   * Callback for handling incomming published message.
-   * @param {ROSLIB.Message} msg message of type sensor_msgs/Image or sensor_msgs/CompressedImage,
-   * depending on whether this subscribed is using compressed images.
-   */
-  onMessage(msg) {
-    let imageDataUrl;
-
-    if (this.compressed) {
-      imageDataUrl = ImageSubscriber.createImageDataUrl(msg.format, msg.data);
-    } else {
-      // setup canvas
-      const imageCanvas = document.createElement('canvas');
-      imageCanvas.width = msg.width;
-      imageCanvas.height = msg.height;
-      const ctx = imageCanvas.getContext('2d');
-
-      // create RGBA image data from raw pixel data in msg
-      const convertedData = ImageSubscriber.convertImageData(msg.data, msg.encoding, msg.width * msg.height);
-      const imageData = new window.ImageData(convertedData, msg.width, msg.height);
-      ctx.putImageData(imageData, 0, 0);
-
-      // create new dataURL from canvas contents
-      imageDataUrl = imageCanvas.toDataURL();
-    }
-
-    // draw image contained in dataURL to canvas
-    this.drawImage(imageDataUrl);
   }
 
   /**

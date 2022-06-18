@@ -44,7 +44,9 @@ class ButtonPublisher extends SensorPublisher {
         return;
       }
       flag = true;
-      const msg = this.createBoolMsg(true);
+      const msg = new ROSLIB.Message({
+        data: true,
+      });
       this.topic.publish(msg);
     }.bind(this);
 
@@ -58,33 +60,25 @@ class ButtonPublisher extends SensorPublisher {
         return;
       }
       flag = false;
-      const msg = this.createBoolMsg(false);
+      const msg = new ROSLIB.Message({
+        data: false,
+      });
       this.topic.publish(msg);
     }.bind(this);
-  }
-
-  /**
-   * Creates a new ROS std_msgs/Bool message, containing the supplied boolean value.
-   * @param {boolean} bool boolean to include in message
-   * @return {ROSLIB.Message} a new std_msgs/Bool message, containing the supplied boolean value.
-   */
-  createBoolMsg(bool) {
-    return new ROSLIB.Message({
-      data: bool,
-    });
   }
 
   /**
    * Start the publishing of data to ROS.
    */
   start() {
-    super.start();
     this.button.addEventListener('mousedown', this.onMouseDown);
     this.button.addEventListener('touchstart', this.onMouseDown);
     this.button.addEventListener('mouseup', this.onMouseUp);
     this.button.addEventListener('mouseleave', this.onMouseUp);
     this.button.addEventListener('touchend', this.onMouseUp);
     this.button.addEventListener('touchcancel', this.onMouseUp);
+
+    super.start();
   }
 
   /**
@@ -92,6 +86,7 @@ class ButtonPublisher extends SensorPublisher {
    */
   stop() {
     super.stop();
+
     this.button.removeEventListener('mousedown', this.onMouseDown);
     this.button.removeEventListener('touchstart', this.onMouseDown);
     this.button.removeEventListener('mouseup', this.onMouseUp);

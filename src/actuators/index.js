@@ -4,7 +4,7 @@
  * Any module to be exported to the library should have an entry in the object below.
  */
 module.exports = {
-  TextSubscriber: require('./TextSubscriber'),
-  ImageSubscriber: require('./ImageSubscriber'),
   FlashlightSubscriber: require('./FlashlightSubscriber'),
+  ImageSubscriber: require('./ImageSubscriber'),
+  TextSubscriber: require('./TextSubscriber'),
 };

@@ -50,6 +50,12 @@ class IMUPublisher extends IntervalPublisher {
     if (!window.MSStream && /iPad|iPhone|iPod|Macintosh/.test(window.navigator.userAgent)) {
       this.requestPermission();
     }
+  }
+
+  /**
+   * Start the publishing of data to ROS with frequency of <freq> Hz.
+   */
+  start() {
     // If user is not on iOS, sensor data can be read as normal.
     window.addEventListener('deviceorientation', (event) => {
       if (event.isTrusted) {
@@ -65,6 +71,26 @@ class IMUPublisher extends IntervalPublisher {
     } else {
       window.alert('acceleration not supported!');
     }
+
+    super.start();
+  }
+
+  /**
+   * Stops the publishing of data to ROS.
+   */
+  stop() {
+    super.stop();
+
+    window.removeEventListener('deviceorientation', (event) => {
+      if (event.isTrusted) {
+        this.onReadOrientation.bind(this)(event);
+      }
+    });
+    window.removeEventListener('devicemotion', (event) => {
+      if (event.isTrusted) {
+        this.onReadMotion.bind(this)(event);
+      }
+    });
   }
 
   /**

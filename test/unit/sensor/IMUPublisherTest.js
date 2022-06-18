@@ -43,32 +43,6 @@ describe('Test IMU Publisher', function() {
       sandbox.restore();
     });
 
-    it('works when browser has device motion support', function() {
-      // Arrange
-      global.window.DeviceMotionEvent = true;
-
-      // Act
-      createStandardIMU();
-
-      // Assert
-      assert.equal(global.window.addEventListener.callCount, 2);
-      assert(global.window.addEventListener.calledWith('deviceorientation'));
-      assert(global.window.addEventListener.calledWith('devicemotion'));
-    });
-
-    it('works when browser doesn\'t have device motion support', function() {
-      // Arrange
-      global.window.DeviceMotionEvent = false;
-
-      // Act
-      createStandardIMU();
-
-      // Arrange
-      assert.equal(global.window.addEventListener.callCount, 1);
-      assert(global.window.addEventListener.calledWith('deviceorientation'));
-      assert.equal(global.window.alert.callCount, 1);
-    });
-
     it('should not start reading orientation user is on iOS', function() {
       // This is to 'fake' a device running on iOS
       const original = global.window.navigator.userAgent;
@@ -85,6 +59,49 @@ describe('Test IMU Publisher', function() {
       global.window.navigator.__defineGetter__('userAgent', () => {
         return original;
       });
+    });
+  });
+
+  // requestPermission tests
+  describe('#start', function() {
+    // Set-up sandbox
+    const sandbox = sinon.createSandbox();
+
+    beforeEach(function() {
+      global.window.alert = function() {};
+      sandbox.spy(global.window);
+    });
+
+    afterEach(function() {
+      sandbox.restore();
+    });
+
+    it('works when browser has device motion support', function() {
+    // Arrange
+      global.window.DeviceMotionEvent = true;
+
+      // Setup IMU object
+      const imu = new IMUPublisher(new ROSLIB.Ros(), 'topic');
+      imu.start();
+
+      // Assert
+      assert.equal(global.window.addEventListener.callCount, 2);
+      assert(global.window.addEventListener.calledWith('deviceorientation'));
+      assert(global.window.addEventListener.calledWith('devicemotion'));
+    });
+
+    it('works when browser doesn\'t have device motion support', function() {
+    // Arrange
+      global.window.DeviceMotionEvent = false;
+
+      // Setup IMU object
+      const imu = new IMUPublisher(new ROSLIB.Ros(), 'topic');
+      imu.start();
+
+      // Arrange
+      assert.equal(global.window.addEventListener.callCount, 1);
+      assert(global.window.addEventListener.calledWith('deviceorientation'));
+      assert.equal(global.window.alert.callCount, 1);
     });
   });
 

@@ -1,9 +1,9 @@
 // Sensor Publishers
 const CameraPublisher = require('../sensors/CameraPublisher');
-const GPSDeclinationPublisher = require('../sensors/GPSDeclinationPublisher');
+const CoordinateCompassPublisher = require('../sensors/CoordinateCompassPublisher');
 const GPSPublisher = require('../sensors/GPSPublisher');
 const IMUPublisher = require('../sensors/IMUPublisher');
-const MagneticDeclinationPublisher = require('../sensors/MagneticDeclinationPublisher');
+const CompassPublisher = require('../sensors/CompassPublisher');
 // HTML element publishers
 const ButtonPublisher = require('../sensors/ButtonPublisher');
 const CheckboxPublisher = require('../sensors/CheckboxPublisher');
@@ -13,6 +13,7 @@ const TextPublisher = require('../sensors/TextPublisher');
 const FlashLightSubscriber = require('../actuators/FlashlightSubscriber');
 const ImageSubscriber = require('../actuators/ImageSubscriber');
 const TextSubscriber = require('../actuators/TextSubscriber');
+
 /**
  * Array containing deserializers for every type of sensor.
  * An deserializers is a function that takes a ros instance and a properties object,
@@ -22,15 +23,15 @@ const sensorDeserializers = {
   'phone_button': ButtonPublisher.readFromConfig,
   'phone_camera': CameraPublisher.readFromConfig,
   'phone_checkbox': CheckboxPublisher.readFromConfig,
+  'phone_compass': CompassPublisher.readFromConfig,
   'phone_flashlight': FlashLightSubscriber.readFromConfig,
-  'phone_gps_declination': GPSDeclinationPublisher.readFromConfig,
   'phone_gps': GPSPublisher.readFromConfig,
+  'phone_image_output': ImageSubscriber.readFromConfig,
   'phone_imu': IMUPublisher.readFromConfig,
-  'phone_magnetic_declination': MagneticDeclinationPublisher.readFromConfig,
+  'phone_coordinate_compass': CoordinateCompassPublisher.readFromConfig,
   'phone_slider': SliderPublisher.readFromConfig,
   'phone_text_input': TextPublisher.readFromConfig,
   'phone_text_output': TextSubscriber.readFromConfig,
-  'phone_image_output': ImageSubscriber.readFromConfig,
 };
 
 /**
@@ -44,7 +45,7 @@ const sensorDeserializers = {
 function readSensorsFromConfig(config, ros, targetElement) {
   const sensorMap = new Map();
 
-  // loop through all publishable sensor types, e.g. imu or magnetic_declination
+  // loop through all publishable sensor types, e.g. imu or compass
   // (see sensorDeserializers array)
   for (const sensorType of Object.keys(sensorDeserializers)) {
     const sensorInstances = config[sensorType];

@@ -10,7 +10,7 @@ const PermissionDeniedError = require('../error/PermissionDeniedError.js');
 const NotSupportedError = require('../error/NotSupportedError');
 
 /**
- * GPSDeclinationPublisher publishes the rotation as a compass to
+ * CoordinateCompassPublisher publishes the rotation as a compass to
  * a certain point in the world.
  * By default it publishes data at the interval rate
  * from parrent class IntervalPublisher
@@ -18,7 +18,7 @@ const NotSupportedError = require('../error/NotSupportedError');
  * The data resulting from the interactions is published as a
  * ROS std_msgs/Int32 message.
  */
-class GPSDeclinationPublisher extends IntervalPublisher {
+class CoordinateCompassPublisher extends IntervalPublisher {
   /**
    * Creates a new sensor publisher that publishes the angle
    * between the device and the provided Coordinates to the provided topic.
@@ -66,7 +66,7 @@ class GPSDeclinationPublisher extends IntervalPublisher {
 
     // check support for API
     if (!window.navigator.geolocation) {
-      throw new NotSupportedError('Unable to create GPSPublisher, ' +
+      throw new NotSupportedError('Unable to create CoordinateCompassPublisher, ' +
         'Geolocation API not supported');
     }
   }
@@ -75,8 +75,6 @@ class GPSDeclinationPublisher extends IntervalPublisher {
    * Start the publishing of data to ROS with frequency of <freq> Hz.
    */
   start() {
-    super.start();
-
     window.addEventListener('deviceorientationabsolute', (event) => {
       if (event.isTrusted) {
         this.onReadOrientation(event);
@@ -88,6 +86,8 @@ class GPSDeclinationPublisher extends IntervalPublisher {
         (error) => {
           throw Error('failed to watch position');
         });
+
+    super.start();
   }
 
   /**
@@ -95,6 +95,7 @@ class GPSDeclinationPublisher extends IntervalPublisher {
    */
   stop() {
     super.stop();
+
     window.navigator.geolocation.clearWatch(this.watchId);
   }
 
@@ -122,14 +123,6 @@ class GPSDeclinationPublisher extends IntervalPublisher {
     });
 
     window.document.body.appendChild(permbutton);
-  }
-  /**
-   * Callback for when error occurs while reading sensor data.
-   * @param {Error} event containing error info.
-   */
-  onError(event) {
-    console.log('Error: ' + event);
-    throw Error('ERROR!');
   }
 
   /**
@@ -212,8 +205,7 @@ class GPSDeclinationPublisher extends IntervalPublisher {
   }
 
   /**
-   * Puts the declination
-   * in a ROS message and publishes it
+   * Puts the declination in a ROS message and publishes it
    */
   createSnapshot() {
     if (!(this.orientationReady && this.gpsReady)) {
@@ -222,16 +214,16 @@ class GPSDeclinationPublisher extends IntervalPublisher {
 
     this.compass = this.accountForRotation();
 
-    const GPSDeclinationMessage = new ROSLIB.Message({
+    const CoordinateCompassMessage = new ROSLIB.Message({
       data: this.compass,
     });
 
-    this.msg = GPSDeclinationMessage;
+    this.msg = CoordinateCompassMessage;
     super.createSnapshot();
   }
 
   /**
-   * Deserializes a GPSDeclinationPublisher stored in a config object, and returns the resulting publisher instance.
+   * Deserializes a CoordinateCompassPublisher stored in a config object, and returns the resulting publisher instance.
    * The returned instance is already started.
    * @param {ROSLIB.Ros} ros ros instance to which to resulting publisher will publish
    * @param {Object} config object with the following keys:
@@ -239,11 +231,11 @@ class GPSDeclinationPublisher extends IntervalPublisher {
    * @param {string} config.topicPath - path to location of topic of publisher.
    *  Publisher will publish to the topic topicPath/name
    * @param {number} config.frequency - frequency of the publisher to create
-   * @return {GPSDeclinationPublisher} GPSDeclinationPublisher described in the provided config parameter
+   * @return {CoordinateCompassPublisher} CoordinateCompassPublisher described in the provided config parameter
    */
   static readFromConfig(ros, config) {
     const topicName = config.topicPath + '/' + config.name;
-    const publisher = new GPSDeclinationPublisher(ros, topicName);
+    const publisher = new CoordinateCompassPublisher(ros, topicName);
 
     publisher.start();
     publisher.setPublishFrequency(config.frequency);
@@ -252,4 +244,4 @@ class GPSDeclinationPublisher extends IntervalPublisher {
   }
 }
 
-module.exports = GPSDeclinationPublisher;
+module.exports = CoordinateCompassPublisher;

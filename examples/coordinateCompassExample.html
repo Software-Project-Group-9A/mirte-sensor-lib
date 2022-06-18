@@ -29,7 +29,7 @@
             function startDemo() {
                 const latt = parseFloat(document.getElementById("latitude").value);
                 const longi = parseFloat(document.getElementById("longitude").value);
-                publisher = new SENSORLIB.GPSDeclinationPublisher(ros, '/gpsDeclination', latt, longi);
+                publisher = new SENSORLIB.CoordinateCompassPublisher(ros, '/coordinateCompass', latt, longi);
                 publisher.start();
             }
             function stopDemo() {
