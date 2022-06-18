@@ -37,7 +37,7 @@ class TextSubscriber extends Subscriber {
   }
 
   /**
-   * Deserializes a TextSubscriber stored in a config object, and returns the resulting publisher instance.
+   * Deserializes a TextSubscriber stored in a config object, and returns the resulting subscriber instance.
    * The returned instance is already started.
    * @param {ROSLIB.Ros} ros ros instance to which subscriber will subscribe
    * @param {Object} config object with the following keys:
@@ -51,7 +51,7 @@ class TextSubscriber extends Subscriber {
    */
   static readFromConfig(ros, config, targetElement) {
     const div = window.document.createElement('div');
-    div.width = '20%';
+    div.style.setProperty('width', '20%');
 
     positionElement(div, targetElement, config.x, config.y);
 

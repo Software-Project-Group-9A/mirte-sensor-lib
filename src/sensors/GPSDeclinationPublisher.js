@@ -238,7 +238,7 @@ class GPSDeclinationPublisher extends IntervalPublisher {
    * @param {string} config.name - name of the publisher to create
    * @param {string} config.topicPath - path to location of topic of publisher.
    *  Publisher will publish to the topic topicPath/name
-   * @param {number} config.frequency - name of the publisher to create
+   * @param {number} config.frequency - frequency of the publisher to create
    * @return {GPSDeclinationPublisher} GPSDeclinationPublisher described in the provided config parameter
    */
   static readFromConfig(ros, config) {

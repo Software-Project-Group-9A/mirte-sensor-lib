@@ -68,7 +68,7 @@ class FlashlightSubscriber extends Subscriber {
   }
 
   /**
-   * Deserializes a FlashLightSubscriber stored in a config object, and returns the resulting publisher instance.
+   * Deserializes a FlashLightSubscriber stored in a config object, and returns the resulting subscriber instance.
    * The returned instance is already started.
    * @param {ROSLIB.Ros} ros ros instance to which subscriber will subscribe
    * @param {Object} config object with the following keys:
