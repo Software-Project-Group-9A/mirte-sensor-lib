@@ -1,28 +1,32 @@
+// Sensor Publishers
+const CameraPublisher = require('../sensors/CameraPublisher');
+const GPSDeclinationPublisher = require('../sensors/GPSDeclinationPublisher');
 const GPSPublisher = require('../sensors/GPSPublisher');
 const IMUPublisher = require('../sensors/IMUPublisher');
 const MagneticDeclinationPublisher = require('../sensors/MagneticDeclinationPublisher');
-const GPSDeclinationPublisher = require('../sensors/GPSDeclinationPublisher');
-const CameraPublisher = require('../sensors/CameraPublisher');
 // HTML element publishers
-const SliderPublisher = require('../sensors/SliderPublisher');
 const ButtonPublisher = require('../sensors/ButtonPublisher');
-const TextPublisher = require('../sensors/TextPublisher');
 const CheckboxPublisher = require('../sensors/CheckboxPublisher');
+const SliderPublisher = require('../sensors/SliderPublisher');
+const TextPublisher = require('../sensors/TextPublisher');
+// Subscribers
+const FlashLightSubscriber = require('../actuators/FlashlightSubscriber');
 /**
  * Array containing deserializers for every type of sensor.
  * An deserializers is a function that takes a ros instance and a properties object,
  * and returns the corresponding SensorPublisher.
  */
 const sensorDeserializers = {
+  'phone_button': ButtonPublisher.readFromConfig,
+  'phone_camera': CameraPublisher.readFromConfig,
+  'phone_checkbox': CheckboxPublisher.readFromConfig,
+  'phone_flashlight': FlashLightSubscriber.readFromConfig,
+  'phone_gps_declination': GPSDeclinationPublisher.readFromConfig,
+  'phone_gps': GPSPublisher.readFromConfig,
   'phone_imu': IMUPublisher.readFromConfig,
   'phone_magnetic_declination': MagneticDeclinationPublisher.readFromConfig,
-  'phone_gps': GPSPublisher.readFromConfig,
-  'phone_gps_declination': GPSDeclinationPublisher.readFromConfig,
-  'phone_camera': CameraPublisher.readFromConfig,
   'phone_slider': SliderPublisher.readFromConfig,
-  'phone_button': ButtonPublisher.readFromConfig,
   'phone_text_input': TextPublisher.readFromConfig,
-  'phone_checkbox': CheckboxPublisher.readFromConfig,
 };
 
 /**
