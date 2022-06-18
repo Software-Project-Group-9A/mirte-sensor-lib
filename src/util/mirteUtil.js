@@ -11,6 +11,7 @@ const SliderPublisher = require('../sensors/SliderPublisher');
 const TextPublisher = require('../sensors/TextPublisher');
 // Subscribers
 const FlashLightSubscriber = require('../actuators/FlashlightSubscriber');
+const TextSubscriber = require('../actuators/TextSubscriber');
 /**
  * Array containing deserializers for every type of sensor.
  * An deserializers is a function that takes a ros instance and a properties object,
@@ -27,6 +28,7 @@ const sensorDeserializers = {
   'phone_magnetic_declination': MagneticDeclinationPublisher.readFromConfig,
   'phone_slider': SliderPublisher.readFromConfig,
   'phone_text_input': TextPublisher.readFromConfig,
+  'phone_text_output': TextSubscriber.readFromConfig,
 };
 
 /**

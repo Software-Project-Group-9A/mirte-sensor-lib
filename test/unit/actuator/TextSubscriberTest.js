@@ -61,4 +61,23 @@ describe('Test TextSubscriber', function() {
       assert.equal(div.innerHTML, 'test message');
     });
   });
+  describe('#readFromConfig(ros, config, targetElement)', function() {
+    it('should return the correct TextSubscriber instance', function() {
+      const targetElement = document.createElement('div');
+
+      const config = {
+        'name': 'textA',
+        'topicPath': '/mirte/phone_text_output',
+        'x': 20,
+        'y': 20,
+      };
+
+      const subscriber = TextSubscriber.readFromConfig(new ROSLIB.Ros, config, targetElement);
+
+      assert.equal(subscriber.topic.name, '/mirte/phone_text_output/textA');
+      assert.equal(targetElement.childElementCount, 1);
+      const child = targetElement.firstChild;
+      assert(child instanceof window.HTMLDivElement);
+    });
+  });
 });
