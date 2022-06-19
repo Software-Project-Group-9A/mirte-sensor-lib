@@ -212,7 +212,7 @@ describe('Test IMU Publisher', function() {
 
       imu.orientationReady = true;
       imu.motionReady = true;
-      imu.beta = 45.0; // 45 degrees over X-axis (Pitch)
+      imu.beta = 45.0; // 45 degrees over X-axis (Roll)
       imu.gamma = 75.0; // 75 degrees over Y-axis (Pitch)
       imu.alpha = 90.0; // 90 degrees over Z-axis (Yaw)
 
@@ -223,9 +223,10 @@ describe('Test IMU Publisher', function() {
       // Assert
       const msgCords = msg[0].orientation;
       const msgQuat = new THREE.Quaternion(msgCords.x, msgCords.y, msgCords.z, msgCords.w);
-      const q = new THREE.Euler().setFromQuaternion(msgQuat);
+      const q = new THREE.Euler().setFromQuaternion(msgQuat, 'ZYX');
+
       // Check if angles are valid
-      const rad = 180/ Math.PI;
+      const rad = 180 / Math.PI;
       closeTo(q.x * rad, 45.0, 0.05); // x axis should be beta
       closeTo(q.y * rad, 75.0, 0.05); // y axis should be gamma
       closeTo(q.z * rad, 90.0, 0.05); // z axis should be alpha

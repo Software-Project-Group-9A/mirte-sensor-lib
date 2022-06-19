@@ -4,29 +4,38 @@
  *
  *
  * Convert Euler angle notation rotation to Quaternion notation.
- * @param {number} x the Euler x coordinate
- * @param {number} y the Euler angle y coordinate
- * @param {number} z as Euler angle z coordinate
+ * @param {number} x the x degree
+ * @param {number} y the y degree
+ * @param {number} z the z degree
  * @return {*} object containing Quaternian coordinates.
  */
 function quatFromEuler(x, y, z) {
+  // Formula for conversion used from wikipedia
+  /**
+   * @see {@link https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles}
+  */
   const cos = Math.cos;
   const sin = Math.sin;
 
-  const c1 = cos( x / 2 );
-  const c2 = cos( y / 2 );
-  const c3 = cos( z / 2 );
+  const yaw = z;
+  const pitch = y;
+  const roll = x;
 
-  const s1 = sin( x / 2 );
-  const s2 = sin( y / 2 );
-  const s3 = sin( z / 2 );
+  const cy = parseFloat(cos(yaw * 0.5));
+  const sy = parseFloat(sin(yaw * 0.5));
+  const cp = parseFloat(cos(pitch * 0.5));
+  const sp = parseFloat(sin(pitch * 0.5));
+  const cr = parseFloat(cos(roll * 0.5));
+  const sr = parseFloat(sin(roll * 0.5));
 
-  const _x = s1 * c2 * c3 + c1 * s2 * s3;
-  const _y = c1 * s2 * c3 - s1 * c2 * s3;
-  const _z = c1 * c2 * s3 + s1 * s2 * c3;
-  const _w = c1 * c2 * c3 - s1 * s2 * s3;
+  const q = {'x': 0, 'y': 0, 'z': 0, 'w': 0};
 
-  return {'x': _x, 'y': _y, 'z': _z, 'w': _w};
+  q.w = cr * cp * cy + sr * sp * sy;
+  q.x = sr * cp * cy - cr * sp * sy;
+  q.y = cr * sp * cy + sr * cp * sy;
+  q.z = cr * cp * sy - sr * sp * cy;
+
+  return q;
 }
 
 module.exports = {
