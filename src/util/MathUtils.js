@@ -10,7 +10,11 @@
  * @return {*} object containing Quaternian coordinates.
  */
 function quatFromEuler(x, y, z) {
-  // Formula for conversion used from https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
+  // Formula for conversion used from wikipedia
+  /**
+   * @see {@link https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles}
+  */
+  U
   const cos = Math.cos;
   const sin = Math.sin;
 
