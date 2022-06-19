@@ -227,9 +227,6 @@ describe('Test IMU Publisher', function() {
 
       // Check if angles are valid
       const rad = 180 / Math.PI;
-      console.log(q.x * rad);
-      console.log(q.y * rad);
-      console.log(q.z * rad);
       closeTo(q.x * rad, 45.0, 0.05); // x axis should be beta
       closeTo(q.y * rad, 75.0, 0.05); // y axis should be gamma
       closeTo(q.z * rad, 90.0, 0.05); // z axis should be alpha
