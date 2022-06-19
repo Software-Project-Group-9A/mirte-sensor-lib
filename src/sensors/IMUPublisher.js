@@ -1,9 +1,3 @@
-// Assumptions:
-// A non-set timer is no problem.
-
-// To check:
-// Use on IOS with requesting permission
-
 // Dependencies
 const IntervalPublisher = require('./IntervalPublisher.js');
 const PermissionDeniedError = require('../error/PermissionDeniedError.js');
@@ -11,7 +5,7 @@ const MathUtils = require('../util/MathUtils.js');
 
 /**
  * Object that publishes IMU sensor data to the provided ROS topic.
- * Uses the following great example:
+ * @see Uses the following example:
  * {@link http://wiki.ros.org/roslibjs/Tutorials/Publishing%20video%20and%20IMU%20data%20with%20roslibjs}
  */
 class IMUPublisher extends IntervalPublisher {
@@ -155,7 +149,7 @@ class IMUPublisher extends IntervalPublisher {
      * Create snapshot creates snapshot of IMU data and publishes this as a
      * ROS message to this.
      * Resource used:
-     * {@link http://wiki.ros.org/roslibjs/Tutorials/Publishing%20video%20and%20IMU%20data%20with%20roslibjs}
+     * @see {@link http://wiki.ros.org/roslibjs/Tutorials/Publishing%20video%20and%20IMU%20data%20with%20roslibjs}
      */
   createSnapshot() {
     // Convert rotation into quaternion.

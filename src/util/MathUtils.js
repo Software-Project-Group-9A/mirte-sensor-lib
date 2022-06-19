@@ -1,4 +1,8 @@
 /**
+ * This code was copied and modified from Three.js/src/math/Quaternion.js
+ * The modification of this code is allowed by the MIT license claimed by the Three.js project.
+ *
+ *
  * Convert Euler angle notation rotation to Quaternion notation.
  * @param {number} x the x degree
  * @param {number} y the y degree

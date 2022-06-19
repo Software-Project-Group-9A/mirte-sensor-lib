@@ -2,54 +2,59 @@
 
 ## About 
 
-The Mirte Sensor Library is JavaScript library for getting the sensor data of a mobile phone into ROS.
+The Mirte Sensor Library is JavaScript library for getting sensor data of a mobile phone and sending this data to a ROS instance. This is done through a webpage on the mobile phone.
 
-It currently offers support for publishing IMU, GPS, compass and camera sensor data.
+It currently offers support for publishing data from the following sensors:
+- Inertial Measurement Unit(IMU)
+- GPS
+- Compass (to magnetic north or to a specific coordinate)
+- Camera
+- Ambient light sensor 
 
-Additionally, it allows for publishing the state of certain HTML UI elements to ROS.
+Additionally, it allows for publishing the state of certain HTML UI elements to ROS. These elements include but are not limited to:
+- Text input box
+- Slider
+- Checkbox
 
+Lastly, the library allows a ROS instance to send data to a mobile phone by having a webpage subscribe to a ROS topic. This currently supports the following:
+- Flashlight: The flashlight of a phone can be turned on or off.
+- Image: Images sent by a ROS instance can be displayed.
+- Text: Text sent by a ROS instance can be displayed.
+
+A detailed documentation of the library can be found through `/doc/index.html`
 ## Dependencies
 
-The library has the following dependencies:
-
-- eventemitter2: [https://github.com/EventEmitter2/EventEmitter2]
-- roslibjs: [https://github.com/RobotWebTools/roslibjs]
+This library depends on [roslibjs](https://github.com/RobotWebTools/roslibjs "RosLibJs")
 
 To allow the library to function correctly, these dependencies must already be loaded before importing the Mirte Sensor Library.
 
 ## How To Use
 
 To use Mirte Sensor Library, it must be imbedded as a script in a webpage. Please make sure the necessary dependencies are already imported, before adding the Mirte Sensor Library. This can be done as follows:
-```
-<script src="http://static.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
+
+```html
 <script src="http://static.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
 <script src="/path/to/RosSensorLib.min.js"></script>
 ```
 
-A pre-built file of the library can be found in the */build* folder of this repository. Alternatively, the  files can be built from scratch by running the ```grunt build``` command on your local machine. For more information regarding the tools of this project, see the *Running the tools* section of this file.
+A pre-built file of the library can be found in the */build* folder of this repository. Alternatively, the  files can be built from scratch using the commands below. For more information regarding the tools of this project, see [Running the tools](#running-the-tools).
 
 Once Mirte Sensor Library has been imported, it functionality is exposed through the global ```SENSORLIB``` object.
-From this object, it is possible to create a number of different ```SensorPublisher```s, to share the data of a specific sensor to ROS. These ```SensorPublisher```s all require a Topic from roslibjs to function. In the options of the topic, you will need to specify the handle of the ROS instance to publish to, together with the name of the topic to publish to. The ROS handle can once again be created through the roslibjs library, by connecting to a running ROS instance. An example of this can be seen below, where a ```ButtonPublisher``` is setup to publish the state of an HTML button:
+From this object, it is possible to create a number of different ```SensorPublishers```, to share the data of a specific sensor to ROS. These ```SensorPublishers``` require a ROS instance and a topic name to publish to.  The ROS handle can be created through the roslibjs library, by connecting to a running ROS instance. An example piece of code can be seen below, where a ```ButtonPublisher``` is setup to publish the state of an HTML button to a local ROS instance.
 
-```
+```js
 var ros = new ROSLIB.Ros();
-
 ros.connect('ws://localhost:9090');
 
-var topic = new ROSLIB.Topic({
-    ros : ros,
-    name : '/button'
-});
-
-var publisher = new SENSORLIB.ButtonPublisher(topic, document.getElementById("button"));
+var publisher = new SENSORLIB.ButtonPublisher(ros, "/topic", document.getElementById("button"));
 publisher.start();
 ```
 
-The details for how to create and use the different ```SensorPublisher```s can be found in the documentation. 
+The details for how to create and use the different ```SensorPublishers``` can be found in the documentation. 
 
 A number of example for how to do this can be found in the ```/examples``` folder.
 
-Please note that many of the ```SensorPublisher```s require user permission in order to start publishing their respective sensor data. If your browser throws a pop-up requesting permission to use one of your sensors, make sure to accept it.
+Please note that the ```SensorPublishers``` require a secure http connection (https) to publish the sensor data. 
 
 ## Documentation
 Currently, the documentation of Mirte Sensor Library is only available to generating it youself from the source code.
@@ -57,7 +62,7 @@ See *running the tools* for more details.
 
 ## Setup
 
-*Requires npm to be installed on your device.*
+*Note: Requires npm to be installed on your device.*
 
 To setup the project, run the following commands:
 ```
@@ -71,9 +76,9 @@ npm install .
 
 ### **To build**
 ```
-run: grunt build
+grunt build
 ```
-
+This will create a ``` RosSensorLib.js``` and a ``` RosSensorLib.min.js``` in the /build folder
 ### **To run tests**
 
 **To run all tests:**

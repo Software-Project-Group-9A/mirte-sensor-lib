@@ -16,10 +16,16 @@ class SensorPublisher {
       throw new TypeError('topicName argument was not of type String');
     }
 
+    if (/\s/.test(topicName)) {
+      throw new Error('topicName argument has space');
+    }
+
     /**
      * ros instance to publish data to
      */
-    this.ros = ros;
+    {
+      this.ros = ros;
+    }
 
     /**
      * Topicname of the topic to publish to.
