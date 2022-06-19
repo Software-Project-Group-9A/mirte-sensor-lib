@@ -14,7 +14,6 @@ function quatFromEuler(x, y, z) {
   /**
    * @see {@link https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles}
   */
-  U
   const cos = Math.cos;
   const sin = Math.sin;
 
