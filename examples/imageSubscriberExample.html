@@ -1,6 +1,5 @@
 <html>
     <head>
-        <script src="http://static.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
         <script src="http://static.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
         <script src="../build/RosSensorLib.js"></script>
         <script>
@@ -21,7 +20,7 @@
         <h2>Please open the cameraExample demo</h2>
         <canvas id='outputCanvas' width="500", height="500">
         <script>
-            var subscriber = new SENSORLIB.ImageSubscriber(ros, '/camera', document.getElementById("outputCanvas"), true);
+            var subscriber = new SENSORLIB.ImageSubscriber(ros, 'camera', document.getElementById("outputCanvas"), true);
             subscriber.start();
         </script>
         <button onclick="subscriber.start()">subscribe</button>

@@ -3,25 +3,29 @@ const IntervalPublisher = require('./IntervalPublisher.js');
 const NotSupportedError = require('../error/NotSupportedError');
 
 /**
+ * <p> <b> This feature is not fully suported over all browsers
+ * To enable in Chrome, go to: chrome://flags/
+ * There enable: "Generic Sensor Extra Classes" </b> </p>
+ *
+ *
  * AmbientLightPublisher publishes the amount of lux the
  * camera receives
  * By default it publishes data at the interval rate
  * from parrent class IntervalPublisher
  *
- * VERY IMPORTANT: This feature is not fully suported over all browsers
- * To enable in Chrome, go to: chrome://flags/
- * There enable: "Generic Sensor Extra Classes"
- *
  * The data resulting from the interactions is published as a
  * ROS std_msgs/Int32 message.
+ *
+ * @see Uses the following example:
+ * {@link https://developer.mozilla.org/en-US/docs/Web/API/AmbientLightSensor}
  */
 class AmbientLightPublisher extends IntervalPublisher {
   /**
    * Creates a new sensor publisher that publishes the amount of lux
    * the camera receives
    * @param {ROSLIB.Ros} ros a ROS instance to publish to
-   * @param {ROSLIB.Topic} topicName a Topic from RosLibJS
-   * @param {Number} hz a frequency to be called
+   * @param {String} topicName name for the topic to publish data to
+   * @param {Number} hz frequency for the publishing interval
    */
   constructor(ros, topicName, hz = 1) {
     // check support for API
@@ -39,12 +43,12 @@ class AmbientLightPublisher extends IntervalPublisher {
    * Start the publishing of data to ROS with frequency of <freq> Hz.
    */
   start() {
-    super.start();
-
     this.sensor.addEventListener('reading', (event) => {
       this.light = this.sensor.illuminance;
     });
     this.sensor.start();
+
+    super.start();
   }
 
   /**
@@ -55,7 +59,9 @@ class AmbientLightPublisher extends IntervalPublisher {
 
     this.sensor.stop();
 
-    this.sensor.removeEventListener('reading');
+    this.sensor.removeEventListener('reading', (event) => {
+      this.light = this.sensor.illuminance;
+    });
   }
 
   /**

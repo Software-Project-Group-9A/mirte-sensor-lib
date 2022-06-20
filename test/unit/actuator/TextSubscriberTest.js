@@ -6,7 +6,7 @@ const TextSubscriber = require('../../../src/actuators/TextSubscriber.js');
 const {document} = global.window;
 
 describe('Test TextSubscriber', function() {
-  describe('#constructor(topic, HTMLElement)', function() {
+  describe('#constructor(ros, topicName, HTMLElement)', function() {
     /**
      * Helper functions for checking whether correct error is raised for
      * invalid HTMLElements.
@@ -59,6 +59,25 @@ describe('Test TextSubscriber', function() {
       subscriber.onMessage({data: 'test message'});
 
       assert.equal(div.innerHTML, 'test message');
+    });
+  });
+  describe('#readFromConfig(ros, config, targetElement)', function() {
+    it('should return the correct TextSubscriber instance', function() {
+      const targetElement = document.createElement('div');
+
+      const config = {
+        'name': 'textA',
+        'topicPath': '/mirte/phone_text_output',
+        'x': 20,
+        'y': 20,
+      };
+
+      const subscriber = TextSubscriber.readFromConfig(new ROSLIB.Ros, config, targetElement);
+
+      assert.equal(subscriber.topic.name, '/mirte/phone_text_output/textA');
+      assert.equal(targetElement.childElementCount, 1);
+      const child = targetElement.firstChild;
+      assert(child instanceof window.HTMLDivElement);
     });
   });
 });

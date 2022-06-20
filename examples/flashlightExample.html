@@ -1,6 +1,5 @@
 <html>
     <head>
-        <script src="http://static.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
         <script src="http://static.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
         <script src="../build/RosSensorLib.min.js"></script>
         <script>
@@ -27,6 +26,12 @@
             const msgFalse = new ROSLIB.Message({
                                     data: false,
                                 });
+
+            const topic = new ROSLIB.Topic({
+                ros : ros,
+                name : '/flashlight',
+                messageType : 'bool'
+            });
             
         </script>
         <h1 id='connection_info'></h1>

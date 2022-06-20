@@ -1,9 +1,3 @@
-// Assumptions:
-// A non-set timer is no problem.
-
-// To check:
-// Use on IOS with requesting permission
-
 // Dependencies
 const IntervalPublisher = require('./IntervalPublisher.js');
 const PermissionDeniedError = require('../error/PermissionDeniedError.js');
@@ -11,14 +5,14 @@ const MathUtils = require('../util/MathUtils.js');
 
 /**
  * Object that publishes IMU sensor data to the provided ROS topic.
- * Uses the following great example:
+ * @see Uses the following example:
  * {@link http://wiki.ros.org/roslibjs/Tutorials/Publishing%20video%20and%20IMU%20data%20with%20roslibjs}
  */
 class IMUPublisher extends IntervalPublisher {
   /**
      * Creates a new sensor publisher that publishes to the provided topic.
      * @param {ROSLIB.Ros} ros a ROS instance to publish to
-     * @param {ROSLIB.Topic} topicName a Topic from RosLibJS
+     * @param {String} topicName name for the topic to publish data to
      * @param {Number} hz a standard frequency for this type of object.
      */
   constructor(ros, topicName, hz = 5) {
@@ -50,6 +44,12 @@ class IMUPublisher extends IntervalPublisher {
     if (!window.MSStream && /iPad|iPhone|iPod|Macintosh/.test(window.navigator.userAgent)) {
       this.requestPermission();
     }
+  }
+
+  /**
+   * Start the publishing of data to ROS with frequency of <freq> Hz.
+   */
+  start() {
     // If user is not on iOS, sensor data can be read as normal.
     window.addEventListener('deviceorientation', (event) => {
       if (event.isTrusted) {
@@ -65,6 +65,26 @@ class IMUPublisher extends IntervalPublisher {
     } else {
       window.alert('acceleration not supported!');
     }
+
+    super.start();
+  }
+
+  /**
+   * Stops the publishing of data to ROS.
+   */
+  stop() {
+    super.stop();
+
+    window.removeEventListener('deviceorientation', (event) => {
+      if (event.isTrusted) {
+        this.onReadOrientation.bind(this)(event);
+      }
+    });
+    window.removeEventListener('devicemotion', (event) => {
+      if (event.isTrusted) {
+        this.onReadMotion.bind(this)(event);
+      }
+    });
   }
 
   /**
@@ -129,7 +149,7 @@ class IMUPublisher extends IntervalPublisher {
      * Create snapshot creates snapshot of IMU data and publishes this as a
      * ROS message to this.
      * Resource used:
-     * {@link http://wiki.ros.org/roslibjs/Tutorials/Publishing%20video%20and%20IMU%20data%20with%20roslibjs}
+     * @see {@link http://wiki.ros.org/roslibjs/Tutorials/Publishing%20video%20and%20IMU%20data%20with%20roslibjs}
      */
   createSnapshot() {
     // Convert rotation into quaternion.
@@ -184,11 +204,13 @@ class IMUPublisher extends IntervalPublisher {
    * @param {ROSLIB.Ros} ros ros instance to which to resulting publisher will publish
    * @param {Object} config object with the following keys:
    * @param {string} config.name - name of the publisher to create
-   * @param {number} config.frequency - name of the publisher to create
+   * @param {string} config.topicPath - path to location of topic of publisher.
+   *  Publisher will publish to the topic topicPath/name
+   * @param {number} config.frequency - frequency of the publisher to create
    * @return {IMUPublisher} IMUPublisher described in the provided properties parameter
    */
   static readFromConfig(ros, config) {
-    const topicName = 'mirte/phone_imu/' + config.name;
+    const topicName = config.topicPath + '/' + config.name;
     const publisher = new IMUPublisher(ros, topicName);
     publisher.start();
     publisher.setPublishFrequency(config.frequency);

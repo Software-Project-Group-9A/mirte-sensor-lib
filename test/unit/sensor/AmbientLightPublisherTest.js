@@ -22,7 +22,7 @@ function spyOnLightSensor() {
 // Test
 describe('Test AmbientLightPublisher', function() {
   // Test constructor
-  describe('#constructor(topic)', function() {
+  describe('#constructor(ros, topicName, hz)', function() {
     it('should fail when there is no API support', function() {
       global.window.AmbientLightSensor = false;
       AmbientLightSensor = sinon.stub();

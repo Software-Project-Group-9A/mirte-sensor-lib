@@ -1,7 +1,5 @@
 require('../../globalSetup.js');
 const assert = require('assert');
-// Sinon library for mocking
-const sinon = require('sinon');
 
 const {document} = global.window;
 
@@ -9,7 +7,7 @@ const {document} = global.window;
 const CameraPublisher = require('../../../src/sensors/CameraPublisher.js');
 
 describe('Test CamerPublisher', function() {
-  describe('#constructor(topic, camera)', function() {
+  describe('#constructor(ros, topicName, camera, canvas, hz)', function() {
     /**
      * Helper function for checking whether correct error is raised for
      * invalid buttons.
@@ -71,25 +69,11 @@ describe('Test CamerPublisher', function() {
       assert.equal(cameraPublisher.camera, camera);
       assert.equal(cameraPublisher.canvas, canvas);
     });
-  });
+    it('should publish to topic called /topic/compressed', function() {
+      const ros = new ROSLIB.Ros();
+      const cameraPublisher = new CameraPublisher(ros, 'topic', camera, canvas);
 
-  describe('#start()', function() {
-    /**
-     * Helper function for checking whether correct error is raised for
-     * invalid buttons.
-     * @param {Error} error The raised error.
-     * @return {boolean} true if valid.
-     */
-    function expectInvalidSource(error) {
-      assert(error.message === 'No video source found.');
-      return true;
-    }
-    it('should throw an error if there is no video source', function() {
-      const camera = document.createElement('video');
-      const canvas = document.createElement('canvas');
-      const publisher = sinon.spy(new CameraPublisher(new ROSLIB.Ros(), 'topic', camera, canvas));
-
-      assert.throws(() => publisher.start(), expectInvalidSource);
+      assert.equal(cameraPublisher.topic.name, 'topic/compressed');
     });
   });
 
@@ -103,6 +87,7 @@ describe('Test CamerPublisher', function() {
       const config = {
         name: cameraName,
         frequency: frequency,
+        topicPath: '/mirte/phone_camera/compressed',
         cameraId: videoId,
         canvasId: canvasId,
       };
@@ -118,7 +103,7 @@ describe('Test CamerPublisher', function() {
 
       const publisher = CameraPublisher.readFromConfig(ros, config);
 
-      const topicName = 'mirte/phone_camera/' + cameraName;
+      const topicName = config.topicPath + '/' + cameraName + '/compressed';
       assert(publisher instanceof CameraPublisher);
       assert(publisher.started);
       assert.equal(publisher.topic.name, topicName);

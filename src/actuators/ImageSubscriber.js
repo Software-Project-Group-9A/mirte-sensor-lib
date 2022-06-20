@@ -1,5 +1,6 @@
 const Subscriber = require('./Subscriber');
 const NotSupportedError = require('../error/NotSupportedError');
+const {positionElement} = require('../util/styleUtils');
 
 /**
  * ImageSubscriber subscribes to a ROS topic and displays any images published to that topic on a canvas.
@@ -18,7 +19,7 @@ class ImageSubscriber extends Subscriber {
     * to the provided topic on the provided canvas.
     * Both compressed (sensor_msgs/CompressedImage) and non-compressed images (sensor_msgs/Image) are supported.
     * @param {ROSLIB.Ros} ros ROS instance to publish to
-    * @param {ROSLIB.Topic} topicName topic from which to subscribe to
+    * @param {ROSLIB.Topic} topicName name for the topic to subscribe to
     * @param {HTMLCanvasElement} canvas canvas to draw published images on
     * @param {boolean} [compressed=true]  whether compressed images are published to the topic. True by default.
     */
@@ -43,6 +44,36 @@ class ImageSubscriber extends Subscriber {
    */
   getMessageType() {
     return this.compressed ? 'sensor_msgs/CompressedImage' : 'sensor_msgs/Image';
+  }
+
+  /**
+   * Callback for handling incomming published message.
+   * @param {ROSLIB.Message} msg message of type sensor_msgs/Image or sensor_msgs/CompressedImage,
+   * depending on whether this subscribed is using compressed images.
+   */
+  onMessage(msg) {
+    let imageDataUrl;
+
+    if (this.compressed) {
+      imageDataUrl = ImageSubscriber.createImageDataUrl(msg.format, msg.data);
+    } else {
+      // setup canvas
+      const imageCanvas = document.createElement('canvas');
+      imageCanvas.width = msg.width;
+      imageCanvas.height = msg.height;
+      const ctx = imageCanvas.getContext('2d');
+
+      // create RGBA image data from raw pixel data in msg
+      const convertedData = ImageSubscriber.convertImageData(msg.data, msg.encoding, msg.width * msg.height);
+      const imageData = new window.ImageData(convertedData, msg.width, msg.height);
+      ctx.putImageData(imageData, 0, 0);
+
+      // create new dataURL from canvas contents
+      imageDataUrl = imageCanvas.toDataURL();
+    }
+
+    // draw image contained in dataURL to canvas
+    this.drawImage(imageDataUrl);
   }
 
   /**
@@ -112,33 +143,29 @@ class ImageSubscriber extends Subscriber {
   }
 
   /**
-   * Callback for handling incomming published message.
-   * @param {ROSLIB.Message} msg message of type sensor_msgs/Image or sensor_msgs/CompressedImage,
-   * depending on whether this subscribed is using compressed images.
+   * Deserializes an ImageSubscriber stored in a config object, and returns the resulting subscriber instance.
+   * The returned instance is already started.
+   * @param {ROSLIB.Ros} ros ros instance to which subscriber will subscribe
+   * @param {Object} config object with the following keys:
+   * @param {string} config.name - name of the subscriber to create
+   * @param {string} config.topicPath - path to location of topic of subscriber.
+   *  subscriber will subscribe to the topic topicPath/name
+   * @param {number} config.x distance from right side of container
+   * @param {number} config.y distance from top side of container
+   * @param {HTMLElement} targetElement HTML element in which to generate necessary UI elements
+   * @return {ImageSubscriber} ImageSubscriber described in the provided properties parameter
    */
-  onMessage(msg) {
-    let imageDataUrl;
+  static readFromConfig(ros, config, targetElement) {
+    const canvas = window.document.createElement('canvas');
+    canvas.style.setProperty('width', '20%');
+    canvas.style.setProperty('height', '20%');
 
-    if (this.compressed) {
-      imageDataUrl = ImageSubscriber.createImageDataUrl(msg.format, msg.data);
-    } else {
-      // setup canvas
-      const imageCanvas = document.createElement('canvas');
-      imageCanvas.width = msg.width;
-      imageCanvas.height = msg.height;
-      const ctx = imageCanvas.getContext('2d');
+    positionElement(canvas, targetElement, config.x, config.y);
 
-      // create RGBA image data from raw pixel data in msg
-      const convertedData = ImageSubscriber.convertImageData(msg.data, msg.encoding, msg.width * msg.height);
-      const imageData = new window.ImageData(convertedData, msg.width, msg.height);
-      ctx.putImageData(imageData, 0, 0);
+    const topicName = config.topicPath + '/' + config.name;
+    const subscriber = new ImageSubscriber(ros, topicName, canvas);
 
-      // create new dataURL from canvas contents
-      imageDataUrl = imageCanvas.toDataURL();
-    }
-
-    // draw image contained in dataURL to canvas
-    this.drawImage(imageDataUrl);
+    return subscriber;
   }
 }
 

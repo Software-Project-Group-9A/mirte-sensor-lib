@@ -13,7 +13,7 @@ class GPSPublisher extends IntervalPublisher {
    * Creates a new GPSPublisher, which will publish the longitude and latitude
    * of the current device in the form of a sensor_msgs/NavSatFix message.
    * @param {ROSLIB.Ros} ros a ROS instance to publish to
-   * @param {ROSLIB.Topic} topicName topic to which to publish geolocation data.
+   * @param {String} topicName name for the topic to publish data to
    * @param {number} hz frequency at which to publish GPS data, in Hertz.
    * If no frequency is specified, this will default to 1 Hz.
    * @throws {NotSupportedError} if the Geolocation API is not supported
@@ -53,8 +53,6 @@ class GPSPublisher extends IntervalPublisher {
    * Start the publishing of data to ROS with frequency of <freq> Hz.
    */
   start() {
-    super.start();
-
     // Callback for reading position data
     const successCallback = function(pos) {
       this.position = pos;
@@ -68,6 +66,8 @@ class GPSPublisher extends IntervalPublisher {
     this.watchId = window.navigator.geolocation.watchPosition(
         successCallback,
         errorCallback);
+
+    super.start();
   }
 
   /**
@@ -75,6 +75,7 @@ class GPSPublisher extends IntervalPublisher {
    */
   stop() {
     super.stop();
+
     window.navigator.geolocation.clearWatch(this.watchId);
   }
 
@@ -121,11 +122,13 @@ class GPSPublisher extends IntervalPublisher {
    * @param {ROSLIB.Ros} ros ros instance to which to resulting publisher will publish
    * @param {Object} config object with the following keys:
    * @param {string} config.name - name of the publisher to create
-   * @param {number} config.frequency - name of the publisher to create
+   * @param {string} config.topicPath - path to location of topic of publisher.
+   *  Publisher will publish to the topic topicPath/name
+   * @param {number} config.frequency - frequency of the publisher to create
    * @return {GPSPublisher} GPSPublisher described in the provided properties parameter
    */
   static readFromConfig(ros, config) {
-    const topicName = 'mirte/phone_gps/' + config.name;
+    const topicName = config.topicPath + '/' + config.name;
     const publisher = new GPSPublisher(ros, topicName);
     publisher.start();
     publisher.setPublishFrequency(config.frequency);

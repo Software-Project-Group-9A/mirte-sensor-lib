@@ -1,26 +1,24 @@
-/*
- Used sources:
-    https://dev.to/orkhanjafarovr/real-compass-on-mobile-browsers-with-javascript-3emi
-    https://answers.ros.org/question/65971/how-can-i-publish-an-integer-and-string-int16-string-using-roslibjs/
-*/
-
 // Dependencies
 const PermissionDeniedError = require('../error/PermissionDeniedError.js');
 const IntervalPublisher = require('./IntervalPublisher.js');
 
 /**
- * MagneticDeclinationPublisher publishes the rotation as a compass
+ * CompassPublisher publishes the rotation as a compass
  * By default it publishes data at the interval rate
  * from parrent class IntervalPublisher
  *
  * The data resulting from the interactions is published as a
  * ROS std_msgs/Int32 message.
+ *
+ * @see Uses the following examples:
+ * {@link https://dev.to/orkhanjafarovr/real-compass-on-mobile-browsers-with-javascript-3emi}
+ * {@link https://answers.ros.org/question/65971/how-can-i-publish-an-integer-and-string-int16-string-using-roslibjs/}
  */
-class MagneticDeclinationPublisher extends IntervalPublisher {
+class CompassPublisher extends IntervalPublisher {
   /**
    * Creates a new sensor publisher that publishes to the provided topic.
    * @param {ROSLIB.Ros} ros a ROS instance to publish to
-   * @param {ROSLIB.Topic} topicName a Topic from RosLibJS
+   * @param {String} topicName name for the topic to publish data to
    * @param {Number} hz a standard frequency for this type of object.
    */
   constructor(ros, topicName, hz = 10) {
@@ -36,8 +34,6 @@ class MagneticDeclinationPublisher extends IntervalPublisher {
    * Start the publishing of data to ROS with frequency of <freq> Hz.
    */
   start() {
-    super.start();
-
     /*
     * Support for iOS
     * For DeviceOrientationEvent and DeviceMotionEvent to work on Safari on iOS 13 and up,
@@ -50,6 +46,21 @@ class MagneticDeclinationPublisher extends IntervalPublisher {
     }
     // If user is not on iOS, sensor data can be read as normal.
     window.addEventListener('deviceorientationabsolute', (event) => {
+      if (event.isTrusted) {
+        this.onReadOrientation(event);
+      }
+    }, true);
+
+    super.start();
+  }
+
+  /**
+   * Stops the publishing of data to ROS.
+   */
+  stop() {
+    super.stop();
+
+    window.removeEventListener('deviceorientationabsolute', (event) => {
       if (event.isTrusted) {
         this.onReadOrientation(event);
       }
@@ -83,15 +94,6 @@ class MagneticDeclinationPublisher extends IntervalPublisher {
   }
 
   /**
-   * Callback for when error occurs while reading sensor data.
-   * @param {Error} event containing error info.
-   */
-  onError(event) {
-    console.log('Error: ' + event);
-    throw Error('ERROR!');
-  }
-
-  /**
      * Callback for reading orientation data.
      * context of object that called callback.
      *
@@ -103,35 +105,36 @@ class MagneticDeclinationPublisher extends IntervalPublisher {
   }
 
   /**
-   * Puts the magnetic declination
-   * in a ROS message and publishes it
+   * Puts the magnetic declination in a ROS message and publishes it
    */
   createSnapshot() {
     if (!this.orientationReady) {
       throw Error('Orientation is not read yet!');
     }
 
-    const MagneticDeclinationMessage = new ROSLIB.Message({
+    const Compass = new ROSLIB.Message({
       data: this.alpha,
     });
 
-    this.msg = MagneticDeclinationMessage;
+    this.msg = Compass;
     super.createSnapshot();
   }
 
   /**
-   * Deserializes a MagneticDeclinationPublisher stored in a config object,
+   * Deserializes a CompassPublisher stored in a config object,
    * and returns the resulting publisher instance.
    * The returned instance is already started.
    * @param {ROSLIB.Ros} ros ros instance to which to resulting publisher will publish
    * @param {Object} config object with the following keys:
    * @param {string} config.name - name of the publisher to create
-   * @param {number} config.frequency - name of the publisher to create
-   * @return {MagneticDeclinationPublisher} MagneticDeclinationPublisher described in the provided properties parameter
+   * @param {number} config.frequency - frequency of the publisher to create
+   * @param {string} config.topicPath - path to location of topic of publisher.
+   *  Publisher will publish to the topic topicPath/name
+   * @return {CompassPublisher} CompassPublisher described in the provided properties parameter
    */
   static readFromConfig(ros, config) {
-    const topicName = 'mirte/phone_magnetic_declination/' + config.name;
-    const publisher = new MagneticDeclinationPublisher(ros, topicName);
+    const topicName = config.topicPath + '/' + config.name;
+    const publisher = new CompassPublisher(ros, topicName);
     publisher.start();
     publisher.setPublishFrequency(config.frequency);
 
@@ -139,4 +142,4 @@ class MagneticDeclinationPublisher extends IntervalPublisher {
   }
 }
 
-module.exports = MagneticDeclinationPublisher;
+module.exports = CompassPublisher;

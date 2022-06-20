@@ -1,4 +1,32 @@
-/*
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: sensors/CoordinateCompassPublisher.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: sensors/CoordinateCompassPublisher.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/*
  Used sources:
     https://dev.to/orkhanjafarovr/real-compass-on-mobile-browsers-with-javascript-3emi
     https://answers.ros.org/question/65971/how-can-i-publish-an-integer-and-string-int16-string-using-roslibjs/
@@ -10,7 +38,7 @@ const PermissionDeniedError = require('../error/PermissionDeniedError.js');
 const NotSupportedError = require('../error/NotSupportedError');
 
 /**
- * GPSDeclinationPublisher publishes the rotation as a compass to
+ * CoordinateCompassPublisher publishes the rotation as a compass to
  * a certain point in the world.
  * By default it publishes data at the interval rate
  * from parrent class IntervalPublisher
@@ -18,13 +46,13 @@ const NotSupportedError = require('../error/NotSupportedError');
  * The data resulting from the interactions is published as a
  * ROS std_msgs/Int32 message.
  */
-class GPSDeclinationPublisher extends IntervalPublisher {
+class CoordinateCompassPublisher extends IntervalPublisher {
   /**
    * Creates a new sensor publisher that publishes the angle
    * between the device and the provided Coordinates to the provided topic.
    * Will point to the North Pole (latitude 90, longitude 0) if not coordinates are specified.
    * @param {ROSLIB.Ros} ros a ROS instance to publish to
-   * @param {ROSLIB.Topic} topicName a Topic from RosLibJS
+   * @param {String} topicName name for the topic to publish data to
    * @param {Number} latitude float that gives the latitude of point where to aim for
    * @param {Number} longitude float that gives the longitude of point where to aim for
    * @param {Number} hz a standard frequency for this type of object.
@@ -32,11 +60,11 @@ class GPSDeclinationPublisher extends IntervalPublisher {
   constructor(ros, topicName, latitude = 90, longitude = 0, hz = 10) {
     super(ros, topicName, hz);
 
-    if (!((typeof latitude === 'number') && (typeof longitude === 'number'))) {
+    if (!((typeof latitude === 'number') &amp;&amp; (typeof longitude === 'number'))) {
       throw new TypeError('Coordinates were not of type Number');
     }
 
-    if (latitude > 90 || latitude < -90 || longitude > 180 || longitude < -180) {
+    if (latitude > 90 || latitude &lt; -90 || longitude > 180 || longitude &lt; -180) {
       throw new Error('Range of given coordinates is invalid');
     }
 
@@ -60,23 +88,21 @@ class GPSDeclinationPublisher extends IntervalPublisher {
     * the user has to give permission through a user activation event.
     * Note: This will only work through either localhost or a secure connection (https).
     */
-    if (!window.MSStream && /iPad|iPhone|iPod|Macintosh/.test(window.navigator.userAgent)) {
+    if (!window.MSStream &amp;&amp; /iPad|iPhone|iPod|Macintosh/.test(window.navigator.userAgent)) {
       this.requestPermission();
     }
 
     // check support for API
     if (!window.navigator.geolocation) {
-      throw new NotSupportedError('Unable to create GPSPublisher, ' +
+      throw new NotSupportedError('Unable to create CoordinateCompassPublisher, ' +
         'Geolocation API not supported');
     }
   }
 
   /**
-   * Start the publishing of data to ROS with frequency of <freq> Hz.
+   * Start the publishing of data to ROS with frequency of &lt;freq> Hz.
    */
   start() {
-    super.start();
-
     window.addEventListener('deviceorientationabsolute', (event) => {
       if (event.isTrusted) {
         this.onReadOrientation(event);
@@ -88,6 +114,8 @@ class GPSDeclinationPublisher extends IntervalPublisher {
         (error) => {
           throw Error('failed to watch position');
         });
+
+    super.start();
   }
 
   /**
@@ -95,6 +123,7 @@ class GPSDeclinationPublisher extends IntervalPublisher {
    */
   stop() {
     super.stop();
+
     window.navigator.geolocation.clearWatch(this.watchId);
   }
 
@@ -123,14 +152,6 @@ class GPSDeclinationPublisher extends IntervalPublisher {
 
     window.document.body.appendChild(permbutton);
   }
-  /**
-   * Callback for when error occurs while reading sensor data.
-   * @param {Error} event containing error info.
-   */
-  onError(event) {
-    console.log('Error: ' + event);
-    throw Error('ERROR!');
-  }
 
   /**
    * Helper method for angle calculation
@@ -139,7 +160,7 @@ class GPSDeclinationPublisher extends IntervalPublisher {
    * @return {Number} angle between current position and the North
    */
   calcDegreeToPoint(latitude, longitude) {
-    if (latitude === this.lat && longitude === this.lng) {
+    if (latitude === this.lat &amp;&amp; longitude === this.lng) {
       return 0;
     }
 
@@ -205,43 +226,42 @@ class GPSDeclinationPublisher extends IntervalPublisher {
     // If it is smaller then 0 it means alpha is bigger
     // We could turn left that amount of degrees but taking compass [0, 360[ we account for that
     // So ex. -10 (10 degrees left) becomes 350 (350 degrees right)
-    if (diff < 0) {
+    if (diff &lt; 0) {
       diff = 360 + diff;
     }
     return diff;
   }
 
   /**
-   * Puts the declination
-   * in a ROS message and publishes it
+   * Puts the declination in a ROS message and publishes it
    */
   createSnapshot() {
-    if (!(this.orientationReady && this.gpsReady)) {
+    if (!(this.orientationReady &amp;&amp; this.gpsReady)) {
       throw Error('Orientation is not read yet!');
     }
 
     this.compass = this.accountForRotation();
 
-    const GPSDeclinationMessage = new ROSLIB.Message({
+    const CoordinateCompassMessage = new ROSLIB.Message({
       data: this.compass,
     });
 
-    this.msg = GPSDeclinationMessage;
+    this.msg = CoordinateCompassMessage;
     super.createSnapshot();
   }
 
   /**
-   * Deserializes a GPSDeclinationPublisher stored in a config object, and returns the resulting publisher instance.
+   * Deserializes a CoordinateCompassPublisher stored in a config object, and returns the resulting publisher instance.
    * The returned instance is already started.
    * @param {ROSLIB.Ros} ros ros instance to which to resulting publisher will publish
    * @param {Object} config object with the following keys:
    * @param {string} config.name - name of the publisher to create
    * @param {number} config.frequency - name of the publisher to create
-   * @return {GPSDeclinationPublisher} GPSDeclinationPublisher described in the provided config parameter
+   * @return {CoordinateCompassPublisher} CoordinateCompassPublisher described in the provided config parameter
    */
   static readFromConfig(ros, config) {
-    const topicName = 'mirte/phone_gps_declination/' + config.name;
-    const publisher = new GPSDeclinationPublisher(ros, topicName);
+    const topicName = 'mirte/phone_coordinate_compass/' + config.name;
+    const publisher = new CoordinateCompassPublisher(ros, topicName);
 
     publisher.start();
     publisher.setPublishFrequency(config.frequency);
@@ -250,4 +270,27 @@ class GPSDeclinationPublisher extends IntervalPublisher {
   }
 }
 
-module.exports = GPSDeclinationPublisher;
+module.exports = CoordinateCompassPublisher;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AmbientLightPublisher.html">AmbientLightPublisher</a></li><li><a href="ButtonPublisher.html">ButtonPublisher</a></li><li><a href="CameraPublisher.html">CameraPublisher</a></li><li><a href="CheckboxPublisher.html">CheckboxPublisher</a></li><li><a href="CompassPublisher.html">CompassPublisher</a></li><li><a href="CoordinateCompassPublisher.html">CoordinateCompassPublisher</a></li><li><a href="FlashlightSubscriber.html">FlashlightSubscriber</a></li><li><a href="GPSPublisher.html">GPSPublisher</a></li><li><a href="ImageSubscriber.html">ImageSubscriber</a></li><li><a href="IMUPublisher.html">IMUPublisher</a></li><li><a href="IntervalPublisher.html">IntervalPublisher</a></li><li><a href="NotSupportedError.html">NotSupportedError</a></li><li><a href="PermissionDeniedError.html">PermissionDeniedError</a></li><li><a href="SensorPublisher.html">SensorPublisher</a></li><li><a href="SliderPublisher.html">SliderPublisher</a></li><li><a href="Subscriber.html">Subscriber</a></li><li><a href="TextPublisher.html">TextPublisher</a></li><li><a href="TextSubscriber.html">TextSubscriber</a></li></ul><h3>Global</h3><ul><li><a href="global.html#publishChildElements">publishChildElements</a></li><li><a href="global.html#quatFromEuler">quatFromEuler</a></li><li><a href="global.html#readSensorsFromConfig">readSensorsFromConfig</a></li><li><a href="global.html#sensorDeserializers">sensorDeserializers</a></li><li><a href="global.html#SENSORLIB">SENSORLIB</a></li><li><a href="global.html#tryPublishElement">tryPublishElement</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Fri Jun 17 2022 16:03:01 GMT+0200 (Midden-Europese zomertijd)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

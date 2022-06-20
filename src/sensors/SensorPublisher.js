@@ -5,8 +5,8 @@ class SensorPublisher {
   /**
    * Creates a new sensor publisher that publishes to the provided topic.
    * @param {ROSLIB.Ros} ros a ROS instance to publish to
-   * @param {ROSLIB.Topic} topicName a Topic from RosLibJS
-   * @throws TypeError if topic argument is not of type ROSLIB.Topic
+   * @param {String} topicName name for the topic to publish data to
+   * @throws TypeError if topic argument is not of type String
    */
   constructor(ros, topicName) {
     if (!(ros instanceof ROSLIB.Ros)) {
@@ -16,10 +16,16 @@ class SensorPublisher {
       throw new TypeError('topicName argument was not of type String');
     }
 
+    if (/\s/.test(topicName)) {
+      throw new Error('topicName argument has space');
+    }
+
     /**
      * ros instance to publish data to
      */
-    this.ros = ros;
+    {
+      this.ros = ros;
+    }
 
     /**
      * Topicname of the topic to publish to.

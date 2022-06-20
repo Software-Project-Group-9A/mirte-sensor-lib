@@ -6,7 +6,7 @@ const SensorPublisher = require('./SensorPublisher');
 const isEqual = require('lodash.isequal');
 
 /**
- * Interface-like class that can be extended by sensors that need
+ * Parent class that can be extended by sensors that need
  * their messages to be published at regular intervals.
  * Usage requires provision of standard frequency for class in constructor
  * and implementation of createSnapshot function.
@@ -16,7 +16,7 @@ class IntervalPublisher extends SensorPublisher {
      * Creates a new sensor publisher that publishes to
      * the provided topic with a Regular interval.
      * @param {ROSLIB.Ros} ros a ROS instance to publish to
-     * @param {ROSLIB.Topic} topicName a Topic from RosLibJS on which to publish.
+     * @param {String} topicName name for the topic from ROS on which to publish data to
      * @param {Number} hz a standard frequency for this type of object.
      */
   constructor(ros, topicName, hz = 10) {
@@ -33,27 +33,14 @@ class IntervalPublisher extends SensorPublisher {
   }
 
   /**
-     * Captures sensor-data at current timeframe and
-     * publishes this to the topic instantly.
-     */
-  createSnapshot() {
-    if (isEqual(this.msg, this.alReadyPublishedMsg)) {
-      return;
-    }
-
-    this.topic.publish(this.msg);
-
-    this.alReadyPublishedMsg = this.msg;
-  }
-
-  /**
      * Start the publishing of data to ROS with frequency of <freq> Hz.
      */
   start() {
-    super.start();
     const delay = 1000/this.freq;
     const snapshotCallback = this.createSnapshot.bind(this);
     this.timer = setInterval(snapshotCallback, delay);
+
+    super.start();
   }
 
   /**
@@ -61,7 +48,25 @@ class IntervalPublisher extends SensorPublisher {
      */
   stop() {
     super.stop();
+
     clearInterval(this.timer);
+  }
+
+  /**
+     * Captures sensor-data at current timeframe and
+     * publishes this to the topic instantly.
+     */
+  createSnapshot() {
+    if (!this.msg) {
+      throw Error('createSnapshot has not been implemented correctly');
+    }
+    if (isEqual(this.msg, this.alReadyPublishedMsg)) {
+      return;
+    }
+
+    this.topic.publish(this.msg);
+
+    this.alReadyPublishedMsg = this.msg;
   }
 
   /**

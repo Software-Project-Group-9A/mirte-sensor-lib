@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: util/documentUtils.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: util/documentUtils.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>const ButtonPublisher = require('../sensors/ButtonPublisher');
+const CheckboxPublisher = require('../sensors/CheckboxPublisher');
+const ImageSubscriber = require('../actuators/ImageSubscriber');
+const SliderPublisher = require('../sensors/SliderPublisher');
+const TextPublisher = require('../sensors/TextPublisher');
+const TextSubscriber = require('../actuators/TextSubscriber');
+
+/**
+ * Takes an HTML element, and creates the appropriate Publisher if possible.
+ * The id of the element and type of element will determine the name of the topic.
+ * In order to be able to publish an element, the following must be true:
+ *  - The element must have an id
+ *  - The element must be an HTML element
+ *  - The element must be one of the following types:
+ *    > HTMLButtonElement - published as ButtonPublisher, to topic mirte/phone_button/{id}
+ *    > HTMLInputElement - published as SliderPublisher if type is set to 'range',
+ *      and as TextPublisher if type is set to 'text', to topics mirte/phone_slider/{id}
+ *      and mirte/phone_text_input/{id} respectively
+ *    > HTMLCanvasElement - subscribed as ImageSubscriber, to topic mirte/phone_image_output/{id}
+ *    > If none of the above are applicable, the element will be subscribed as a TextSubscriber
+ *      to topic mirte/phone_text_output/{id}
+ * Any resulting publisher or subscriber will be placed in the provided map, with its id as its key
+ * @param {HTMLElement} element HTMLElement to attempt to publish
+ * @param {ROSLIB.Ros} ros ros instance to which to publish/subscribe resulting publishers and subscribers
+ * @param {Map} map Map in which to place any created publisher or subscriber
+ */
+function tryPublishElement(element, ros, map) {
+  const instanceName = element.id;
+
+  // do not publish elements without id
+  if (instanceName.length &lt; 1) {
+    return;
+  }
+
+  if (!(element instanceof window.HTMLElement)) {
+    throw new TypeError('element was not instance of HTMLElement');
+  }
+
+  // find appropriate action for element
+  let mapEntry;
+  switch (element.constructor.name) {
+    case 'HTMLButtonElement':
+      mapEntry = new ButtonPublisher(ros, 'mirte/phone_button/' + instanceName, element);
+      break;
+    case 'HTMLInputElement':
+      if (element.type &amp;&amp; element.type === 'range') {
+        mapEntry = new SliderPublisher(ros, 'mirte/phone_slider/' + instanceName, element);
+      } else if (element.type &amp;&amp; element.type === 'text') {
+        mapEntry = new TextPublisher(ros, 'mirte/phone_text_input/' + instanceName, element);
+      } else if (element.type &amp;&amp; element.type === 'checkbox') {
+        mapEntry = new CheckboxPublisher(ros, 'mirte/phone_checkbox/' + instanceName, element);
+      }
+      break;
+    case 'HTMLCanvasElement':
+      mapEntry = new ImageSubscriber(ros, 'mirte/phone_image_output/' + instanceName, element);
+      break;
+    default:
+      mapEntry = new TextSubscriber(ros, 'mirte/phone_text_output/' + instanceName, element);
+  }
+
+  // check for duplicate topic names
+  const topicName = mapEntry.topic.name;
+  if (map.has(topicName)) {
+    throw new Error(`topic name ${topicName} already published`);
+  }
+
+  mapEntry.start();
+  map.set(topicName, mapEntry);
+}
+
+/**
+ * Recursively publishes all children of the provided parentElement.
+ * In order to be publishable, a child element must have an id.
+ * For more information on the publishing of these childnodes,
+ * see the comments on the @function tryPublishElement function
+ * @param {HTMLElement} parentElement element of which to publish child elements
+ * @param {ROSLIB.Ros} ros ros instance to which to publish child elements
+ * @param {Map} [map] map in which to place resulting publishers and subscribers.
+ *  Will create an empty map if no map is given.
+ * @return {Map} Map where each publisher is stored under it's respective topic name
+ */
+function publishChildElements(parentElement, ros, map) {
+  // create default map
+  map = map || new Map();
+
+  if (!(ros instanceof ROSLIB.Ros)) {
+    throw new TypeError('ros argument must be of type ROSLIB.Ros');
+  }
+
+  if (!(parentElement instanceof window.HTMLElement)) {
+    throw new TypeError('parentElement argument must be of type HTMLElement');
+  }
+
+  if (!(map instanceof Map)) {
+    throw new TypeError('map argument must be of type Map');
+  }
+
+  // check recursive base case
+  if (parentElement.children === 0) {
+    return map;
+  }
+
+  // depth-first search through all children for valid elements to publish
+  for (let i = 0; i &lt; parentElement.childElementCount; i++) {
+    const childNode = parentElement.children[i];
+
+    tryPublishElement(childNode, ros, map);
+    publishChildElements(childNode, ros, map);
+  }
+
+  return map;
+}
+
+module.exports = {
+  publishChildElements: publishChildElements,
+  tryPublishElement: tryPublishElement,
+};
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AmbientLightPublisher.html">AmbientLightPublisher</a></li><li><a href="ButtonPublisher.html">ButtonPublisher</a></li><li><a href="CameraPublisher.html">CameraPublisher</a></li><li><a href="CheckboxPublisher.html">CheckboxPublisher</a></li><li><a href="CompassPublisher.html">CompassPublisher</a></li><li><a href="CoordinateCompassPublisher.html">CoordinateCompassPublisher</a></li><li><a href="FlashlightSubscriber.html">FlashlightSubscriber</a></li><li><a href="GPSPublisher.html">GPSPublisher</a></li><li><a href="ImageSubscriber.html">ImageSubscriber</a></li><li><a href="IMUPublisher.html">IMUPublisher</a></li><li><a href="IntervalPublisher.html">IntervalPublisher</a></li><li><a href="NotSupportedError.html">NotSupportedError</a></li><li><a href="PermissionDeniedError.html">PermissionDeniedError</a></li><li><a href="SensorPublisher.html">SensorPublisher</a></li><li><a href="SliderPublisher.html">SliderPublisher</a></li><li><a href="Subscriber.html">Subscriber</a></li><li><a href="TextPublisher.html">TextPublisher</a></li><li><a href="TextSubscriber.html">TextSubscriber</a></li></ul><h3>Global</h3><ul><li><a href="global.html#publishChildElements">publishChildElements</a></li><li><a href="global.html#quatFromEuler">quatFromEuler</a></li><li><a href="global.html#readSensorsFromConfig">readSensorsFromConfig</a></li><li><a href="global.html#sensorDeserializers">sensorDeserializers</a></li><li><a href="global.html#SENSORLIB">SENSORLIB</a></li><li><a href="global.html#tryPublishElement">tryPublishElement</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Fri Jun 17 2022 16:03:01 GMT+0200 (Midden-Europese zomertijd)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

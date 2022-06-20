@@ -1,6 +1,5 @@
 <html>
     <head>
-        <script src="http://static.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
         <script src="http://static.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
         <script src="../build/RosSensorLib.js"></script>
         <script>
@@ -44,7 +43,7 @@
               console.error("Error: ", error);
             }
 
-            let cameraPublisher = new SENSORLIB.CameraPublisher(ros, "/camera/compressed", video, canvas);
+            let cameraPublisher = new SENSORLIB.CameraPublisher(ros, "/camera", video, canvas);
             let bool = true;
             button.addEventListener('click', () => {
                 cameraPublisher.start()

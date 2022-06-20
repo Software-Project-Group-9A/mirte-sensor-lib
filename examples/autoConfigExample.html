@@ -1,7 +1,6 @@
 <head>
-    <script src="http://static.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
     <script src="http://static.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
-    <script src="../build/RosSensorLib.min.js"></script>
+    <script src="../build/RosSensorLib.js"></script> 
     <script>
         var ros = new ROSLIB.Ros();
 
@@ -15,9 +14,9 @@
     </script>
 </head>
 <body>
+    <h1 id='connection_info'></h1>
     <video id="camera" crossorigin="anonymous" autoplay></video>
     <canvas id="canvas" width="640" height="480"></canvas>
-    <h1 id='connection_info'></h1>
     <button id="button">Press Here!</button>
     <script>
         // config object with sensor configuration
@@ -29,14 +28,14 @@
                 },
             },
             phone_magnetic_declination: {
-                magnetic_declination: {
-                    name: 'magnetic_declination',
+                compass: {
+                    name: 'compass',
                     frequency: 1.0,
                 },
             },
-            phone_gps_declination: {
-                gps_declination: {
-                    name: 'gps_declination',
+            phone_coordinate_compass: {
+                coordinate_compass: {
+                    name: 'coordinate_compass',
                     frequency: 1.0,
                 },
             },

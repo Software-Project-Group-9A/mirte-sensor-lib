@@ -1,4 +1,5 @@
 const SensorPublisher = require('./SensorPublisher.js');
+const {positionElement} = require('../util/styleUtils.js');
 
 /**
  * CheckboxPublisher publishes the state of an HTML checkbox.
@@ -13,7 +14,7 @@ class CheckboxPublisher extends SensorPublisher {
   /**
    * Creates a new checkboxPublisher.
    * @param {ROSLIB.Ros} ros a ROS instance to publish to
-   * @param {ROSLIB.Topic} topicName topic to which to publish checkbox data
+   * @param {String} topicName topic to which to publish checkbox data
    * @param {HTMLElement} checkbox checkbox of which to publish data
    */
   constructor(ros, topicName, checkbox) {
@@ -43,6 +44,23 @@ class CheckboxPublisher extends SensorPublisher {
     }.bind(this);
   }
 
+  /**
+   * Start the publishing of data to ROS.
+   */
+  start() {
+    this.checkbox.addEventListener('change', this.change);
+
+    super.start();
+  }
+
+  /**
+   * Stop the publishing of data to ROS.
+   */
+  stop() {
+    super.stop();
+
+    this.checkbox.removeEventListener('change', this.change);
+  }
 
   /**
    * Creates and publishes a new ROS std_msgs/Bool message, containing the supplied boolean value.
@@ -56,21 +74,29 @@ class CheckboxPublisher extends SensorPublisher {
   }
 
   /**
-   * Start the publishing of data to ROS.
+   * Deserializes a Checkbox stored in a config object, and returns the resulting publisher instance.
+   * The returned instance is already started.
+   * @param {ROSLIB.Ros} ros ros instance to which to resulting publisher will publish
+   * @param {Object} config object with the following keys:
+   * @param {string} config.name name of the publisher to create
+   * @param {string} config.topicPath - path to location of topic of publisher.
+   *  Publisher will publish to the topic topicPath/name
+   * @param {number} config.x distance from right side of container
+   * @param {number} config.y distance from top side of container
+   * @param {HTMLElement} targetElement HTML element in which to generate necessary sensor UI elements
+   * @return {GPSDeclinationPublisher} GPSDeclinationPublisher described in the provided config parameter
    */
-  start() {
-    super.start();
+  static readFromConfig(ros, config, targetElement) {
+    // initialize checkbox
+    const checkbox = window.document.createElement('input');
+    checkbox.type = 'checkbox';
 
-    this.checkbox.addEventListener('change', this.change);
-  }
+    positionElement(checkbox, targetElement, config.x, config.y, config.name);
 
-  /**
-   * Stop the publishing of data to ROS.
-   */
-  stop() {
-    super.stop();
+    const publisher = new CheckboxPublisher(ros, config.topicPath + '/' + config.name, checkbox);
+    publisher.start();
 
-    this.checkbox.removeEventListener('change', this.change);
+    return publisher;
   }
 }
 

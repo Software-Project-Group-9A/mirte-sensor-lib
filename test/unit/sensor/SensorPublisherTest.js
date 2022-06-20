@@ -4,7 +4,7 @@ require('../../globalSetup.js');
 const SensorPublisher = require('../../../src/sensors/SensorPublisher.js');
 
 describe('Test SensorPublisher', function() {
-  describe('#constructor(topic)', function() {
+  describe('#constructor(ros, topicName)', function() {
     /**
      * Helper functions for checking whether correct error is raised for
      * invalid topics.
@@ -14,6 +14,18 @@ describe('Test SensorPublisher', function() {
     function expectInvalidTopic(error) {
       assert(error instanceof TypeError);
       assert(error.message === 'topicName argument was not of type String');
+
+      return true;
+    }
+
+    /**
+     * Helper functions for checking whether correct error is raised for
+     * invalid topics.
+     * @param {Error} error The raised error.
+     * @return {boolean} true if valid.
+     */
+    function expectInvalidTopic2(error) {
+      assert(error.message === 'topicName argument has space');
 
       return true;
     }
@@ -54,13 +66,19 @@ describe('Test SensorPublisher', function() {
       }, expectInvalidTopic);
     });
 
+    it('should reject any topicName argument that has a space', function() {
+      assert.throws(() => {
+        new SensorPublisher(new ROSLIB.Ros(), 'Anish Gijs Mike Pieter Tijs');
+      }, expectInvalidTopic2);
+    });
+
     it('should accept a ROSLIB.Topic', function() {
       let publisher;
       const ros = new ROSLIB.Ros();
 
       assert.doesNotThrow(
           () => {
-            publisher = new SensorPublisher(ros, 'topic');
+            publisher = new SensorPublisher(ros, 'topic&topic');
           },
           (error) => {
             return false;
@@ -68,7 +86,7 @@ describe('Test SensorPublisher', function() {
       );
 
       assert.equal(publisher.ros, ros);
-      assert.equal(publisher.topic.name, 'topic');
+      assert.equal(publisher.topic.name, 'topic&topic');
     });
   });
 

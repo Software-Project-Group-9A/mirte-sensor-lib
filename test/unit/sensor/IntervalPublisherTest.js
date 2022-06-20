@@ -15,7 +15,7 @@ function createIntervalPublisher() {
 }
 
 describe('Test IntervalPublisher', function() {
-  describe('#constructor(topic)', function() {
+  describe('#constructor(ros, topicName, hz)', function() {
     /**
      * Helper functions for checking whether correct error is raised for
      * invalid topics.
@@ -259,7 +259,7 @@ describe('Test IntervalPublisher', function() {
       assert.equal(topic.publish.callCount, 1);
     });
 
-    it('should publish new', function() {
+    it('should publish a new message', function() {
       // Arrange
       const publisher = new IntervalPublisher(new ROSLIB.Ros(), 'topic');
       const topic = sinon.spy(publisher.topic);
@@ -277,6 +277,15 @@ describe('Test IntervalPublisher', function() {
 
       // Assert
       assert.equal(topic.publish.callCount, 2);
+    });
+
+    it('should not allow an empty message or allow a wrong implementation', function() {
+      // Arrange
+      const publisher = new IntervalPublisher(new ROSLIB.Ros(), 'topic');
+      // Act & Assert
+      assert.throws(() => {
+        publisher.createSnapshot();
+      }, Error);
     });
   });
 });

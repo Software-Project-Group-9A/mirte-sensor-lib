@@ -30,7 +30,7 @@ function createStandardIMU() {
 
 describe('Test IMU Publisher', function() {
   // Constructor Tests
-  describe('#constructor(topic)', function() {
+  describe('#constructor(ros, topicName, hz)', function() {
     // Set-up sandbox
     const sandbox = sinon.createSandbox();
 
@@ -41,32 +41,6 @@ describe('Test IMU Publisher', function() {
 
     afterEach(function() {
       sandbox.restore();
-    });
-
-    it('works when browser has device motion support', function() {
-      // Arrange
-      global.window.DeviceMotionEvent = true;
-
-      // Act
-      createStandardIMU();
-
-      // Assert
-      assert.equal(global.window.addEventListener.callCount, 2);
-      assert(global.window.addEventListener.calledWith('deviceorientation'));
-      assert(global.window.addEventListener.calledWith('devicemotion'));
-    });
-
-    it('works when browser doesn\'t have device motion support', function() {
-      // Arrange
-      global.window.DeviceMotionEvent = false;
-
-      // Act
-      createStandardIMU();
-
-      // Arrange
-      assert.equal(global.window.addEventListener.callCount, 1);
-      assert(global.window.addEventListener.calledWith('deviceorientation'));
-      assert.equal(global.window.alert.callCount, 1);
     });
 
     it('should not start reading orientation user is on iOS', function() {
@@ -85,6 +59,49 @@ describe('Test IMU Publisher', function() {
       global.window.navigator.__defineGetter__('userAgent', () => {
         return original;
       });
+    });
+  });
+
+  // requestPermission tests
+  describe('#start', function() {
+    // Set-up sandbox
+    const sandbox = sinon.createSandbox();
+
+    beforeEach(function() {
+      global.window.alert = function() {};
+      sandbox.spy(global.window);
+    });
+
+    afterEach(function() {
+      sandbox.restore();
+    });
+
+    it('works when browser has device motion support', function() {
+    // Arrange
+      global.window.DeviceMotionEvent = true;
+
+      // Setup IMU object
+      const imu = new IMUPublisher(new ROSLIB.Ros(), 'topic');
+      imu.start();
+
+      // Assert
+      assert.equal(global.window.addEventListener.callCount, 2);
+      assert(global.window.addEventListener.calledWith('deviceorientation'));
+      assert(global.window.addEventListener.calledWith('devicemotion'));
+    });
+
+    it('works when browser doesn\'t have device motion support', function() {
+    // Arrange
+      global.window.DeviceMotionEvent = false;
+
+      // Setup IMU object
+      const imu = new IMUPublisher(new ROSLIB.Ros(), 'topic');
+      imu.start();
+
+      // Arrange
+      assert.equal(global.window.addEventListener.callCount, 1);
+      assert(global.window.addEventListener.calledWith('deviceorientation'));
+      assert.equal(global.window.alert.callCount, 1);
     });
   });
 
@@ -195,7 +212,7 @@ describe('Test IMU Publisher', function() {
 
       imu.orientationReady = true;
       imu.motionReady = true;
-      imu.beta = 45.0; // 45 degrees over X-axis (Pitch)
+      imu.beta = 45.0; // 45 degrees over X-axis (Roll)
       imu.gamma = 75.0; // 75 degrees over Y-axis (Pitch)
       imu.alpha = 90.0; // 90 degrees over Z-axis (Yaw)
 
@@ -206,9 +223,10 @@ describe('Test IMU Publisher', function() {
       // Assert
       const msgCords = msg[0].orientation;
       const msgQuat = new THREE.Quaternion(msgCords.x, msgCords.y, msgCords.z, msgCords.w);
-      const q = new THREE.Euler().setFromQuaternion(msgQuat);
+      const q = new THREE.Euler().setFromQuaternion(msgQuat, 'ZYX');
+
       // Check if angles are valid
-      const rad = 180/ Math.PI;
+      const rad = 180 / Math.PI;
       closeTo(q.x * rad, 45.0, 0.05); // x axis should be beta
       closeTo(q.y * rad, 75.0, 0.05); // y axis should be gamma
       closeTo(q.z * rad, 90.0, 0.05); // z axis should be alpha
@@ -339,6 +357,7 @@ describe('Test IMU Publisher', function() {
       const ros = new ROSLIB.Ros();
       const config = {
         name: imuName,
+        topicPath: 'mirte/phone_imu/',
         frequency: frequency,
       };
 
@@ -346,7 +365,7 @@ describe('Test IMU Publisher', function() {
       const publisher = IMUPublisher.readFromConfig(ros, config);
 
       // Assert
-      const topicName = 'mirte/phone_imu/' + imuName;
+      const topicName = config.topicPath + '/' + imuName;
       assert(publisher instanceof IMUPublisher);
       assert(publisher.started);
       assert.equal(publisher.topic.name, topicName);

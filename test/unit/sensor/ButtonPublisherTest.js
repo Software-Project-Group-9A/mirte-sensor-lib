@@ -6,7 +6,7 @@ const ButtonPublisher = require('../../../src/sensors/ButtonPublisher.js');
 const {document} = global.window;
 
 describe('Test ButtonPublisher', function() {
-  describe('#constructor(topic, button)', function() {
+  describe('#constructor(ros, topicName, button)', function() {
     /**
      * Helper functions for checking whether correct error is raised for
      * invalid topics.
@@ -246,6 +246,58 @@ describe('Test ButtonPublisher', function() {
       button.dispatchEvent(new window.Event('mouseup'));
 
       assert.equal(publisher.onMouseUp.callCount, 0);
+    });
+  });
+
+  describe('#readFromConfig(ros, config, targetElement)', function() {
+    it('should append a button to the target element', function() {
+      const ros = new ROSLIB.Ros();
+      const targetDiv = document.createElement('div');
+      const config = {
+        name: 'buttonA',
+        x: 30,
+        y: 20,
+      };
+
+      ButtonPublisher.readFromConfig(ros, config, targetDiv);
+
+      assert.equal(targetDiv.childElementCount, 1);
+      const child = targetDiv.childNodes.item(0);
+      assert(child instanceof window.HTMLButtonElement);
+      assert.equal(child.innerHTML, 'buttonA');
+    });
+    it('should properly position the button element', function() {
+      const ros = new ROSLIB.Ros();
+      const targetDiv = document.createElement('div');
+      const config = {
+        name: 'buttonA',
+        x: 30,
+        y: 20,
+      };
+
+      const publisher = ButtonPublisher.readFromConfig(ros, config, targetDiv);
+
+      const button = publisher.button;
+      const style = button.style;
+      assert.equal(style.getPropertyValue('position'), 'absolute');
+      assert.equal(style.getPropertyValue('left'), '30%');
+      assert.equal(style.getPropertyValue('top'), '20%');
+    });
+    it('should return the correct publisher', function() {
+      const ros = new ROSLIB.Ros();
+      const targetDiv = document.createElement('div');
+      const config = {
+        name: 'buttonA',
+        topicPath: '/mirte/phone_button',
+        x: 30,
+        y: 20,
+      };
+
+      const publisher = ButtonPublisher.readFromConfig(ros, config, targetDiv);
+
+      assert(publisher instanceof ButtonPublisher);
+      assert(publisher.started);
+      assert.equal(publisher.topic.name, '/mirte/phone_button/buttonA');
     });
   });
 });

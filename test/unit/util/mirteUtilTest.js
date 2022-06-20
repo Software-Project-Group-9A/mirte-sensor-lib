@@ -1,7 +1,7 @@
 require('../../globalSetup.js');
 
 const IMUPublisher = require('../../../src/sensors/IMUPublisher.js');
-const MagneticDeclinationPublisher = require('../../../src/sensors/MagneticDeclinationPublisher.js');
+const CompassPublisher = require('../../../src/sensors/CompassPublisher.js');
 
 // module to test
 const {readSensorsFromConfig} = require('../../../src/util/mirteUtil');
@@ -20,6 +20,7 @@ describe('mirteUtils', function() {
         remote_seismograph: {
           seismograph: {
             name: 'seismograph',
+            topicPath: '/mirte/seismograph',
             frequency: 1.0,
           },
         },
@@ -44,7 +45,7 @@ describe('mirteUtils', function() {
 
       const sensorMap = readSensorsFromConfig(config, ros);
 
-      const topicName = 'mirte/phone_imu/' + imuName;
+      const topicName = '/mirte/phone_imu/' + imuName;
       assert.equal(sensorMap.size, 1);
       assert(sensorMap.has(topicName));
       const imuPublisher = sensorMap.get(topicName);
@@ -52,25 +53,25 @@ describe('mirteUtils', function() {
       assert.equal(imuPublisher.topic.name, topicName);
       assert.equal(imuPublisher.freq, imuFrequency);
     });
-    it('should return MagneticDeclinationPublishers as specified in the config', function() {
-      const magneticDeclinationName = 'compass';
+    it('should return CompassPublishers as specified in the config', function() {
+      const compassName = 'compass';
       const ros = new ROSLIB.Ros();
       const config = {
-        phone_magnetic_declination: {
+        phone_compass: {
           compass: {
-            name: magneticDeclinationName,
+            name: compassName,
           },
         },
       };
 
       const sensorMap = readSensorsFromConfig(config, ros);
 
-      const topicName = 'mirte/phone_magnetic_declination/' + magneticDeclinationName;
+      const topicName = '/mirte/phone_compass/' + compassName;
       assert.equal(sensorMap.size, 1);
       assert(sensorMap.has(topicName));
-      const imuPublisher = sensorMap.get(topicName);
-      assert(imuPublisher instanceof MagneticDeclinationPublisher);
-      assert.equal(imuPublisher.topic.name, topicName);
+      const compassPublisher = sensorMap.get(topicName);
+      assert(compassPublisher instanceof CompassPublisher);
+      assert.equal(compassPublisher.topic.name, topicName);
     });
   });
 });

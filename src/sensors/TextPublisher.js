@@ -1,3 +1,4 @@
+const {positionElement} = require('../util/styleUtils.js');
 const SensorPublisher = require('./SensorPublisher.js');
 
 /**
@@ -13,7 +14,7 @@ class TextPublisher extends SensorPublisher {
    * Creates a new TextPublisher.
    *
    * @param {ROSLIB.Ros} ros a ROS instance to publish to
-   * @param {ROSLIB.Topic} topicName topic to which to publish text data
+   * @param {String} topicName name for the topic to publish data to
    * @param {HTMLInputElement} inputElement input element from which to publish data.
    * @param {Object} [options] configuration options.
    * @param {boolean} [options.onEnter=true] if true publishes on enter, else publishes every key press.
@@ -55,18 +56,6 @@ class TextPublisher extends SensorPublisher {
   }
 
   /**
-   * Reads text from inputElement and publishes it.
-   */
-  publishMessage() {
-    const msg = this.createStrMsg(this.inputElement.value);
-    this.topic.publish(msg);
-
-    if (this.options.clearOnPublish) {
-      this.inputElement.value = '';
-    }
-  }
-
-  /**
    * TODO: should perhaps be it's own module, allong with other message objects
    * we might need in this project
    *
@@ -86,12 +75,13 @@ class TextPublisher extends SensorPublisher {
    * Start the publishing of data to ROS.
    */
   start() {
-    super.start();
     if (this.options.onEnter) {
       this.inputElement.addEventListener('keyup', this.onKeyUp);
     } else {
       this.inputElement.addEventListener('input', this.onInput);
     }
+
+    super.start();
   }
 
   /**
@@ -99,11 +89,51 @@ class TextPublisher extends SensorPublisher {
    */
   stop() {
     super.stop();
+
     if (this.options.onEnter) {
       this.inputElement.removeEventListener('keyup', this.onKeyUp);
     } else {
       this.inputElement.removeEventListener('input', this.onInput);
     }
+  }
+
+  /**
+   * Reads text from inputElement and publishes it.
+   */
+  publishMessage() {
+    const msg = new ROSLIB.Message({
+      data: this.inputElement.value,
+    });
+
+    this.topic.publish(msg);
+
+    if (this.options.clearOnPublish) {
+      this.inputElement.value = '';
+    }
+  }
+
+  /**
+   * Deserializes a text input publisher stored in a config object, and returns the resulting publisher instance.
+   * The returned instance is already started.
+   * @param {ROSLIB.Ros} ros ros instance to which to resulting publisher will publish
+   * @param {Object} config object with the following keys:
+   * @param {string} config.name name of the publisher to create
+   * @param {string} config.topicPath - path to location of topic of publisher.
+   *  Publisher will publish to the topic topicPath/name
+   * @param {HTMLElement} targetElement HTML element in which to generate necessary sensor UI elements
+   * @return {GPSDeclinationPublisher} GPSDeclinationPublisher described in the provided config parameter
+   */
+  static readFromConfig(ros, config, targetElement) {
+    const textInput = window.document.createElement('input');
+    textInput.type = 'text';
+
+    positionElement(textInput, targetElement, config.x, config.y, config.name);
+
+    const topicName = config.topicPath + '/' + config.name;
+    const publisher = new TextPublisher(ros, topicName, textInput);
+    publisher.start();
+
+    return publisher;
   }
 }
 

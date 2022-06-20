@@ -6,12 +6,12 @@
 module.exports = {
   AmbientLightPublisher: require('./AmbientLightPublisher'),
   ButtonPublisher: require('./ButtonPublisher'),
+  CameraPublisher: require('./CameraPublisher'),
   CheckboxPublisher: require('./CheckboxPublisher'),
+  CompassPublisher: require('./CompassPublisher'),
+  CoordinateCompassPublisher: require('./CoordinateCompassPublisher'),
+  GPSPublisher: require('./GPSPublisher'),
   IMUPublisher: require('./IMUPublisher'),
   SliderPublisher: require('./SliderPublisher'),
-  CameraPublisher: require('./CameraPublisher'),
   TextPublisher: require('./TextPublisher'),
-  GPSPublisher: require('./GPSPublisher'),
-  MagneticDeclinationPublisher: require('./MagneticDeclinationPublisher'),
-  GPSDeclinationPublisher: require('./GPSDeclinationPublisher'),
 };

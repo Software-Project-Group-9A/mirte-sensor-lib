@@ -24,7 +24,7 @@ const RED_SQUARE_RGB_DATA = 'iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAAC' +
               'MKELUEEQAM6pAggfw96NAAAAAElFTkSuQmCC';
 
 describe('ImageSubscriber', function() {
-  describe('#constructor(topic, canvas)', function() {
+  describe('#constructor(ros, topicName, canvas)', function() {
     it('should not accept an undefined canvas argument', function() {
       assert.throws(
           () => {
@@ -164,6 +164,25 @@ describe('ImageSubscriber', function() {
       assert.equal(imageData.length, 16);
       const expectedPixelData = Uint8ClampedArray.from([255, 0, 0, 255, 0, 255, 0, 255, 0, 0, 255, 255, 0, 0, 0, 255]);
       assert.deepEqual(imageData, expectedPixelData);
+    });
+  });
+  describe('#readFromConfig(ros, config, targetElement)', function() {
+    it('should return the correct subscriber instance', function() {
+      const targetElement = document.createElement('div');
+
+      const config = {
+        'name': 'imageA',
+        'topicPath': '/mirte/phone_image_output',
+        'x': 20,
+        'y': 20,
+      };
+
+      const subscriber = ImageSubscriber.readFromConfig(new ROSLIB.Ros(), config, targetElement);
+
+      assert.equal(subscriber.topic.name, '/mirte/phone_image_output/imageA');
+      assert.equal(targetElement.childElementCount, 1);
+      const child = targetElement.firstChild;
+      assert(child instanceof window.HTMLCanvasElement);
     });
   });
 });

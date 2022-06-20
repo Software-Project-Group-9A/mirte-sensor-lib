@@ -6,12 +6,14 @@ const IntervalPublisher = require('./IntervalPublisher');
  *
  * The data resulting from the button interactions is published as a
  * ROS sensor_msgs/Image Message message.
+ * @see Uses the following example:
+ * {@link http://wiki.ros.org/roslibjs/Tutorials/Publishing%20video%20and%20IMU%20data%20with%20roslibjs}
  */
 class CameraPublisher extends IntervalPublisher {
   /**
      * Creates a new Camera publisher that publishes to the provided topic.
    * @param {ROSLIB.Ros} ros a ROS instance to publish to
-     * @param {ROSLIB.Topic} topicName a Topic from RosLibJS
+     * @param {String} topicName name for the topic to publish data to
      * @param {HTMLVideoElement} camera the video element of which to publish the data from.
      * @param {HTMLCanvasElement} canvas a canvas element for making publishing video data possible
      * @param {Number} hz a standard frequency for this type of object.
@@ -25,10 +27,27 @@ class CameraPublisher extends IntervalPublisher {
     if (!(canvas instanceof window.HTMLCanvasElement)) {
       throw new TypeError('canvas argument was not of type HTMLCanvasElement');
     }
+
+    this.topicName = topicName + '/compressed';
+    this.topic.name = this.topicName;
+
     this.camera = camera;
     this.canvas = canvas;
 
     this.topic.messageType = 'sensor_msgs/CompressedImage';
+  }
+
+  /**
+     * Start the publishing of camera data to ROS.
+     *
+     * @throws {Error} if no video source is available.
+     */
+  start() {
+    // If there is no videostream available yet, do not publish data.
+    if (!this.camera.srcObject) {
+      throw new Error('No video source found.');
+    }
+    super.start();
   }
 
   /**
@@ -51,34 +70,25 @@ class CameraPublisher extends IntervalPublisher {
   }
 
   /**
-     * Start the publishing of camera data to ROS.
-     *
-     * @throws {Error} if no video source is available.
-     */
-  start() {
-    // If there is no videostream available yet, do not publish data.
-    if (!this.camera.srcObject) {
-      throw new Error('No video source found.');
-    }
-    super.start();
-  }
-
-  /**
    * Deserializes a CameraPublisher stored in a config object, and returns the resulting publisher instance.
    * The returned instance is already started.
    * @param {ROSLIB.Ros} ros ros instance to which to resulting publisher will publish
    * @param {Object} config object with the following keys:
    * @param {string} config.name - name of the publisher to create
-   * @param {number} config.frequency - name of the publisher to create
-   * @param {string} config.cameraId - id of HTMLVideoElement with camera data
-   * @param {string} config.canvasId - id of HTMLCanvasElement to use creating images from video
+   * @param {string} config.topicPath - path to location of topic of publisher.
+   *  Publisher will publish to the topic topicPath/name
+   * @param {number} config.frequency - frequency of the publisher to create
+   * @param {string} [config.cameraId='camera'] - id of HTMLVideoElement with camera data
+   * @param {string} [config.canvasId='canvas'] - id of HTMLCanvasElement to use creating images from video
    * @return {CameraPublisher} CameraPublisher described in the provided config parameter
    */
   static readFromConfig(ros, config) {
+    config.cameraId = config.cameraId || 'camera';
+    config.canvasId = config.canvasId || 'canvas';
     const camera = document.getElementById(config.cameraId);
     const canvas = document.getElementById(config.canvasId);
 
-    const topicName = 'mirte/phone_camera/' + config.name;
+    const topicName = config.topicPath + '/' + config.name;
     const publisher = new CameraPublisher(ros, topicName, camera, canvas);
     publisher.start();
     publisher.setPublishFrequency(config.frequency);

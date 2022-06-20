@@ -154,4 +154,37 @@ describe('Test CheckboxPublisher', function() {
       });
     });
   });
+  describe('#readFromConfig(ros, config, targetElement)', function() {
+    it('should append a checkbox to the target element', function() {
+      const ros = new ROSLIB.Ros();
+      const targetDiv = document.createElement('div');
+      const config = {
+        name: 'checkbox',
+        x: 30,
+        y: 20,
+      };
+
+      CheckboxPublisher.readFromConfig(ros, config, targetDiv);
+
+      assert.equal(targetDiv.childElementCount, 1);
+      const child = targetDiv.childNodes.item(0);
+      assert(child instanceof window.HTMLInputElement);
+    });
+    it('should return the correct publisher', function() {
+      const ros = new ROSLIB.Ros();
+      const targetDiv = document.createElement('div');
+      const config = {
+        name: 'checkbox',
+        topicPath: '/mirte/phone_checkbox',
+        x: 30,
+        y: 20,
+      };
+
+      const publisher = CheckboxPublisher.readFromConfig(ros, config, targetDiv);
+
+      assert(publisher instanceof CheckboxPublisher);
+      assert(publisher.started);
+      assert.equal(publisher.topic.name, '/mirte/phone_checkbox/checkbox');
+    });
+  });
 });

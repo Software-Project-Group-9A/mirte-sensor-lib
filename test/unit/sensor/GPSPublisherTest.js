@@ -37,7 +37,7 @@ function createGeolocationPosition(longitude, latitude) {
 }
 
 describe('GPSPublisher', function() {
-  describe('#constructor(topic, freq)', function() {
+  describe('#constructor(ros, topicName, hz)', function() {
     it('should create a new instance if the geolocation API is supported', function() {
       // mock navigator instance
       global.window.navigator.geolocation = createGeolocationSpy();
@@ -177,12 +177,13 @@ describe('GPSPublisher', function() {
       const ros = new ROSLIB.Ros();
       const config = {
         name: gpsName,
+        topicPath: 'mirte/phone_gps',
         frequency: frequency,
       };
 
       const publisher = GPSPublisher.readFromConfig(ros, config);
 
-      const topicName = 'mirte/phone_gps/' + gpsName;
+      const topicName = config.topicPath + '/' + gpsName;
       assert(publisher instanceof GPSPublisher);
       assert(publisher.started);
       assert.equal(publisher.topic.name, topicName);
