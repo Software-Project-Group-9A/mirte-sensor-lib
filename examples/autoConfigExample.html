@@ -1,5 +1,4 @@
 <head>
-    <script src="http://static.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
     <script src="http://static.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
     <script src="../build/RosSensorLib.js"></script> 
     <script>
@@ -15,9 +14,9 @@
     </script>
 </head>
 <body>
+    <h1 id='connection_info'></h1>
     <video id="camera" crossorigin="anonymous" autoplay></video>
     <canvas id="canvas" width="640" height="480"></canvas>
-    <h1 id='connection_info'></h1>
     <button id="button">Press Here!</button>
     <script>
         // config object with sensor configuration

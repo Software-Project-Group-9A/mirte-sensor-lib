@@ -27,6 +27,10 @@ class CameraPublisher extends IntervalPublisher {
     if (!(canvas instanceof window.HTMLCanvasElement)) {
       throw new TypeError('canvas argument was not of type HTMLCanvasElement');
     }
+
+    this.topicName = topicName + '/compressed';
+    this.topic.name = this.topicName;
+
     this.camera = camera;
     this.canvas = canvas;
 
