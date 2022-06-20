@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: sensors/ButtonPublisher.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: sensors/ButtonPublisher.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>const SensorPublisher = require('./SensorPublisher.js');
+
+/**
+ * ButtonPublisher publishes the state of an HTML button element.
+ * This state is published every time the button changes state,
+ * from pressed to unpressed, and vice versa.
+ *
+ * The data resulting from the button interactions is published as a
+ * ROS std_msgs/Bool message. The boolean contained within this message
+ * is set to true when the button is pressed, and false otherwise.
+ */
+class ButtonPublisher extends SensorPublisher {
+  /**
+   * Creates a new ButtonPublisher.
+   * @param {ROSLIB.Ros} ros a ROS instance to publish to
+   * @param {String} topicName name for the topic to publish data to
+   * @param {HTMLButtonElement} button button of which to publish data
+   */
+  constructor(ros, topicName, button) {
+    super(ros, topicName);
+
+    if (!(button instanceof window.HTMLButtonElement)) {
+      throw new TypeError('button argument was not of type HTMLButtonElement');
+    }
+
+    this.topic.messageType = 'std_msgs/Bool';
+
+    /**
+     * button of which to publish data
+     */
+    this.button = button;
+
+    // Flag to check if button was already pressed
+    let flag = false;
+
+    /**
+     * Callback for when button is pressed.
+     * @param {Event} event event from callback
+     */
+    this.onMouseDown = function(event) {
+      event.preventDefault();
+      if (flag) {
+        return;
+      }
+      flag = true;
+      const msg = new ROSLIB.Message({
+        data: true,
+      });
+      this.topic.publish(msg);
+    }.bind(this);
+
+    /**
+     * Callback for when button is released.
+     * @param {Event} event event from callback
+     */
+    this.onMouseUp = function(event) {
+      event.preventDefault();
+      if (!flag) {
+        return;
+      }
+      flag = false;
+      const msg = new ROSLIB.Message({
+        data: false,
+      });
+      this.topic.publish(msg);
+    }.bind(this);
+  }
+
+  /**
+   * Start the publishing of data to ROS.
+   */
+  start() {
+    this.button.addEventListener('mousedown', this.onMouseDown);
+    this.button.addEventListener('touchstart', this.onMouseDown);
+    this.button.addEventListener('mouseup', this.onMouseUp);
+    this.button.addEventListener('mouseleave', this.onMouseUp);
+    this.button.addEventListener('touchend', this.onMouseUp);
+    this.button.addEventListener('touchcancel', this.onMouseUp);
+
+    super.start();
+  }
+
+  /**
+   * Stop the publishing of data to ROS.
+   */
+  stop() {
+    super.stop();
+
+    this.button.removeEventListener('mousedown', this.onMouseDown);
+    this.button.removeEventListener('touchstart', this.onMouseDown);
+    this.button.removeEventListener('mouseup', this.onMouseUp);
+    this.button.removeEventListener('mouseleave', this.onMouseUp);
+    this.button.removeEventListener('touchend', this.onMouseUp);
+    this.button.removeEventListener('touchcancel', this.onMouseUp);
+  }
+}
+
+module.exports = ButtonPublisher;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AmbientLightPublisher.html">AmbientLightPublisher</a></li><li><a href="ButtonPublisher.html">ButtonPublisher</a></li><li><a href="CameraPublisher.html">CameraPublisher</a></li><li><a href="CheckboxPublisher.html">CheckboxPublisher</a></li><li><a href="CompassPublisher.html">CompassPublisher</a></li><li><a href="CoordinateCompassPublisher.html">CoordinateCompassPublisher</a></li><li><a href="FlashlightSubscriber.html">FlashlightSubscriber</a></li><li><a href="GPSPublisher.html">GPSPublisher</a></li><li><a href="ImageSubscriber.html">ImageSubscriber</a></li><li><a href="IMUPublisher.html">IMUPublisher</a></li><li><a href="IntervalPublisher.html">IntervalPublisher</a></li><li><a href="NotSupportedError.html">NotSupportedError</a></li><li><a href="PermissionDeniedError.html">PermissionDeniedError</a></li><li><a href="SensorPublisher.html">SensorPublisher</a></li><li><a href="SliderPublisher.html">SliderPublisher</a></li><li><a href="Subscriber.html">Subscriber</a></li><li><a href="TextPublisher.html">TextPublisher</a></li><li><a href="TextSubscriber.html">TextSubscriber</a></li></ul><h3>Global</h3><ul><li><a href="global.html#publishChildElements">publishChildElements</a></li><li><a href="global.html#quatFromEuler">quatFromEuler</a></li><li><a href="global.html#readSensorsFromConfig">readSensorsFromConfig</a></li><li><a href="global.html#sensorDeserializers">sensorDeserializers</a></li><li><a href="global.html#SENSORLIB">SENSORLIB</a></li><li><a href="global.html#tryPublishElement">tryPublishElement</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Fri Jun 17 2022 16:03:01 GMT+0200 (Midden-Europese zomertijd)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
