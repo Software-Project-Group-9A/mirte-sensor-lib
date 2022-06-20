@@ -43,7 +43,7 @@
               console.error("Error: ", error);
             }
 
-            let cameraPublisher = new SENSORLIB.CameraPublisher(ros, "/camera/compressed", video, canvas);
+            let cameraPublisher = new SENSORLIB.CameraPublisher(ros, "/camera", video, canvas);
             let bool = true;
             button.addEventListener('click', () => {
                 cameraPublisher.start()
