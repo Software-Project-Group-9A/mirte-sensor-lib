@@ -69,6 +69,12 @@ describe('Test CamerPublisher', function() {
       assert.equal(cameraPublisher.camera, camera);
       assert.equal(cameraPublisher.canvas, canvas);
     });
+    it('should publish to topic called /topic/compressed', function() {
+      const ros = new ROSLIB.Ros();
+      const cameraPublisher = new CameraPublisher(ros, 'topic', camera, canvas);
+
+      assert.equal(cameraPublisher.topic.name, 'topic/compressed');
+    });
   });
 
   describe('#readFromConfig(ros, config)', function() {
@@ -81,7 +87,7 @@ describe('Test CamerPublisher', function() {
       const config = {
         name: cameraName,
         frequency: frequency,
-        topicPath: '/mirte/phone_camera',
+        topicPath: '/mirte/phone_camera/compressed',
         cameraId: videoId,
         canvasId: canvasId,
       };
@@ -97,7 +103,7 @@ describe('Test CamerPublisher', function() {
 
       const publisher = CameraPublisher.readFromConfig(ros, config);
 
-      const topicName = config.topicPath + '/' + cameraName;
+      const topicName = config.topicPath + '/' + cameraName + '/compressed';
       assert(publisher instanceof CameraPublisher);
       assert(publisher.started);
       assert.equal(publisher.topic.name, topicName);

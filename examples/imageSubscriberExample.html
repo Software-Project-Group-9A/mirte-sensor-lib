@@ -20,7 +20,7 @@
         <h2>Please open the cameraExample demo</h2>
         <canvas id='outputCanvas' width="500", height="500">
         <script>
-            var subscriber = new SENSORLIB.ImageSubscriber(ros, 'camera/compressed', document.getElementById("outputCanvas"), true);
+            var subscriber = new SENSORLIB.ImageSubscriber(ros, 'camera', document.getElementById("outputCanvas"), true);
             subscriber.start();
         </script>
         <button onclick="subscriber.start()">subscribe</button>
