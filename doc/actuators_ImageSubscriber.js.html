@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: actuators/ImageSubscriber.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: actuators/ImageSubscriber.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>const Subscriber = require('./Subscriber');
+const NotSupportedError = require('../error/NotSupportedError');
+
+/**
+ * ImageSubscriber subscribes to a ROS topic and displays any images published to that topic on a canvas.
+ * These images can either be provided as an sensor_msgs/Image or sensor_msgs/CompressedImage ROS message.
+ *
+ * It is recommended to use compressed messages, as to minimalize the network strain. In theory, nearly any image format
+ * is supported by ImageSubscriber, as long the image format is supported by the current browser. However, only the PNG,
+ * JPEG, BMP, GIF and SVG formats have been tested so far.
+ *
+ * It is also possible to make use of uncompressed images, but support for different pixel data encodings is limited.
+ * Currently, only the rgb8 (24-bit color) and rgba8 (24-bit color with alpha channel) encodings are supported.
+ */
+class ImageSubscriber extends Subscriber {
+  /**
+    * Creates a new ImageSubscriber, which will display the images published
+    * to the provided topic on the provided canvas.
+    * Both compressed (sensor_msgs/CompressedImage) and non-compressed images (sensor_msgs/Image) are supported.
+    * @param {ROSLIB.Ros} ros ROS instance to publish to
+    * @param {ROSLIB.Topic} topicName name for the topic to subscribe to
+    * @param {HTMLCanvasElement} canvas canvas to draw published images on
+    * @param {boolean} [compressed=true]  whether compressed images are published to the topic. True by default.
+    */
+  constructor(ros, topicName, canvas, compressed = true) {
+    super(ros, topicName);
+
+    if (!(canvas instanceof window.HTMLCanvasElement)) {
+      throw new TypeError('canvas argument must be of type HTMLCanvasElement');
+    }
+
+    this.topic.messageType = 'sensor_msgs/CompressedImage';
+
+    this.canvas = canvas;
+    this.compressed = compressed;
+
+    this.topic.messageType = this.getMessageType();
+  }
+
+  /**
+   * Returns the messageType this subscriber expects to receieve.
+   * @return {string} ROS messageType this subscriber expects to recieve
+   */
+  getMessageType() {
+    return this.compressed ? 'sensor_msgs/CompressedImage' : 'sensor_msgs/Image';
+  }
+
+  /**
+   * Callback for handling incomming published message.
+   * @param {ROSLIB.Message} msg message of type sensor_msgs/Image or sensor_msgs/CompressedImage,
+   * depending on whether this subscribed is using compressed images.
+   */
+  onMessage(msg) {
+    let imageDataUrl;
+
+    if (this.compressed) {
+      imageDataUrl = ImageSubscriber.createImageDataUrl(msg.format, msg.data);
+    } else {
+      // setup canvas
+      const imageCanvas = document.createElement('canvas');
+      imageCanvas.width = msg.width;
+      imageCanvas.height = msg.height;
+      const ctx = imageCanvas.getContext('2d');
+
+      // create RGBA image data from raw pixel data in msg
+      const convertedData = ImageSubscriber.convertImageData(msg.data, msg.encoding, msg.width * msg.height);
+      const imageData = new window.ImageData(convertedData, msg.width, msg.height);
+      ctx.putImageData(imageData, 0, 0);
+
+      // create new dataURL from canvas contents
+      imageDataUrl = imageCanvas.toDataURL();
+    }
+
+    // draw image contained in dataURL to canvas
+    this.drawImage(imageDataUrl);
+  }
+
+  /**
+   * Creates a data URL encoding an image in the given format with the given image data.
+   * @param {String} format format of the image (e.g. png, jpeg, etc)
+   * @param {String} data data of the image, in base64 format
+   * @return {String} data URL conaining image data
+   */
+  static createImageDataUrl(format, data) {
+    return 'data:image/' + format + ';base64,' + data;
+  }
+
+  /**
+   * Draws the image encoded in the provided dataURL to the canvas of this ImageSubscriber.
+   * @param {string} dataURL dataURL containing image to draw to canvas.
+   */
+  drawImage(dataURL) {
+    const canvas = this.canvas;
+    const ctx = canvas.getContext('2d');
+    const image = new window.Image();
+
+    image.onload = function() {
+      ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+    };
+
+    image.onerror = function() {
+      throw Error('could not draw image');
+    };
+
+    image.src = dataURL;
+  }
+
+  /**
+   * Converts pixel data encoded as a base64 to a byte array containing
+   * the color channel values of each pixel.
+   * Currently only supports rgb8 and rgba8 formats
+   * @param {string} pixelData pixel data encoded as base64 string
+   * @param {string} format format of pixel data. Any format besides rgb8 and rgba8 is not supported.
+   * @param {number} pixels number of pixels described in pixelData
+   * @return {Uint8ClampedArray} array containing pixel data in rgba format
+   */
+  static convertImageData(pixelData, format, pixels) {
+    // check for unsupported encodings
+    if (format !== 'rgb8' &amp;&amp; format !== 'rgba8') {
+      throw new NotSupportedError('Subscriber only supports uncompressed images in rgb8 or rgba8 format');
+    }
+    const hasAlphaChannel = (format === 'rgba8');
+    // decode base64 encoded pixelData to string of bytes
+    const binaryString = window.atob(pixelData);
+
+    // fill imageData array, which contains pixel data in rgba encoding
+    // each color channel is store as a byte (Uint8)
+    const imageData = new Uint8ClampedArray(pixels * 4);
+
+    let charIndex = 0;
+    for (let i = 0; i &lt; imageData.length; i++) {
+      if (!hasAlphaChannel &amp;&amp; i % 4 === 3) {
+        imageData[i] = 255;
+        continue;
+      }
+
+      imageData[i] = binaryString.charCodeAt(charIndex);
+      charIndex++;
+    }
+
+    return imageData;
+  }
+}
+
+module.exports = ImageSubscriber;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AmbientLightPublisher.html">AmbientLightPublisher</a></li><li><a href="ButtonPublisher.html">ButtonPublisher</a></li><li><a href="CameraPublisher.html">CameraPublisher</a></li><li><a href="CheckboxPublisher.html">CheckboxPublisher</a></li><li><a href="CompassPublisher.html">CompassPublisher</a></li><li><a href="CoordinateCompassPublisher.html">CoordinateCompassPublisher</a></li><li><a href="FlashlightSubscriber.html">FlashlightSubscriber</a></li><li><a href="GPSPublisher.html">GPSPublisher</a></li><li><a href="ImageSubscriber.html">ImageSubscriber</a></li><li><a href="IMUPublisher.html">IMUPublisher</a></li><li><a href="IntervalPublisher.html">IntervalPublisher</a></li><li><a href="NotSupportedError.html">NotSupportedError</a></li><li><a href="PermissionDeniedError.html">PermissionDeniedError</a></li><li><a href="SensorPublisher.html">SensorPublisher</a></li><li><a href="SliderPublisher.html">SliderPublisher</a></li><li><a href="Subscriber.html">Subscriber</a></li><li><a href="TextPublisher.html">TextPublisher</a></li><li><a href="TextSubscriber.html">TextSubscriber</a></li></ul><h3>Global</h3><ul><li><a href="global.html#publishChildElements">publishChildElements</a></li><li><a href="global.html#quatFromEuler">quatFromEuler</a></li><li><a href="global.html#readSensorsFromConfig">readSensorsFromConfig</a></li><li><a href="global.html#sensorDeserializers">sensorDeserializers</a></li><li><a href="global.html#SENSORLIB">SENSORLIB</a></li><li><a href="global.html#tryPublishElement">tryPublishElement</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Fri Jun 17 2022 16:03:01 GMT+0200 (Midden-Europese zomertijd)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

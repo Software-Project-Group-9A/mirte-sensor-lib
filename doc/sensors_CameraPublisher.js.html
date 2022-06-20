@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: sensors/CameraPublisher.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: sensors/CameraPublisher.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>const IntervalPublisher = require('./IntervalPublisher');
+
+/**
+ * CameraPublisher publishes the frame of a video stream.
+ * This state is published at a set interval,
+ *
+ * The data resulting from the button interactions is published as a
+ * ROS sensor_msgs/Image Message message.
+ */
+class CameraPublisher extends IntervalPublisher {
+  /**
+     * Creates a new Camera publisher that publishes to the provided topic.
+   * @param {ROSLIB.Ros} ros a ROS instance to publish to
+     * @param {String} topicName name for the topic to publish data to
+     * @param {HTMLVideoElement} camera the video element of which to publish the data from.
+     * @param {HTMLCanvasElement} canvas a canvas element for making publishing video data possible
+     * @param {Number} hz a standard frequency for this type of object.
+     */
+  constructor(ros, topicName, camera, canvas, hz = 10) {
+    super(ros, topicName, hz);
+
+    if (!(camera instanceof window.HTMLVideoElement)) {
+      throw new TypeError('camera argument was not of type HTMLVideoElement');
+    }
+    if (!(canvas instanceof window.HTMLCanvasElement)) {
+      throw new TypeError('canvas argument was not of type HTMLCanvasElement');
+    }
+    this.camera = camera;
+    this.canvas = canvas;
+
+    this.topic.messageType = 'sensor_msgs/CompressedImage';
+  }
+
+  /**
+     * Start the publishing of camera data to ROS.
+     *
+     * @throws {Error} if no video source is available.
+     */
+  start() {
+    // If there is no videostream available yet, do not publish data.
+    if (!this.camera.srcObject) {
+      throw new Error('No video source found.');
+    }
+    super.start();
+  }
+
+  /**
+     * Create a snapshot of the current videostream.
+     */
+  createSnapshot() {
+    // Creates a snapshot of the current videostream
+    this.canvas.getContext('2d').drawImage(this.camera, 0, 0, this.canvas.width, this.canvas.height);
+
+    // Converts the data to publishable data to ROS
+    const data = this.canvas.toDataURL('image/jpeg');
+    // Note: This message should publish to '/{name}/compressed', since the message contains compressed data
+    const imageMessage = new ROSLIB.Message({
+      format: 'jpeg',
+      data: data.replace('data:image/jpeg;base64,', ''),
+    });
+
+    this.msg = imageMessage;
+    super.createSnapshot();
+  }
+
+  /**
+   * Deserializes a CameraPublisher stored in a config object, and returns the resulting publisher instance.
+   * The returned instance is already started.
+   * @param {ROSLIB.Ros} ros ros instance to which to resulting publisher will publish
+   * @param {Object} config object with the following keys:
+   * @param {string} config.name - name of the publisher to create
+   * @param {number} config.frequency - name of the publisher to create
+   * @param {string} config.cameraId - id of HTMLVideoElement with camera data
+   * @param {string} config.canvasId - id of HTMLCanvasElement to use creating images from video
+   * @return {CameraPublisher} CameraPublisher described in the provided config parameter
+   */
+  static readFromConfig(ros, config) {
+    const camera = document.getElementById(config.cameraId);
+    const canvas = document.getElementById(config.canvasId);
+
+    const topicName = 'mirte/phone_camera/' + config.name;
+    const publisher = new CameraPublisher(ros, topicName, camera, canvas);
+    publisher.start();
+    publisher.setPublishFrequency(config.frequency);
+
+    return publisher;
+  }
+}
+
+
+module.exports = CameraPublisher;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AmbientLightPublisher.html">AmbientLightPublisher</a></li><li><a href="ButtonPublisher.html">ButtonPublisher</a></li><li><a href="CameraPublisher.html">CameraPublisher</a></li><li><a href="CheckboxPublisher.html">CheckboxPublisher</a></li><li><a href="CompassPublisher.html">CompassPublisher</a></li><li><a href="CoordinateCompassPublisher.html">CoordinateCompassPublisher</a></li><li><a href="FlashlightSubscriber.html">FlashlightSubscriber</a></li><li><a href="GPSPublisher.html">GPSPublisher</a></li><li><a href="ImageSubscriber.html">ImageSubscriber</a></li><li><a href="IMUPublisher.html">IMUPublisher</a></li><li><a href="IntervalPublisher.html">IntervalPublisher</a></li><li><a href="NotSupportedError.html">NotSupportedError</a></li><li><a href="PermissionDeniedError.html">PermissionDeniedError</a></li><li><a href="SensorPublisher.html">SensorPublisher</a></li><li><a href="SliderPublisher.html">SliderPublisher</a></li><li><a href="Subscriber.html">Subscriber</a></li><li><a href="TextPublisher.html">TextPublisher</a></li><li><a href="TextSubscriber.html">TextSubscriber</a></li></ul><h3>Global</h3><ul><li><a href="global.html#publishChildElements">publishChildElements</a></li><li><a href="global.html#quatFromEuler">quatFromEuler</a></li><li><a href="global.html#readSensorsFromConfig">readSensorsFromConfig</a></li><li><a href="global.html#sensorDeserializers">sensorDeserializers</a></li><li><a href="global.html#SENSORLIB">SENSORLIB</a></li><li><a href="global.html#tryPublishElement">tryPublishElement</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Fri Jun 17 2022 16:03:01 GMT+0200 (Midden-Europese zomertijd)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

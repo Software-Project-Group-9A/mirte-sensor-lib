@@ -1,0 +1,282 @@
+
+[0m[0m
+[0m  Test FlashlightSubscriber[0m
+[0m    #constructor(ros, topicName)[0m
+    [32m  [32m√[39m[0m[90m should accept a ROSLIB.Topic[0m
+    [32m  [32m√[39m[0m[90m should throw an error if browser does not support[0m
+
+[0m  ImageSubscriber[0m
+[0m    #constructor(ros, topicName, canvas)[0m
+    [32m  [32m√[39m[0m[90m should not accept an undefined canvas argument[0m
+    [32m  [32m√[39m[0m[90m should accept an HTMLCanvasElement as canvas argument[0m
+    [32m  [32m√[39m[0m[90m should correctly set its topic's messageType when compressed images are used[0m
+    [32m  [32m√[39m[0m[90m should correctly set its topic's messageType when uncompressed images are used[0m
+[0m    #createImageDataUrl(format, data)[0m
+    [32m  [32m√[39m[0m[90m should create the correct dataURL for a given format and data array[0m
+[0m    #onMessage(msg)[0m
+    [32m  [32m√[39m[0m[90m calls drawImage with correct URL for compressed image[0m
+    [32m  [32m√[39m[0m[90m calls drawImage with correct URL for uncompressed image in rgb8 encoding[0m
+[0m    #convertImageData(pixelData, encoding, pixels)[0m
+    [32m  [32m√[39m[0m[90m throw an error for unsupported encodings[0m
+    [32m  [32m√[39m[0m[90m should correctly convert single rgb8 encoded pixel[0m
+    [32m  [32m√[39m[0m[90m should correctly convert single rgba8 encoded pixel[0m
+    [32m  [32m√[39m[0m[90m should correctly convert multiple rgb8 encoded pixels[0m
+    [32m  [32m√[39m[0m[90m should correctly convert multiple rgba8 encoded pixels[0m
+
+[0m  Test Subscriber[0m
+[0m    #constructor(topic)[0m
+    [32m  [32m√[39m[0m[90m should reject an undefined ros[0m
+    [32m  [32m√[39m[0m[90m should reject an undefined topic[0m
+    [32m  [32m√[39m[0m[90m should reject any topic argument that is not a ROSLIB.Topic instance[0m
+    [32m  [32m√[39m[0m[90m should reject any topic argument that is not a ROSLIB.Topic instance[0m
+    [32m  [32m√[39m[0m[90m should accept a topic name string argument and ros instance[0m
+[0m    #start()[0m
+    [32m  [32m√[39m[0m[90m should start before stop[0m
+    [32m  [32m√[39m[0m[90m should start only one time[0m
+    [32m  [32m√[39m[0m[90m should stop only one time[0m
+
+[0m  Test TextSubscriber[0m
+[0m    #constructor(ros, topicName, HTMLElement)[0m
+    [32m  [32m√[39m[0m[90m should reject an undefined element[0m
+    [32m  [32m√[39m[0m[90m should reject any element argument that is not an HTMLElement[0m
+    [32m  [32m√[39m[0m[90m should accept a ROSLIB.Topic and an HTML Element as arguments[0m
+    [32m  [32m√[39m[0m[90m should set innerHTML when the the callback gets called[0m
+
+[0m  Test AmbientLightPublisher[0m
+[0m    #constructor(ros, topicName, hz)[0m
+    [32m  [32m√[39m[0m[90m should fail when there is no API support[0m
+    [32m  [32m√[39m[0m[90m should accept a ROSLIB.Topic[0m
+[0m    #start()[0m
+    [32m  [32m√[39m[0m[90m should start with an event listener[0m
+[0m    #stop()[0m
+    [32m  [32m√[39m[0m[90m should stop and remove event listener[0m
+[0m    #createSnapshot()[0m
+    [32m  [32m√[39m[0m[90m shoud capture the ambient light[0m
+
+[0m  Test ButtonPublisher[0m
+[0m    #constructor(ros, topicName, button)[0m
+    [32m  [32m√[39m[0m[90m should reject an undefined button[0m
+    [32m  [32m√[39m[0m[90m should reject any button argument that is not an HTML Button[0m
+    [32m  [32m√[39m[0m[90m should accept a ROSLIB.Topic and an HTML Button as arguments[0m
+[0m    #start()[0m
+    [32m  [32m√[39m[0m[90m should subscribe onMouseUp and onMouseDown callbacks to correct events[0m
+    [32m  [32m√[39m[0m[90m should result in onMouseDown being called at mousedown[0m
+    [32m  [32m√[39m[0m[90m should result in onMouseDown being called at touchstart[0m
+    [32m  [32m√[39m[0m[90m should result in onMouseUp being called at mouseup[0m
+    [32m  [32m√[39m[0m[90m should result in onMouseUp being called at mouseleave[0m
+    [32m  [32m√[39m[0m[90m should result in onMouseUp being called at touchend[0m
+    [32m  [32m√[39m[0m[90m should result in onMouseUp being called at mousedown event 4[0m
+[0m    #onMouseUp()[0m
+    [32m  [32m√[39m[0m[90m should publish a sts_msgs/Bool message to topic upon callback[0m
+[0m    #onMouseDown()[0m
+    [32m  [32m√[39m[0m[90m should publish a sts_msgs/Bool message to topic upon callback[0m
+    [32m  [32m√[39m[0m[90m should publish only once upon double callback[0m
+[0m    #stop()[0m
+    [32m  [32m√[39m[0m[90m should unsubscribe onMouseUp and onMouseDown callbacks[0m
+    [32m  [32m√[39m[0m[90m should prevent onMouseDown from being called at mousedown event[0m
+    [32m  [32m√[39m[0m[90m should prevent onMouseUp from being called at mouseup event[0m
+
+[0m  Test CamerPublisher[0m
+[0m    #constructor(ros, topicName, camera, canvas, hz)[0m
+    [32m  [32m√[39m[0m[90m should reject an undefined camera[0m
+    [32m  [32m√[39m[0m[90m should reject an element other than camera[0m
+    [32m  [32m√[39m[0m[90m should reject an undefined canvas[0m
+    [32m  [32m√[39m[0m[90m should reject an element other than canvas[0m
+    [32m  [32m√[39m[0m[90m should accept publisher with topic and camera[0m
+[0m    #start()[0m
+    [32m  [32m√[39m[0m[90m should throw an error if there is no video source[0m
+[0m    #readFromConfig(ros, config)[0m
+    [32m  [32m√[39m[0m[90m should return a started instance of CameraPublisher[0m
+
+[0m  Test CheckboxPublisher[0m
+[0m    #constructor(topic, topicName, checkbox)[0m
+    [32m  [32m√[39m[0m[90m should reject an undefined checkbox[0m
+    [32m  [32m√[39m[0m[90m should reject any checkbox argument that is not an HTML checkbox[0m
+    [32m  [32m√[39m[0m[90m should accept a ROSLIB.Topic and an HTML checkbox as arguments[0m
+[0m    #start()[0m
+    [32m  [32m√[39m[0m[90m should subscribe to change callback[0m
+    [32m  [32m√[39m[0m[90m should result in change being called at check[0m
+    [32m  [32m√[39m[0m[90m should result in change being called multiple times at multiple check[0m
+[0m    #publishBoolMsg(bool)[0m
+    [32m  [32m√[39m[0m[90m should publish true message to topic upon checked call[0m
+    [32m  [32m√[39m[0m[90m should publish false message to topic upon unchecked call[0m
+[0m    #stop()[0m
+    [32m  [32m√[39m[0m[90m should unsubscribe to change callback[0m
+
+[0m  Test CompassPublisher[0m
+[0m    #constructor(ros, topicName, hz)[0m
+    [32m  [32m√[39m[0m[90m should correctly construct a publisher and not start reading yet[0m
+    [32m  [32m√[39m[0m[90m should not start reading immeadiately orientation user is on iOS[0m
+[0m    #requestPermission[0m
+    [32m  [32m√[39m[0m[90m should create a new button for iOS[0m
+    [32m  [32m√[39m[0m[90m should not create a new button for Android[0m
+[0m    #onReadOrientation()[0m
+    [32m  [32m√[39m[0m[90m should find the current location[0m
+[0m    #createSnapshot()[0m
+    [32m  [32m√[39m[0m[90m should create snapshot[0m
+    [32m  [32m√[39m[0m[90m should not create snapshot when orientation is not read yet[0m
+[0m    #readFromConfig(ros, config)[0m
+    [32m  [32m√[39m[0m[90m should return a started instance of CompassPublisher[0m
+
+[0m  Test CoordinateCompassPublisher[0m
+[0m    #constructor(ros, topicName, latitude, longitude, hz)[0m
+    [32m  [32m√[39m[0m[90m should accept an undefined latitude[0m
+    [32m  [32m√[39m[0m[90m should accept an undefined longitude[0m
+    [32m  [32m√[39m[0m[90m should not accept an out of range latitude[0m
+    [32m  [32m√[39m[0m[90m should not accept an out of range undefined longitude[0m
+    [32m  [32m√[39m[0m[90m should accept a well defined coördinates[0m
+    [32m  [32m√[39m[0m[90m should not start reading orientation user is on iOS[0m
+[0m    #requestPermission[0m
+    [32m  [32m√[39m[0m[90m should create a new button[0m
+[0m    #calcDegreeToPoint(latitude, longitude)[0m
+    [32m  [32m√[39m[0m[90m should calculate the degree between point and current location[0m
+[0m    #locationHandler(position)[0m
+    [32m  [32m√[39m[0m[90m should handle the location[0m
+[0m    #createSnapshot()[0m
+    [32m  [32m√[39m[0m[90m should create snapshot[0m
+[0m    #accountForRotation()[0m
+    [32m  [32m√[39m[0m[90m Difference is 0 when same orientation[0m
+    [32m  [32m√[39m[0m[90m Small difference[0m
+    [32m  [32m√[39m[0m[90m 180 difference[0m
+    [32m  [32m√[39m[0m[90m big difference[0m
+[0m    #readFromConfig(ros, config)[0m
+    [32m  [32m√[39m[0m[90m should return a started instance of CoordinateCompassPublisher[0m
+
+[0m  GPSPublisher[0m
+[0m    #constructor(ros, topicName, hz)[0m
+    [32m  [32m√[39m[0m[90m should create a new instance if the geolocation API is supported[0m
+    [32m  [32m√[39m[0m[90m should set the correct message type for the topic[0m
+    [32m  [32m√[39m[0m[90m should throw an error if the geolocation API is not suppported[0m
+[0m    #start()[0m
+    [32m  [32m√[39m[0m[90m should add the correct callbacks to geolocation[0m
+[0m    #start()[0m
+    [32m  [32m√[39m[0m[90m should add remove the correct callbacks from geolocation[0m
+[0m    #createNavSatMessage(coordinates)[0m
+    [32m  [32m√[39m[0m[90m should return a ROSLIB.Message[0m
+    [32m  [32m√[39m[0m[90m should have the correct types for the lattitude and longitude fields[0m
+    [32m  [32m√[39m[0m[90m should set the lattitude and longitude fields to the correct values[0m
+[0m    #createSnapshot()[0m
+    [32m  [32m√[39m[0m[90m should publish no message if there is not yet any location data[0m
+    [32m  [32m√[39m[0m[90m should publish message if there is location data[0m
+    [32m  [32m√[39m[0m[90m should publish the current location data[0m
+[0m    #readFromConfig(ros, config)[0m
+    [32m  [32m√[39m[0m[90m should return a started instance of GPSPublisher[0m
+
+[0m  Test IMU Publisher[0m
+[0m    #constructor(ros, topicName, hz)[0m
+    [32m  [32m√[39m[0m[90m works when browser has device motion support[0m
+    [32m  [32m√[39m[0m[90m works when browser doesn't have device motion support[0m
+    [32m  [32m√[39m[0m[90m should not start reading orientation user is on iOS[0m
+[0m    #requestPermission[0m
+    [32m  [32m√[39m[0m[90m should create a new button for iOS[0m
+    [32m  [32m√[39m[0m[90m should not create a new button for Android[0m
+[0m    #createSnapshot()[0m
+    [32m  [32m√[39m[0m[90m publishes to the topic.[0m
+    [32m  [32m√[39m[0m[90m does 0.0 deg quarternions correctly.[0m
+    [32m  [32m√[39m[0m[90m does different deg quarternions correctly.[0m
+    [32m  [32m√[39m[0m[90m has -1 hardcoded in the covar-matrix when phone orientattion has not occured[0m
+    [32m  [32m√[39m[0m[90m has -1 hardcoded in the covar-matrix when motion event has not yet occured[0m
+    [32m  [32m√[39m[0m[90m has -1 hardcoded in the covar-matrix when neither events have occured[0m
+[0m    #onReadOrientation(event)[0m
+    [32m  [32m√[39m[0m[90m changes appropriate orientation attributes[0m
+[0m    #onReadMotion(event)[0m
+    [32m  [32m√[39m[0m[90m changes appropriate motion attributes[0m
+[0m    #readFromConfig(ros, config)[0m
+    [32m  [32m√[39m[0m[90m should return a started instance of IMUPublisher[0m
+
+[0m  Test IntervalPublisher[0m
+[0m    #constructor(ros, topicName, hz)[0m
+    [32m  [32m√[39m[0m[90m should construct with 10Hz when not defined[0m
+    [32m  [32m√[39m[0m[90m should construct with other Hz when defined[0m
+    [32m  [32m√[39m[0m[90m should construct with 10Hz when it is invalid[0m
+[0m    #setPublishFrequency(hz)[0m
+    [32m  [32m√[39m[0m[90m Frequency of 1 Hz works correctly[0m
+    [32m  [32m√[39m[0m[90m Should be able to change frequency during publishing[0m
+    [32m  [32m√[39m[0m[90m Should restart when already started[0m
+    [32m  [32m√[39m[0m[90m Should not restart when not started yet[0m
+    [32m  [32m√[39m[0m[90m Frequency of 0 Hz does not work[0m
+[0m    #start()[0m
+    [32m  [32m√[39m[0m[90m should start a timer[0m
+[0m    #stop()[0m
+    [32m  [32m√[39m[0m[90m should stop a timer[0m
+    [32m  [32m√[39m[0m[90m should accept a non-existent timer[0m
+[0m    #createSnapshot(msg)[0m
+    [32m  [32m√[39m[0m[90m should publish[0m
+    [32m  [32m√[39m[0m[90m should not publish double[0m
+    [32m  [32m√[39m[0m[90m should publish a new message[0m
+    [32m  [32m√[39m[0m[90m should not allow an empty message or allow a wrong implementation[0m
+
+[0m  Test SensorPublisher[0m
+[0m    #constructor(ros, topicName)[0m
+    [32m  [32m√[39m[0m[90m should reject an undefined ros[0m
+    [32m  [32m√[39m[0m[90m should reject an undefined topicName[0m
+    [32m  [32m√[39m[0m[90m should reject any topicName argument that is not a string[0m
+    [32m  [32m√[39m[0m[90m should reject any topicName argument that is not a string[0m
+    [32m  [32m√[39m[0m[90m should reject any topicName argument that has a space[0m
+    [32m  [32m√[39m[0m[90m should accept a ROSLIB.Topic[0m
+[0m    #start() & stop()[0m
+    [32m  [32m√[39m[0m[90m should start before stop[0m
+    [32m  [32m√[39m[0m[90m should start only one time[0m
+    [32m  [32m√[39m[0m[90m should stop only one time[0m
+
+[0m  SliderPublisher[0m
+[0m    #constructor(ros, topicName, slider, hz)[0m
+    [32m  [32m√[39m[0m[90m should reject an undefined slider[0m
+    [32m  [32m√[39m[0m[90m should reject any slider argument that is not an HTML Input Element[0m
+    [32m  [32m√[39m[0m[90m should reject any slider argument that does not have field type set to range[0m
+    [32m  [32m√[39m[0m[90m should accept a ROSLIB.Topic and an slider as arguments[0m
+[0m    #createSnapshot()[0m
+    [32m  [32m√[39m[0m[90m should publish an std_msgs/Int32 message with the slider value to topic[0m
+    [32m  [32m√[39m[0m[90m should publish the slider as a number[0m
+    [32m  [32m√[39m[0m[90m should publish a message with the updated slider value when the slider changes[0m
+
+[0m  Test TextPublisher[0m
+[0m    #constructor(ros, topicName, inputElement, options)[0m
+    [32m  [32m√[39m[0m[90m should reject an undefined input element[0m
+    [32m  [32m√[39m[0m[90m should reject any input argument that is not an HTMLInputElement[0m
+    [32m  [32m√[39m[0m[90m should accept a ROSLIB.Topic and an HTML Input element as arguments[0m
+[0m    #start()[0m
+    [32m  [32m√[39m[0m[90m should subscribe onKeyUp callback to correct events[0m
+[0m    #start()[0m
+    [32m  [32m√[39m[0m[90m should subscribe onInput callback to correct events[0m
+[0m    #onKeyUp()[0m
+    [32m  [32m√[39m[0m[90m should publish a sts_msgs/String message to topic upon callbackwith onEnter=false[0m
+[0m    #onKeyUp()[0m
+    [32m  [32m√[39m[0m[90m should not publish a sts_msgs/String message to topic upon callbackwith onEnter=true and no enter[0m
+[0m    #onKeyUp()[0m
+    [32m  [32m√[39m[0m[90m should publish a sts_msgs/String message to topic upon callbackwith onEnter=true and enter[0m
+[0m    #onKeyUp()[0m
+    [32m  [32m√[39m[0m[90m should not clear text when clearOnPublish=false[0m
+[0m    #onKeyUp()[0m
+    [32m  [32m√[39m[0m[90m should clear text when clearOnPublish=true[0m
+[0m    #stop()[0m
+    [32m  [32m√[39m[0m[90m should unsubscribe onKeyUp callback[0m
+
+[0m  documentUtils[0m
+[0m    #tryPublishElement(element, ros, map)[0m
+    [32m  [32m√[39m[0m[90m should be able to properly publish a HTMLButtonElement[0m
+    [32m  [32m√[39m[0m[90m should be able to properly publish a checkbox[0m
+    [32m  [32m√[39m[0m[90m should be able to properly publish a slider[0m
+    [32m  [32m√[39m[0m[90m should be able to properly publish a text input[0m
+    [32m  [32m√[39m[0m[90m should be able to properly publish a text output[0m
+    [32m  [32m√[39m[0m[90m should be able to properly publish a canvas for image publishing[0m
+    [32m  [32m√[39m[0m[90m should ignore elements without an id[0m
+    [32m  [32m√[39m[0m[90m should throw an error for non-HTMLElement element argument[0m
+[0m    #publishChildElements(parentElement, ros, map)[0m
+    [32m  [32m√[39m[0m[90m should reject a non-HTMLElement parentElement argument[0m
+    [32m  [32m√[39m[0m[90m should reject a non-ROSLIB.Ros ros argument[0m
+    [32m  [32m√[39m[0m[90m should reject a non-Map map argument[0m
+    [32m  [32m√[39m[0m[90m should return an empty map if parentElement has no children[0m
+    [32m  [32m√[39m[0m[90m should return an non-empty map if parentElement has publishable children[0m
+    [32m  [32m√[39m[0m[90m should recursively publish children's children[0m
+
+[0m  mirteUtils[0m
+[0m    #readSensorsFromConfig(config)[0m
+    [32m  [32m√[39m[0m[90m should return an empty map for an empty config[0m
+    [32m  [32m√[39m[0m[90m should ignore unknown sensor types in config[0m
+    [32m  [32m√[39m[0m[90m should return IMUPublishers as specified in the config[0m
+    [32m  [32m√[39m[0m[90m should return CompassPublishers as specified in the config[0m
+
+
+[92m [0m[32m 172 passing[0m[90m (413ms)[0m
+

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: sensors/GPSPublisher.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: sensors/GPSPublisher.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>const IntervalPublisher = require('./IntervalPublisher');
+const NotSupportedError = require('../error/NotSupportedError');
+
+/**
+ * GPSPublisher publishes the geolocation data of the
+ * current device.
+ *
+ * The user must make sure to give permission for access
+ * to their geolocation.
+ */
+class GPSPublisher extends IntervalPublisher {
+  /**
+   * Creates a new GPSPublisher, which will publish the longitude and latitude
+   * of the current device in the form of a sensor_msgs/NavSatFix message.
+   * @param {ROSLIB.Ros} ros a ROS instance to publish to
+   * @param {String} topicName name for the topic to publish data to
+   * @param {number} hz frequency at which to publish GPS data, in Hertz.
+   * If no frequency is specified, this will default to 1 Hz.
+   * @throws {NotSupportedError} if the Geolocation API is not supported
+   * by the current browser.
+   */
+  constructor(ros, topicName, hz = 1) {
+    super(ros, topicName, hz);
+
+    this.topic.messageType = GPSPublisher.messageType;
+
+    /**
+     * Id of geolocation watch callback
+     */
+    this.watchId = -1;
+
+    /**
+     * GeolocationPosition storing latest device position.
+     * Is set to null when the latest position was already published.
+     */
+    this.position = undefined;
+
+    // check support for API
+    if (!window.navigator.geolocation) {
+      throw new NotSupportedError('Unable to create GPSPublisher, ' +
+        'Geolocation API not supported');
+    }
+  }
+
+  /**
+   * Returns the message type this publisher publishes its data.
+   */
+  static get messageType() {
+    return 'sensor_msgs/NavSatFix';
+  }
+
+  /**
+   * Start the publishing of data to ROS with frequency of &lt;freq> Hz.
+   */
+  start() {
+    // Callback for reading position data
+    const successCallback = function(pos) {
+      this.position = pos;
+    }.bind(this);
+
+    // Callback for handling errors. Will throw any error provided to it.
+    const errorCallback = function(error) {
+      throw error;
+    };
+
+    this.watchId = window.navigator.geolocation.watchPosition(
+        successCallback,
+        errorCallback);
+
+    super.start();
+  }
+
+  /**
+   * Stops the publishing of data to ROS.
+   */
+  stop() {
+    super.stop();
+
+    window.navigator.geolocation.clearWatch(this.watchId);
+  }
+
+  /**
+   * Creates a new ROS.Message object, containing a
+   * sensor_msgs/NavSatFix message.
+   *
+   * Only the longitude and latitude are contained in this
+   * message.
+   * @param {GeolocationCoordinates} coordinates coordinates to be
+   * contained by the created message.
+   * @return {ROSLIB.Message} sensor_msgs/NavSatFix message containing longitude
+   * and latitude of supplied coordinates.
+   */
+  static createNavSatMessage(coordinates) {
+    return new ROSLIB.Message({
+      latitude: coordinates.latitude,
+      longitude: coordinates.longitude,
+      position_covariance_type: 0,
+    });
+  }
+
+  /**
+   * Creates a snapshot of the current position of the device, and publishes
+   * this data as a sensor_msgs/NavSatFix message.
+   */
+  createSnapshot() {
+    // position has not yet been set, do not publish
+    if (!this.position) {
+      return;
+    }
+
+    // create and publish message
+    const coordinates = this.position.coords;
+    const message = GPSPublisher.createNavSatMessage(coordinates);
+
+    this.msg = message;
+    super.createSnapshot();
+  }
+
+  /**
+   * Deserializes a GPSPublisher stored in a config object, and returns the resulting publisher instance.
+   * The returned instance is already started.
+   * @param {ROSLIB.Ros} ros ros instance to which to resulting publisher will publish
+   * @param {Object} config object with the following keys:
+   * @param {string} config.name - name of the publisher to create
+   * @param {number} config.frequency - name of the publisher to create
+   * @return {GPSPublisher} GPSPublisher described in the provided properties parameter
+   */
+  static readFromConfig(ros, config) {
+    const topicName = 'mirte/phone_gps/' + config.name;
+    const publisher = new GPSPublisher(ros, topicName);
+    publisher.start();
+    publisher.setPublishFrequency(config.frequency);
+
+    return publisher;
+  }
+}
+
+module.exports = GPSPublisher;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AmbientLightPublisher.html">AmbientLightPublisher</a></li><li><a href="ButtonPublisher.html">ButtonPublisher</a></li><li><a href="CameraPublisher.html">CameraPublisher</a></li><li><a href="CheckboxPublisher.html">CheckboxPublisher</a></li><li><a href="CompassPublisher.html">CompassPublisher</a></li><li><a href="CoordinateCompassPublisher.html">CoordinateCompassPublisher</a></li><li><a href="FlashlightSubscriber.html">FlashlightSubscriber</a></li><li><a href="GPSPublisher.html">GPSPublisher</a></li><li><a href="ImageSubscriber.html">ImageSubscriber</a></li><li><a href="IMUPublisher.html">IMUPublisher</a></li><li><a href="IntervalPublisher.html">IntervalPublisher</a></li><li><a href="NotSupportedError.html">NotSupportedError</a></li><li><a href="PermissionDeniedError.html">PermissionDeniedError</a></li><li><a href="SensorPublisher.html">SensorPublisher</a></li><li><a href="SliderPublisher.html">SliderPublisher</a></li><li><a href="Subscriber.html">Subscriber</a></li><li><a href="TextPublisher.html">TextPublisher</a></li><li><a href="TextSubscriber.html">TextSubscriber</a></li></ul><h3>Global</h3><ul><li><a href="global.html#publishChildElements">publishChildElements</a></li><li><a href="global.html#quatFromEuler">quatFromEuler</a></li><li><a href="global.html#readSensorsFromConfig">readSensorsFromConfig</a></li><li><a href="global.html#sensorDeserializers">sensorDeserializers</a></li><li><a href="global.html#SENSORLIB">SENSORLIB</a></li><li><a href="global.html#tryPublishElement">tryPublishElement</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Fri Jun 17 2022 16:03:01 GMT+0200 (Midden-Europese zomertijd)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

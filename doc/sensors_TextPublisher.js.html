@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: sensors/TextPublisher.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: sensors/TextPublisher.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>const SensorPublisher = require('./SensorPublisher.js');
+
+/**
+ * TextPublisher publishes the text of an HTML input element.
+ * By default it publishes data whenever the enter key is pressed, but
+ * it can be configured sends the data every keypress.
+ *
+ * The data resulting from the text interactions is published as a
+ * ROS std_msgs/String message.
+ */
+class TextPublisher extends SensorPublisher {
+  /**
+   * Creates a new TextPublisher.
+   *
+   * @param {ROSLIB.Ros} ros a ROS instance to publish to
+   * @param {String} topicName name for the topic to publish data to
+   * @param {HTMLInputElement} inputElement input element from which to publish data.
+   * @param {Object} [options] configuration options.
+   * @param {boolean} [options.onEnter=true] if true publishes on enter, else publishes every key press.
+   * @param {boolean} [options.clearOnPublish=true] if false, does not clear the inputElement after publishing.
+   */
+  constructor(ros, topicName, inputElement, options) {
+    super(ros, topicName);
+
+    this.topic.messageType = 'std_msgs/String';
+
+    // Set default options
+    this.options = options === undefined ? {} : options;
+    this.options.onEnter = this.options.onEnter === undefined ? true : this.options.onEnter;
+    this.options.clearOnPublish = this.options.clearOnPublish === undefined ? true : this.options.clearOnPublish;
+
+    if (!(inputElement instanceof window.HTMLInputElement)) {
+      throw new TypeError('input element was not of type HTMLInputElement');
+    }
+
+    if (inputElement.getAttribute('type') !== null &amp;&amp;
+      inputElement.getAttribute('type') !== 'text') {
+      throw new TypeError('Input element has to have type attribute "text"');
+    }
+
+    /**
+     * Input element of which to publish data
+     */
+    this.inputElement = inputElement;
+
+    this.onInput = function() {
+      this.publishMessage();
+    }.bind(this);
+
+    this.onKeyUp = function(event) {
+      if (event.key === 'Enter') {
+        this.publishMessage();
+      }
+    }.bind(this);
+  }
+
+  /**
+   * TODO: should perhaps be it's own module, allong with other message objects
+   * we might need in this project
+   *
+   * Creates a new ROS std_msgs/String message, containing the supplied text
+   * value.
+   * @param {boolean} str string containing the text
+   * @return {ROSLIB.Message} a new ROS std_msgs/String message, containing the
+   * supplied text value.
+   */
+  createStrMsg(str) {
+    return new ROSLIB.Message({
+      data: str,
+    });
+  }
+
+  /**
+   * Start the publishing of data to ROS.
+   */
+  start() {
+    if (this.options.onEnter) {
+      this.inputElement.addEventListener('keyup', this.onKeyUp);
+    } else {
+      this.inputElement.addEventListener('input', this.onInput);
+    }
+
+    super.start();
+  }
+
+  /**
+   * Stop the publishing of data to ROS.
+   */
+  stop() {
+    super.stop();
+
+    if (this.options.onEnter) {
+      this.inputElement.removeEventListener('keyup', this.onKeyUp);
+    } else {
+      this.inputElement.removeEventListener('input', this.onInput);
+    }
+  }
+
+  /**
+   * Reads text from inputElement and publishes it.
+   */
+  publishMessage() {
+    const msg = new ROSLIB.Message({
+      data: this.inputElement.value,
+    });
+
+    this.topic.publish(msg);
+
+    if (this.options.clearOnPublish) {
+      this.inputElement.value = '';
+    }
+  }
+}
+
+module.exports = TextPublisher;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AmbientLightPublisher.html">AmbientLightPublisher</a></li><li><a href="ButtonPublisher.html">ButtonPublisher</a></li><li><a href="CameraPublisher.html">CameraPublisher</a></li><li><a href="CheckboxPublisher.html">CheckboxPublisher</a></li><li><a href="CompassPublisher.html">CompassPublisher</a></li><li><a href="CoordinateCompassPublisher.html">CoordinateCompassPublisher</a></li><li><a href="FlashlightSubscriber.html">FlashlightSubscriber</a></li><li><a href="GPSPublisher.html">GPSPublisher</a></li><li><a href="ImageSubscriber.html">ImageSubscriber</a></li><li><a href="IMUPublisher.html">IMUPublisher</a></li><li><a href="IntervalPublisher.html">IntervalPublisher</a></li><li><a href="NotSupportedError.html">NotSupportedError</a></li><li><a href="PermissionDeniedError.html">PermissionDeniedError</a></li><li><a href="SensorPublisher.html">SensorPublisher</a></li><li><a href="SliderPublisher.html">SliderPublisher</a></li><li><a href="Subscriber.html">Subscriber</a></li><li><a href="TextPublisher.html">TextPublisher</a></li><li><a href="TextSubscriber.html">TextSubscriber</a></li></ul><h3>Global</h3><ul><li><a href="global.html#publishChildElements">publishChildElements</a></li><li><a href="global.html#quatFromEuler">quatFromEuler</a></li><li><a href="global.html#readSensorsFromConfig">readSensorsFromConfig</a></li><li><a href="global.html#sensorDeserializers">sensorDeserializers</a></li><li><a href="global.html#SENSORLIB">SENSORLIB</a></li><li><a href="global.html#tryPublishElement">tryPublishElement</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Fri Jun 17 2022 16:03:01 GMT+0200 (Midden-Europese zomertijd)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
