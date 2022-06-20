@@ -286,12 +286,13 @@ describe('Test CoordinateCompassPublisher', function() {
       const ros = new ROSLIB.Ros();
       const config = {
         name: compassName,
+        topicPath: 'mirte/phone_coordinate_compass',
         frequency: frequency,
       };
 
       const publisher = CoordinateCompassPublisher.readFromConfig(ros, config);
 
-      const topicName = 'mirte/phone_coordinate_compass/' + compassName;
+      const topicName = config.topicPath + '/' + compassName;
       assert(publisher instanceof CoordinateCompassPublisher);
       assert(publisher.started);
       assert.equal(publisher.topic.name, topicName);

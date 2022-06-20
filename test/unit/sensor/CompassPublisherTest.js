@@ -204,12 +204,13 @@ describe('Test CompassPublisher', function() {
       const ros = new ROSLIB.Ros();
       const config = {
         name: compassName,
+        topicPath: 'mirte/phone_compass',
         frequency: frequency,
       };
 
       const publisher = CompassPublisher.readFromConfig(ros, config);
 
-      const topicName = 'mirte/phone_compass/' + compassName;
+      const topicName = config.topicPath + '/' + compassName;
       assert(publisher instanceof CompassPublisher);
       assert(publisher.started);
       assert.equal(publisher.topic.name, topicName);

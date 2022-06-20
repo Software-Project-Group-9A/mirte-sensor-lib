@@ -177,12 +177,13 @@ describe('GPSPublisher', function() {
       const ros = new ROSLIB.Ros();
       const config = {
         name: gpsName,
+        topicPath: 'mirte/phone_gps',
         frequency: frequency,
       };
 
       const publisher = GPSPublisher.readFromConfig(ros, config);
 
-      const topicName = 'mirte/phone_gps/' + gpsName;
+      const topicName = config.topicPath + '/' + gpsName;
       assert(publisher instanceof GPSPublisher);
       assert(publisher.started);
       assert.equal(publisher.topic.name, topicName);

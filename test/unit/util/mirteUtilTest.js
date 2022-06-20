@@ -20,6 +20,7 @@ describe('mirteUtils', function() {
         remote_seismograph: {
           seismograph: {
             name: 'seismograph',
+            topicPath: '/mirte/seismograph',
             frequency: 1.0,
           },
         },
@@ -44,7 +45,7 @@ describe('mirteUtils', function() {
 
       const sensorMap = readSensorsFromConfig(config, ros);
 
-      const topicName = 'mirte/phone_imu/' + imuName;
+      const topicName = '/mirte/phone_imu/' + imuName;
       assert.equal(sensorMap.size, 1);
       assert(sensorMap.has(topicName));
       const imuPublisher = sensorMap.get(topicName);
@@ -65,12 +66,12 @@ describe('mirteUtils', function() {
 
       const sensorMap = readSensorsFromConfig(config, ros);
 
-      const topicName = 'mirte/phone_compass/' + compassName;
+      const topicName = '/mirte/phone_compass/' + compassName;
       assert.equal(sensorMap.size, 1);
       assert(sensorMap.has(topicName));
-      const imuPublisher = sensorMap.get(topicName);
-      assert(imuPublisher instanceof CompassPublisher);
-      assert.equal(imuPublisher.topic.name, topicName);
+      const compassPublisher = sensorMap.get(topicName);
+      assert(compassPublisher instanceof CompassPublisher);
+      assert.equal(compassPublisher.topic.name, topicName);
     });
   });
 });

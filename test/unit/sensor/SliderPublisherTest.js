@@ -106,4 +106,36 @@ describe('SliderPublisher', function() {
       assert.deepEqual(topic.publish.getCall(1).args[0], expectedSecondMessage);
     });
   });
+  describe('#readFromConfig(ros, config, targetElement)', function() {
+    it('should append a slider to the target element', function() {
+      const ros = new ROSLIB.Ros();
+      const targetDiv = document.createElement('div');
+      const config = {
+        name: 'sliderA',
+        topicPath: '/mirte/phone_slider',
+        frequency: 20.0,
+      };
+
+      SliderPublisher.readFromConfig(ros, config, targetDiv);
+
+      assert.equal(targetDiv.childElementCount, 1);
+      const child = targetDiv.childNodes.item(0);
+      assert(child instanceof window.HTMLInputElement);
+      assert.equal(child.type, 'range');
+    });
+    it('should return the correct publisher', function() {
+      const ros = new ROSLIB.Ros();
+      const targetDiv = document.createElement('div');
+      const config = {
+        name: 'sliderA',
+        topicPath: '/mirte/phone_slider',
+      };
+
+      const publisher = SliderPublisher.readFromConfig(ros, config, targetDiv);
+
+      assert(publisher instanceof SliderPublisher);
+      assert(publisher.started);
+      assert.equal(publisher.topic.name, '/mirte/phone_slider/sliderA');
+    });
+  });
 });

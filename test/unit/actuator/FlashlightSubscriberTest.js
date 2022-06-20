@@ -77,6 +77,43 @@ describe('Test FlashlightSubscriber', function() {
       }, expectUnsuportedBrowser);
     });
 
+    describe('#readFromConfig(ros, config)', function() {
+      it('should return the correct FlashlightSubscriber instance', function() {
+        const device = {
+          deviceId: 'default',
+          kind: 'videoinput',
+          label: '',
+          groupId: 'default',
+        };
+
+        global.navigator = {
+          mediaDevices: {
+            enumerateDevices: function() {
+              return Promise.resolve(device);
+            },
+            getUserMedia: function() {
+              return {
+                deviceId: 'default',
+                facingMode: ['user', 'environment'],
+                height: {ideal: 1080},
+                width: {ideal: 1920},
+              };
+            },
+          },
+        };
+
+        const config = {
+          'name': 'flash',
+          'topicPath': '/mirte/phone_flashlight',
+        };
+
+        subscriber = FlashlightSubscriber.readFromConfig(new ROSLIB.Ros(), config);
+
+        const expectedTopicName = '/mirte/phone_flashlight/flash';
+        assert.equal(subscriber.topic.name, expectedTopicName);
+      });
+    });
+
     //  THIS TEST DIDN'T WORK BUT WE COULD NOT FIND OUT WHY IT DOESN'T WORK
     //
     //   it('should throw an error if there is no camera', function() {

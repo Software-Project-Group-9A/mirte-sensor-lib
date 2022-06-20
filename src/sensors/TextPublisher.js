@@ -1,3 +1,4 @@
+const {positionElement} = require('../util/styleUtils.js');
 const SensorPublisher = require('./SensorPublisher.js');
 
 /**
@@ -109,6 +110,30 @@ class TextPublisher extends SensorPublisher {
     if (this.options.clearOnPublish) {
       this.inputElement.value = '';
     }
+  }
+
+  /**
+   * Deserializes a text input publisher stored in a config object, and returns the resulting publisher instance.
+   * The returned instance is already started.
+   * @param {ROSLIB.Ros} ros ros instance to which to resulting publisher will publish
+   * @param {Object} config object with the following keys:
+   * @param {string} config.name name of the publisher to create
+   * @param {string} config.topicPath - path to location of topic of publisher.
+   *  Publisher will publish to the topic topicPath/name
+   * @param {HTMLElement} targetElement HTML element in which to generate necessary sensor UI elements
+   * @return {GPSDeclinationPublisher} GPSDeclinationPublisher described in the provided config parameter
+   */
+  static readFromConfig(ros, config, targetElement) {
+    const textInput = window.document.createElement('input');
+    textInput.type = 'text';
+
+    positionElement(textInput, targetElement, config.x, config.y, config.name);
+
+    const topicName = config.topicPath + '/' + config.name;
+    const publisher = new TextPublisher(ros, topicName, textInput);
+    publisher.start();
+
+    return publisher;
   }
 }
 

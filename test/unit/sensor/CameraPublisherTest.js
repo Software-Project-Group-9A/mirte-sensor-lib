@@ -1,7 +1,5 @@
 require('../../globalSetup.js');
 const assert = require('assert');
-// Sinon library for mocking
-const sinon = require('sinon');
 
 const {document} = global.window;
 
@@ -73,26 +71,6 @@ describe('Test CamerPublisher', function() {
     });
   });
 
-  describe('#start()', function() {
-    /**
-     * Helper function for checking whether correct error is raised for
-     * invalid buttons.
-     * @param {Error} error The raised error.
-     * @return {boolean} true if valid.
-     */
-    function expectInvalidSource(error) {
-      assert(error.message === 'No video source found.');
-      return true;
-    }
-    it('should throw an error if there is no video source', function() {
-      const camera = document.createElement('video');
-      const canvas = document.createElement('canvas');
-      const publisher = sinon.spy(new CameraPublisher(new ROSLIB.Ros(), 'topic', camera, canvas));
-
-      assert.throws(() => publisher.start(), expectInvalidSource);
-    });
-  });
-
   describe('#readFromConfig(ros, config)', function() {
     it('should return a started instance of CameraPublisher', function() {
       const cameraName = 'camera';
@@ -103,6 +81,7 @@ describe('Test CamerPublisher', function() {
       const config = {
         name: cameraName,
         frequency: frequency,
+        topicPath: '/mirte/phone_camera',
         cameraId: videoId,
         canvasId: canvasId,
       };
@@ -118,7 +97,7 @@ describe('Test CamerPublisher', function() {
 
       const publisher = CameraPublisher.readFromConfig(ros, config);
 
-      const topicName = 'mirte/phone_camera/' + cameraName;
+      const topicName = config.topicPath + '/' + cameraName;
       assert(publisher instanceof CameraPublisher);
       assert(publisher.started);
       assert.equal(publisher.topic.name, topicName);

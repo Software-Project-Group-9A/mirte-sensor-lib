@@ -71,16 +71,20 @@ class CameraPublisher extends IntervalPublisher {
    * @param {ROSLIB.Ros} ros ros instance to which to resulting publisher will publish
    * @param {Object} config object with the following keys:
    * @param {string} config.name - name of the publisher to create
-   * @param {number} config.frequency - name of the publisher to create
-   * @param {string} config.cameraId - id of HTMLVideoElement with camera data
-   * @param {string} config.canvasId - id of HTMLCanvasElement to use creating images from video
+   * @param {string} config.topicPath - path to location of topic of publisher.
+   *  Publisher will publish to the topic topicPath/name
+   * @param {number} config.frequency - frequency of the publisher to create
+   * @param {string} [config.cameraId='camera'] - id of HTMLVideoElement with camera data
+   * @param {string} [config.canvasId='canvas'] - id of HTMLCanvasElement to use creating images from video
    * @return {CameraPublisher} CameraPublisher described in the provided config parameter
    */
   static readFromConfig(ros, config) {
+    config.cameraId = config.cameraId || 'camera';
+    config.canvasId = config.canvasId || 'canvas';
     const camera = document.getElementById(config.cameraId);
     const canvas = document.getElementById(config.canvasId);
 
-    const topicName = 'mirte/phone_camera/' + config.name;
+    const topicName = config.topicPath + '/' + config.name;
     const publisher = new CameraPublisher(ros, topicName, camera, canvas);
     publisher.start();
     publisher.setPublishFrequency(config.frequency);

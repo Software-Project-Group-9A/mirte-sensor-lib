@@ -66,6 +66,23 @@ class FlashlightSubscriber extends Subscriber {
 
     // The light will be on as long the track exists
   }
+
+  /**
+   * Deserializes a FlashLightSubscriber stored in a config object, and returns the resulting subscriber instance.
+   * The returned instance is already started.
+   * @param {ROSLIB.Ros} ros ros instance to which subscriber will subscribe
+   * @param {Object} config object with the following keys:
+   * @param {string} config.name - name of the subscriber to create
+   * @param {string} config.topicPath - path to location of topic of subscriber.
+   *  subscriber will subscribe to the topic topicPath/name
+   * @return {FlashlightSubscriber} FlashLightSubscriber described in the provided properties parameter
+   */
+  static readFromConfig(ros, config) {
+    const topicName = config.topicPath + '/' + config.name;
+    const subscriber = new FlashlightSubscriber(ros, topicName);
+
+    return subscriber;
+  }
 }
 
 module.exports = FlashlightSubscriber;

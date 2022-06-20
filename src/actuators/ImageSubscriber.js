@@ -1,5 +1,6 @@
 const Subscriber = require('./Subscriber');
 const NotSupportedError = require('../error/NotSupportedError');
+const {positionElement} = require('../util/styleUtils');
 
 /**
  * ImageSubscriber subscribes to a ROS topic and displays any images published to that topic on a canvas.
@@ -139,6 +140,32 @@ class ImageSubscriber extends Subscriber {
     }
 
     return imageData;
+  }
+
+  /**
+   * Deserializes an ImageSubscriber stored in a config object, and returns the resulting subscriber instance.
+   * The returned instance is already started.
+   * @param {ROSLIB.Ros} ros ros instance to which subscriber will subscribe
+   * @param {Object} config object with the following keys:
+   * @param {string} config.name - name of the subscriber to create
+   * @param {string} config.topicPath - path to location of topic of subscriber.
+   *  subscriber will subscribe to the topic topicPath/name
+   * @param {number} config.x distance from right side of container
+   * @param {number} config.y distance from top side of container
+   * @param {HTMLElement} targetElement HTML element in which to generate necessary UI elements
+   * @return {ImageSubscriber} ImageSubscriber described in the provided properties parameter
+   */
+  static readFromConfig(ros, config, targetElement) {
+    const canvas = window.document.createElement('canvas');
+    canvas.style.setProperty('width', '20%');
+    canvas.style.setProperty('height', '20%');
+
+    positionElement(canvas, targetElement, config.x, config.y);
+
+    const topicName = config.topicPath + '/' + config.name;
+    const subscriber = new ImageSubscriber(ros, topicName, canvas);
+
+    return subscriber;
   }
 }
 

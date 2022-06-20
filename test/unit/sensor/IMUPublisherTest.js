@@ -357,6 +357,7 @@ describe('Test IMU Publisher', function() {
       const ros = new ROSLIB.Ros();
       const config = {
         name: imuName,
+        topicPath: 'mirte/phone_imu/',
         frequency: frequency,
       };
 
@@ -364,7 +365,7 @@ describe('Test IMU Publisher', function() {
       const publisher = IMUPublisher.readFromConfig(ros, config);
 
       // Assert
-      const topicName = 'mirte/phone_imu/' + imuName;
+      const topicName = config.topicPath + '/' + imuName;
       assert(publisher instanceof IMUPublisher);
       assert(publisher.started);
       assert.equal(publisher.topic.name, topicName);

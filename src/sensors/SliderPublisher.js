@@ -1,4 +1,5 @@
 const IntervalPublisher = require('./IntervalPublisher.js');
+const {positionElement} = require('../util/styleUtils');
 
 /**
  * SliderPublisher publishes the state of an HTML slider element.
@@ -47,6 +48,34 @@ class SliderPublisher extends IntervalPublisher {
     });
     this.msg = msg;
     super.createSnapshot();
+  }
+
+  /**
+   * Deserializes a Slider stored in a config object, and returns the resulting publisher instance.
+   * The returned instance is already started.
+   * @param {ROSLIB.Ros} ros ros instance to which to resulting publisher will publish
+   * @param {Object} config object with the following keys:
+   * @param {string} config.name name of the publisher to create
+   * @param {string} config.topicPath - path to location of topic of publisher.
+   *  Publisher will publish to the topic topicPath/name
+   * @param {number} config.frequency name of the publisher to create
+   * @param {HTMLElement} targetElement HTML element in which to generate necessary sensor UI elements
+   * @return {GPSDeclinationPublisher} GPSDeclinationPublisher described in the provided config parameter
+   */
+  static readFromConfig(ros, config, targetElement) {
+    const slider = window.document.createElement('input');
+    slider.id = config.name;
+    slider.type = 'range';
+    slider.min = 0;
+    slider.max = 100;
+
+    positionElement(slider, targetElement, config.x, config.y, config.name);
+
+    const topicName = config.topicPath + '/' + config.name;
+    const publisher = new SliderPublisher(ros, topicName, slider, config.frequency);
+    publisher.start();
+
+    return publisher;
   }
 }
 

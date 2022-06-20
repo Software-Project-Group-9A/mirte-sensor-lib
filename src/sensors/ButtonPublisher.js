@@ -1,4 +1,5 @@
 const SensorPublisher = require('./SensorPublisher.js');
+const {positionElement} = require('../util/styleUtils');
 
 /**
  * ButtonPublisher publishes the state of an HTML button element.
@@ -92,6 +93,31 @@ class ButtonPublisher extends SensorPublisher {
     this.button.removeEventListener('mouseleave', this.onMouseUp);
     this.button.removeEventListener('touchend', this.onMouseUp);
     this.button.removeEventListener('touchcancel', this.onMouseUp);
+  }
+
+  /**
+   * Deserializes a Button stored in a config object, and returns the resulting publisher instance.
+   * The returned instance is already started.
+   * @param {ROSLIB.Ros} ros ros instance to which to resulting publisher will publish
+   * @param {Object} config object with the following keys:
+   * @param {string} config.name name of the publisher to create
+   * @param {string} config.topicPath - path to location of topic of publisher.
+   *  Publisher will publish to the topic topicPath/name
+   * @param {number} config.frequency name of the publisher to create
+   * @param {HTMLElement} targetElement HTML element in which to generate necessary sensor UI elements
+   * @return {GPSDeclinationPublisher} GPSDeclinationPublisher described in the provided config parameter
+   */
+  static readFromConfig(ros, config, targetElement) {
+    // initialize button
+    const button = window.document.createElement('button');
+    button.innerHTML = config.name;
+
+    positionElement(button, targetElement, config.x, config.y, config.name);
+
+    const publisher = new ButtonPublisher(ros, config.topicPath + '/' + config.name, button, config.frequency);
+    publisher.start();
+
+    return publisher;
   }
 }
 

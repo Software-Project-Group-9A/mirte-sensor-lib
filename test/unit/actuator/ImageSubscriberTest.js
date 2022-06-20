@@ -166,4 +166,23 @@ describe('ImageSubscriber', function() {
       assert.deepEqual(imageData, expectedPixelData);
     });
   });
+  describe('#readFromConfig(ros, config, targetElement)', function() {
+    it('should return the correct subscriber instance', function() {
+      const targetElement = document.createElement('div');
+
+      const config = {
+        'name': 'imageA',
+        'topicPath': '/mirte/phone_image_output',
+        'x': 20,
+        'y': 20,
+      };
+
+      const subscriber = ImageSubscriber.readFromConfig(new ROSLIB.Ros(), config, targetElement);
+
+      assert.equal(subscriber.topic.name, '/mirte/phone_image_output/imageA');
+      assert.equal(targetElement.childElementCount, 1);
+      const child = targetElement.firstChild;
+      assert(child instanceof window.HTMLCanvasElement);
+    });
+  });
 });

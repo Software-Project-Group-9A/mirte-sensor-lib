@@ -200,4 +200,36 @@ describe('Test TextPublisher', function() {
       assert.equal(topic.publish.callCount, 0);
     });
   });
+
+  describe('#readFromConfig(ros, config, targetElement)', function() {
+    it('should append a input to the target element', function() {
+      const ros = new ROSLIB.Ros();
+      const targetDiv = document.createElement('div');
+      const config = {
+        name: 'textInputA',
+        topicPath: '/mirte/phone_text_intput',
+      };
+
+      TextPublisher.readFromConfig(ros, config, targetDiv);
+
+      assert.equal(targetDiv.childElementCount, 1);
+      const child = targetDiv.childNodes.item(0);
+      assert(child instanceof window.HTMLInputElement);
+      assert.equal(child.type, 'text');
+    });
+    it('should return the correct publisher', function() {
+      const ros = new ROSLIB.Ros();
+      const targetDiv = document.createElement('div');
+      const config = {
+        name: 'textInputA',
+        topicPath: '/mirte/phone_text_input',
+      };
+
+      const publisher = TextPublisher.readFromConfig(ros, config, targetDiv);
+
+      assert(publisher instanceof TextPublisher);
+      assert(publisher.started);
+      assert.equal(publisher.topic.name, '/mirte/phone_text_input/textInputA');
+    });
+  });
 });

@@ -226,11 +226,13 @@ class CoordinateCompassPublisher extends IntervalPublisher {
    * @param {ROSLIB.Ros} ros ros instance to which to resulting publisher will publish
    * @param {Object} config object with the following keys:
    * @param {string} config.name - name of the publisher to create
-   * @param {number} config.frequency - name of the publisher to create
+   * @param {string} config.topicPath - path to location of topic of publisher.
+   *  Publisher will publish to the topic topicPath/name
+   * @param {number} config.frequency - frequency of the publisher to create
    * @return {CoordinateCompassPublisher} CoordinateCompassPublisher described in the provided config parameter
    */
   static readFromConfig(ros, config) {
-    const topicName = 'mirte/phone_coordinate_compass/' + config.name;
+    const topicName = config.topicPath + '/' + config.name;
     const publisher = new CoordinateCompassPublisher(ros, topicName);
 
     publisher.start();
